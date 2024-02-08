@@ -42,9 +42,10 @@ void AWitch::Move(const FInputActionInstance& Instance)
 	FVector2D Input = Instance.GetValue().Get<FVector2D>();
 	if (Controller && !Input.IsNearlyZero())
 	{
-		const float Rotation = Controller->GetControlRotation().Yaw;
-		const FVector2D RotatedInput = Input.GetRotated(Rotation);
-		const FVector Movement = FVector(RotatedInput.X, RotatedInput.Y, 0.0);
+		//const float Rotation = Controller->GetControlRotation().Yaw;
+		const float Rotation = FollowCamera->GetComponentRotation().Yaw + 90.0f;
+		const FVector2D RotatedInput = Input.GetRotated(-Rotation);
+		const FVector Movement = FVector(RotatedInput.X, -RotatedInput.Y, 0.0);
 		AddMovementInput(Movement);
 	}
 }
