@@ -14,4 +14,10 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 
 public:
 	UWitchForestASC();
+
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
 };
