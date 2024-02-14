@@ -4,8 +4,10 @@
 #include "WitchForestGame/Character/Enemies/EnemyAIController.h"
 
 #include "WitchForestGame/Character/Enemies/Enemy.h"
+#include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 
 #include "Navigation/PathFollowingComponent.h" 
+#include "GameFramework/PlayerState.h"
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -16,7 +18,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		return;
 	}
 	EnemyPawn = Enemy;
-	Enemy->OnTakeDamage.BindUObject(this, &AEnemyAIController::DamageReceived);
+	Enemy->OnTakeDamage.AddDynamic(this, &AEnemyAIController::DamageReceived);
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
@@ -26,14 +28,23 @@ void AEnemyAIController::Tick(float DeltaTime)
 	{
 		return;
 	}
-	MoveTo(Destination);
+	FPathFollowingRequestResult Result = MoveTo(Destination);
+	if (Result == EPathFollowingRequestResult::Failed)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed movement request."));
+	}
 }
 
-void AEnemyAIController::DamageReceived(AActor* Source)
+void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)
 {
 	if (!Target.IsValid())
 	{
-		Target = Source;
+		AActor* NewTarget = Source;
+		if (APlayerState* TargetPlayerState = Cast<APlayerState>(Source))
+		{
+			NewTarget = TargetPlayerState->GetPawn();
+		}
+		Target = NewTarget;
 	}
 }
 
@@ -44,24 +55,28 @@ bool AEnemyAIController::TryGetDestination(FVector& Destination)
 		return false;
 	}
 
-	const FVector TargetDelta = Target->GetActorLocation() - EnemyPawn->GetActorLocation();
+	const FVector TargetLocation = Target->GetActorLocation();
+	const FVector TargetDelta = TargetLocation - EnemyPawn->GetActorLocation();
 	const FVector TargetDirection = TargetDelta.GetSafeNormal2D();
 	const float TargetDistanceSquared = TargetDelta.SquaredLength();
 	float DesiredDistance = MaxDistance;
 
-	float ModifiedMaxDistance = MaxDistance - 35.0f;
+	const bool bWithinRadius = TargetDistanceSquared < MaxDistance * MaxDistance;
+	EnemyPawn->GetEnemyMovementComponent()->SetOrientRotationToMovement(!bWithinRadius);
+	ControlRotation = FRotator(0.0f, FMath::RadiansToDegrees(atan2(TargetDirection.Y, TargetDirection.X)), 0.0f);
 
-	if (TargetDistanceSquared < MaxDistance * MaxDistance)
+	if (bWithinRadius)
 	{
-		// If the target is not closer than our min distance, we don't need to move
-		if (TargetDistanceSquared >= ModifiedMaxDistance * ModifiedMaxDistance)
+		// If the target is not closer than our MinDistance, we don't need to move
+		if (TargetDistanceSquared >= MinDistance * MinDistance)
 		{
-			return false;
+			Destination = EnemyPawn->GetActorLocation();
+			return true;
 		}
-		// otherwise, move so we are at least mindistance away from the target
+		// otherwise, move so we are at least MinDistance away from the target
 		DesiredDistance = MinDistance;
 	}
 	const FVector TargetOffset = TargetDirection * DesiredDistance;
-	Destination = Target->GetActorLocation() - TargetOffset;
+	Destination = TargetLocation - TargetOffset;
 	return true;
 }

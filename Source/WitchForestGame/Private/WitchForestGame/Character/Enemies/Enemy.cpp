@@ -17,7 +17,7 @@ AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
 	RootComponent = Capsule;
 
 	MovementComponent = CreateDefaultSubobject<UEnemyMovementComponent>(TEXT("Movement Component"));
-	MovementComponent->SetUpdatedComponent(RootComponent);
+	// MovementComponent->SetUpdatedComponent(RootComponent);
 
 	AbilitySystem = CreateDefaultSubobject<UWitchForestASC>(TEXT("AbilitySystem"));
 	AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("Character attribute set"));
@@ -40,6 +40,11 @@ void AEnemy::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 }
 
+void AEnemy::MoveForward()
+{
+	AddMovementInput(GetActorForwardVector());
+}
+
 UCapsuleComponent* AEnemy::GetCapsule() const
 {
 	return Capsule;
@@ -52,8 +57,19 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 		if (ModifiedAttribute.Attribute == AttributeSet->GetHealthAttribute())
 		{
 			AActor* Damager = GameplayEffectSpec.GetContext().GetInstigator();
-			OnTakeDamage.Execute(Damager);
+			FHitResult Hit = *GameplayEffectSpec.GetContext().GetHitResult();
+			OnTakeDamage.Broadcast(Damager, Hit);
 		}
 	}
+}
+
+UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
+{
+	return AbilitySystem;
+}
+
+UEnemyMovementComponent* AEnemy::GetEnemyMovementComponent() const
+{
+	return MovementComponent;
 }
 

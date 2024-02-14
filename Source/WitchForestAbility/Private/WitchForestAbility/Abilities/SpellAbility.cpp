@@ -5,8 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 
 #include "WitchForestAbility.h"
+#include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
 
 void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -29,21 +31,15 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		OwnerActor = PlayerState->GetPawn();
 	}
 	FTransform ProjectileTransform = OwnerActor->GetActorTransform();
-	AActor* Projectile = World->SpawnActor(ProjectileClass.Get(), &ProjectileTransform);
-	if (!Projectile)
-	{
-		UE_LOG(LogWitchForestAbility, Warning, TEXT("Failed to spawn projectile."));
-		return;
-	}
-	Projectile->OnActorHit.AddDynamic(this, &USpellAbility::ProjectileHit);
+	ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
+	Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
+	Projectile->FinishSpawning(ProjectileTransform);
 }
 
-void USpellAbility::ProjectileHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+void USpellAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	FGameplayEffectSpecHandle SpellEffectHandle = MakeOutgoingGameplayEffectSpec(SpellEffect);
-	FGameplayAbilityTargetDataHandle TargetDataHandle;
-	FGameplayAbilityTargetData* TargetData = new FGameplayAbilityTargetData();
-	TargetData->ReplaceHitWith(OtherActor, &Hit);
-	TargetDataHandle.Add(TargetData);
-	ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, SpellEffectHandle, TargetDataHandle);
+	if (IsActive())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	}
 }

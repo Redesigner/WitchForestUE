@@ -14,10 +14,10 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting|Walking", meta = (AllowPrivateAccess = true))
-	float MaxDistance = 50.0f;
+	float MaxDistance = 200.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting|Walking", meta = (AllowPrivateAccess = true))
-	float MinDistance = 25.0f;
+	float MinDistance = 100.0f;
 
 	TWeakObjectPtr<AActor> Target;
 
@@ -28,7 +28,8 @@ public:
 
 	void Tick(float DeltaTime) override;
 
-	void DamageReceived(AActor* Source);
+	UFUNCTION()
+	void DamageReceived(AActor* Source, FHitResult Hit);
 
 	bool TryGetDestination(FVector& Destination);
 };

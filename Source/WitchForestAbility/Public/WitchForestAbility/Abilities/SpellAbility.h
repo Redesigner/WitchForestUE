@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"
+
 #include "SpellAbility.generated.h"
 
 class UGameplayEffect;
+class ASpellProjectile;
 
 UCLASS()
 class WITCHFORESTABILITY_API USpellAbility : public UWitchForestGameplayAbility
@@ -17,12 +19,11 @@ class WITCHFORESTABILITY_API USpellAbility : public UWitchForestGameplayAbility
 	TSubclassOf<UGameplayEffect> SpellEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile, meta = (AllowPrivateAccess = true))
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<ASpellProjectile> ProjectileClass;
 
 protected:
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)  override;
 
-public:
-	UFUNCTION()
-	void ProjectileHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+
 };

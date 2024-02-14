@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "GameplayEffect.h"
+#include "AbilitySystemInterface.h"
+
 #include "Enemy.generated.h"
 
 class UCapsuleComponent;
@@ -14,7 +16,7 @@ class UAbilitySystemComponent;
 class UBaseAttributeSet;
 
 UCLASS()
-class WITCHFORESTGAME_API AEnemy : public APawn
+class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -39,10 +41,19 @@ public:
 
 	void PossessedBy(AController* NewController) override;
 
+
+	UFUNCTION(BlueprintCallable)
+	void MoveForward();
+
 	UCapsuleComponent* GetCapsule() const;
 
 	void GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
-	DECLARE_DELEGATE_OneParam(FOnTakeDamage, AActor*)
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UEnemyMovementComponent* GetEnemyMovementComponent() const;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTakeDamage, AActor*, Source, FHitResult, Hit);
+	UPROPERTY(BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;
 };

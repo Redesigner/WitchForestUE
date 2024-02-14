@@ -17,6 +17,9 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor
 
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
+	FVector Velocity;
+
 public:	
 	ASpellProjectile();
 
@@ -27,5 +30,5 @@ public:
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 protected:
-	void ApplyGameplayEffectToTarget(AActor* Target);
+	void ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult);
 };
