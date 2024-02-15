@@ -13,7 +13,7 @@ public class WitchForestGame : ModuleRules
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]{
-			"GameplayAbilities", "GameplayTasks"
+			"GameplayAbilities", "GameplayTasks", "NavigationSystem"
 		});
 	}
 }

@@ -4,7 +4,7 @@
 #include "WitchForestGame/Character/Enemies/Enemy.h"
 
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
-#include "WitchForestGame/Character/Enemies/EnemyAIController.h"
+#include "WitchForestGame/AI/EnemyAIController.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 

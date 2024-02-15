@@ -1,17 +1,29 @@
 // Copyright (c) 2024 Stephen Melnick
 
 
-#include "WitchForestGame/Character/Enemies/EnemyAIController.h"
+#include "WitchForestGame/AI/EnemyAIController.h"
 
+#include "WitchForestGame.h"
 #include "WitchForestGame/Character/Enemies/Enemy.h"
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 
 #include "Navigation/PathFollowingComponent.h" 
 #include "GameFramework/PlayerState.h"
+#include "Logging/StructuredLog.h"
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (BehaviorTree)
+	{
+		RunBehaviorTree(BehaviorTree);
+	}
+	else
+	{
+		UE_LOGFMT(LogWitchForestGame, Warning, "AIController '{SelfName}' failed to set a behavior tree for Pawn '{PawnName}'. It does not have a valid BehaviorTree Asset set.", GetName(), InPawn->GetName());
+	}
+
 	AEnemy* Enemy = Cast<AEnemy>(InPawn);
 	if (!Enemy)
 	{
