@@ -44,6 +44,7 @@ void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)
 		{
 			NewTarget = TargetPlayerState->GetPawn();
 		}
+		SetFocus(Source);
 		Target = NewTarget;
 	}
 }

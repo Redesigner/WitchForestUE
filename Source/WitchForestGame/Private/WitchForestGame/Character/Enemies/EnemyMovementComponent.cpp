@@ -274,6 +274,7 @@ bool UEnemyMovementComponent::SnapToFloor()
 
 void UEnemyMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)
 {
+	DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + RequestedVelocity, 25.0f, FColor::Blue, false, 2.0f);
 	RequestedVelocity = MoveVelocity;
 }
 

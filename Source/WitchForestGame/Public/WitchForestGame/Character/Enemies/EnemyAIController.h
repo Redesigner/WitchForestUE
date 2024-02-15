@@ -7,6 +7,7 @@
 #include "EnemyAIController.generated.h"
 
 class AEnemy;
+class UBehaviorTree;
 
 UCLASS()
 class WITCHFORESTGAME_API AEnemyAIController : public AAIController
@@ -18,6 +19,9 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting|Walking", meta = (AllowPrivateAccess = true))
 	float MinDistance = 100.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	TWeakObjectPtr<AActor> Target;
 
