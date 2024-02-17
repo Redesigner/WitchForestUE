@@ -12,6 +12,8 @@
 #include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
 #include "WitchForestGame/Character/WitchForestInputComponent.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
+#include "WitchForestGame/Inventory/InventoryComponent.h"
+
 #include "WitchForestAbility/Input/WitchForestInputConfig.h"
 #include "WitchForestAbility/WitchForestASC.h"
 

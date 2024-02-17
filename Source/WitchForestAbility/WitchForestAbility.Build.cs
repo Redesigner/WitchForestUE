@@ -8,8 +8,12 @@ public class WitchForestAbility : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities", "GameplayTasks" });
+		PublicDependencyModuleNames.AddRange(new string[] {
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities", "GameplayTasks"
+		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags" });
+		PrivateDependencyModuleNames.AddRange(new string[] {
+			"GameplayTags", "WitchForestGame"
+		});
 	}
 }

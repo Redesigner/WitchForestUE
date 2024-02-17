@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BehaviorTreeTypes.h" 
+
 #include "EnemyAIController.generated.h"
 
 class AEnemy;
@@ -14,18 +16,18 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting|Walking", meta = (AllowPrivateAccess = true))
-	float MaxDistance = 200.0f;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting|Walking", meta = (AllowPrivateAccess = true))
-	float MinDistance = 100.0f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = BlackBoard, meta = (AllowPrivateAccess = true))
+	FBlackboardKeySelector TargetKey;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
-	TWeakObjectPtr<AActor> Target;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
+	float MinimumRange = 500.0f;
 
 	TWeakObjectPtr<AEnemy> EnemyPawn;
+
+	TWeakObjectPtr<AActor> TargetActor;
 
 public:
 	void OnPossess(APawn* InPawn) override;
@@ -35,5 +37,6 @@ public:
 	UFUNCTION()
 	void DamageReceived(AActor* Source, FHitResult Hit);
 
-	bool TryGetDestination(FVector& Destination);
+private:
+	void SetTarget(AActor* Target);
 };

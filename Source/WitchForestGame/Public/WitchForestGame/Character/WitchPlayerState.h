@@ -10,6 +10,7 @@
 
 class UWitchForestASC;
 class UWitchForestAbilitySet;
+class UInventoryComponent;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -23,6 +24,9 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	// It is also currently only loaded on construction, but should be able to change in the future
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInventoryComponent> Inventory;
 
 public:
 	AWitchPlayerState();

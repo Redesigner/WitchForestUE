@@ -30,7 +30,7 @@ void UEnemyMovementComponent::SetUpdatedComponent(USceneComponent* Component)
 
 void UEnemyMovementComponent::AddImpulse(FVector Impulse)
 {
-	DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + Impulse, 25.0f, FColor::Red, false, 2.0f);
+	// DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + Impulse, 25.0f, FColor::Red, false, 2.0f);
 	PendingImpulses += Impulse;
 }
 
@@ -181,18 +181,9 @@ void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 
 void UEnemyMovementComponent::UpdateRotation(float DeltaTime)
 {
-	if (!bOrientRotationToMovement)
-	{
-		FRotator ControllerRotation = EnemyOwner->GetControlRotation();
-		ControllerRotation.Pitch = 0.0f;
-		ControllerRotation.Roll = 0.0f;
-		PawnOwner->SetActorRotation(ControllerRotation);
-		return;
-	}
-
 	const FVector Normal2D = Velocity.GetSafeNormal2D();
 
-	if (Normal2D.IsNearlyZero())
+	if (Normal2D.IsNearlyZero() && bOrientRotationToMovement)
 	{
 		return;
 	}
@@ -200,7 +191,7 @@ void UEnemyMovementComponent::UpdateRotation(float DeltaTime)
 	const float DesiredYaw = FMath::RadiansToDegrees(FMath::Atan2(Normal2D.Y, Normal2D.X));
 	const float DeltaYaw = FMath::FInterpConstantTo(CurrentRotation.Yaw, DesiredYaw, DeltaTime, RotationSpeed);
 	FRotator DesiredRotation = CurrentRotation;
-	DesiredRotation.Yaw = DesiredYaw;
+	DesiredRotation.Yaw = bOrientRotationToMovement ? DesiredYaw : EnemyOwner->GetControlRotation().Yaw;
 	FRotator NewRotation = FMath::RInterpConstantTo(CurrentRotation, DesiredRotation, DeltaTime, RotationSpeed);
 	PawnOwner->SetActorRotation(NewRotation);
 }
@@ -274,7 +265,7 @@ bool UEnemyMovementComponent::SnapToFloor()
 
 void UEnemyMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)
 {
-	DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + RequestedVelocity, 25.0f, FColor::Blue, false, 2.0f);
+	// DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + RequestedVelocity.GetSafeNormal() * 300.0f, 25.0f, FColor::Blue, false, -1.0f);
 	RequestedVelocity = MoveVelocity;
 }
 

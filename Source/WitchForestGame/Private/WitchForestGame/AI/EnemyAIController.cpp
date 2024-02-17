@@ -10,6 +10,8 @@
 #include "Navigation/PathFollowingComponent.h" 
 #include "GameFramework/PlayerState.h"
 #include "Logging/StructuredLog.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BrainComponent.h" 
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -35,61 +37,36 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
-	FVector Destination;
-	if (!TryGetDestination(Destination))
+	Super::Tick(DeltaTime);
+
+	APawn* OwnerPawn = GetPawn();
+	if (!OwnerPawn || !TargetActor.IsValid())
 	{
 		return;
 	}
-	FPathFollowingRequestResult Result = MoveTo(Destination);
-	if (Result == EPathFollowingRequestResult::Failed)
+	const float DistanceSquared = (TargetActor->GetActorLocation() - OwnerPawn->GetActorLocation()).SquaredLength();
+	bool bInRange = DistanceSquared <= MinimumRange * MinimumRange;
+	SetFocus(TargetActor.Get());
+
+	if (Blackboard->GetValueAsBool("InRange") != bInRange)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed movement request."));
+		Blackboard->SetValueAsBool("InRange", bInRange);
 	}
 }
 
 void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)
 {
-	if (!Target.IsValid())
+	AActor* Target = Source;
+	if (APlayerState* TargetPlayerState = Cast<APlayerState>(Source))
 	{
-		AActor* NewTarget = Source;
-		if (APlayerState* TargetPlayerState = Cast<APlayerState>(Source))
-		{
-			NewTarget = TargetPlayerState->GetPawn();
-		}
-		SetFocus(Source);
-		Target = NewTarget;
+		Target = TargetPlayerState->GetPawn();
 	}
+	SetTarget(Target);
 }
 
-bool AEnemyAIController::TryGetDestination(FVector& Destination)
+void AEnemyAIController::SetTarget(AActor* Target)
 {
-	if (!Target.IsValid())
-	{
-		return false;
-	}
-
-	const FVector TargetLocation = Target->GetActorLocation();
-	const FVector TargetDelta = TargetLocation - EnemyPawn->GetActorLocation();
-	const FVector TargetDirection = TargetDelta.GetSafeNormal2D();
-	const float TargetDistanceSquared = TargetDelta.SquaredLength();
-	float DesiredDistance = MaxDistance;
-
-	const bool bWithinRadius = TargetDistanceSquared < MaxDistance * MaxDistance;
-	EnemyPawn->GetEnemyMovementComponent()->SetOrientRotationToMovement(!bWithinRadius);
-	ControlRotation = FRotator(0.0f, FMath::RadiansToDegrees(atan2(TargetDirection.Y, TargetDirection.X)), 0.0f);
-
-	if (bWithinRadius)
-	{
-		// If the target is not closer than our MinDistance, we don't need to move
-		if (TargetDistanceSquared >= MinDistance * MinDistance)
-		{
-			Destination = EnemyPawn->GetActorLocation();
-			return true;
-		}
-		// otherwise, move so we are at least MinDistance away from the target
-		DesiredDistance = MinDistance;
-	}
-	const FVector TargetOffset = TargetDirection * DesiredDistance;
-	Destination = TargetLocation - TargetOffset;
-	return true;
+	TargetActor = Target;
+	// Blackboard->SetValueAsObject(TargetKey.SelectedKeyName, Target);
+	Blackboard->SetValueAsObject("TargetActor", Target);
 }

@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputAction;
 class UWitchForestInputConfig;
 class UWitchForestASC;
+class UInventoryComponent;
 struct FInputActionInstance;
 
 UCLASS()

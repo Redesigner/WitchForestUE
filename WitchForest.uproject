@@ -259,6 +259,14 @@
 			"SupportedTargetPlatforms": [
 				"Win64"
 			]
+		},
+		{
+			"Name": "GameplayStateTree",
+			"Enabled": true
+		},
+		{
+			"Name": "StateTree",
+			"Enabled": true
 		}
 	]
 }
