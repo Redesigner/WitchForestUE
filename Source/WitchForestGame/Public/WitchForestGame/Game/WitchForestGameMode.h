@@ -19,4 +19,6 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 public:
 	AWitchForestGameMode();
+
+	UItemSet* GetItemSet() const;
 };

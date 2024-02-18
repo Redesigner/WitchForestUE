@@ -66,7 +66,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FWitchForestAbilitySet_GrantedHandles
+struct WITCHFORESTABILITY_API FWitchForestAbilitySet_GrantedHandles
 {
 	GENERATED_BODY()
 

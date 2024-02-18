@@ -8,14 +8,22 @@
 
 
 UENUM(BlueprintType)
-enum class EAbilityActivationType : uint8
+enum class EAbilityActivationPolicy : uint8
 {
 	OnInputPressed,
-	Repeated
+	Repeated,
+	OnSpawn
 };
 
 UCLASS()
 class WITCHFORESTABILITY_API UWitchForestGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
+
+public:
+	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
+	EAbilityActivationPolicy ActivationPolicy;
 };

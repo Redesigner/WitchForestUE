@@ -12,6 +12,7 @@
 #include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
 #include "WitchForestGame/Character/WitchForestInputComponent.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
+#include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
 #include "WitchForestAbility/Input/WitchForestInputConfig.h"
@@ -37,6 +38,9 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	ItemHandle = CreateDefaultSubobject<UItemHandleComponent>(TEXT("ItemHandle"));
+	ItemHandle->SetupAttachment(RootComponent);
 }
 
 void AWitch::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

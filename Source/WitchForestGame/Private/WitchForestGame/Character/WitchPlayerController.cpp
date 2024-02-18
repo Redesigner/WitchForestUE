@@ -3,6 +3,9 @@
 
 #include "WitchForestGame/Character/WitchPlayerController.h"
 
+#include "WitchForestGame/Character/WitchPlayerState.h"
+#include "WitchForestAbility/WitchForestASC.h"
+
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
@@ -20,4 +23,25 @@ void AWitchPlayerController::BeginPlay()
             }
         }
     }
+}
+
+UWitchForestASC* AWitchPlayerController::GetWitchForestASC() const
+{
+    if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
+    {
+        return WitchPlayerState->GetWitchForestASC();
+    }
+    return nullptr;
+}
+
+void AWitchPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
+{
+    Super::PostProcessInput(DeltaTime, bGamePaused);
+
+    UWitchForestASC* WitchForestASC = GetWitchForestASC();
+    if (!WitchForestASC)
+    {
+        return;
+    }
+    WitchForestASC->ProcessAbilityInput(DeltaTime, bGamePaused);
 }

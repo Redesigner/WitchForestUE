@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "NativeGameplayTags.h"
 
 #include "WitchForestASC.generated.h"
+
+
+WITCHFORESTABILITY_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_AbilityInputBlocked);
 
 UCLASS()
 class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
@@ -20,4 +24,16 @@ public:
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 	void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
+
+
+	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
+
+	void ClearAbilityInput();
+
+protected:
+	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
+
+	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
+
+	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
 };

@@ -6,3 +6,8 @@ AWitchForestGameMode::AWitchForestGameMode()
 {
 
 }
+
+UItemSet* AWitchForestGameMode::GetItemSet() const
+{
+    return CurrentItemSet;
+}

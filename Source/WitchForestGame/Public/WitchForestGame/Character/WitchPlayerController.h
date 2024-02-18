@@ -7,6 +7,7 @@
 #include "WitchPlayerController.generated.h"
 
 class UInputMappingContext;
+class UWitchForestASC;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
@@ -18,4 +19,8 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
 
 public:
 	void BeginPlay() override;
+
+	UWitchForestASC* GetWitchForestASC() const;
+
+	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 };

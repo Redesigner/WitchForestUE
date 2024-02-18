@@ -14,6 +14,7 @@ class UInputAction;
 class UWitchForestInputConfig;
 class UWitchForestASC;
 class UInventoryComponent;
+class UItemHandleComponent;
 struct FInputActionInstance;
 
 UCLASS()
@@ -33,6 +34,9 @@ class WITCHFORESTGAME_API AWitch : public ACharacter
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestInputConfig> InputConfig;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UItemHandleComponent> ItemHandle;
 
 public:
 	AWitch(const FObjectInitializer& ObjectInitializer);
