@@ -15,6 +15,7 @@ class UWitchForestInputConfig;
 class UWitchForestASC;
 class UInventoryComponent;
 class UItemHandleComponent;
+class USphereComponent;
 struct FInputActionInstance;
 
 UCLASS()
@@ -38,6 +39,9 @@ class WITCHFORESTGAME_API AWitch : public ACharacter
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UItemHandleComponent> ItemHandle;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USphereComponent> InteractionVolume;
+
 public:
 	AWitch(const FObjectInitializer& ObjectInitializer);
 
@@ -52,6 +56,9 @@ public:
 
 
 	void Move(const FInputActionInstance& Instance);
+
+	// Consider making Interaction Volume a seprate component so we can use GetComponentByClass instead
+	USphereComponent* GetInteractionVolume() const;
 
 private:
 	UWitchForestASC* GetWitchForestASC() const;

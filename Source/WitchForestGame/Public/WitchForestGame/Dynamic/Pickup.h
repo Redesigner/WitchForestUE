@@ -32,4 +32,7 @@ public:
 	void AddImpulse(FVector Impulse);
 
 	UWitchForestAbilitySet* GetGrantedAbilitySet() const;
+
+	// @TODO: Make a more robust system
+	bool bHeld = false;
 };

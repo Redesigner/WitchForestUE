@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Components/SphereComponent.h"
 #include "Logging/StructuredLog.h"
 
 #include "WitchForestGame.h"
@@ -41,6 +42,9 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 
 	ItemHandle = CreateDefaultSubobject<UItemHandleComponent>(TEXT("ItemHandle"));
 	ItemHandle->SetupAttachment(RootComponent);
+
+	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionVolume"));
+	InteractionVolume->SetupAttachment(RootComponent);
 }
 
 void AWitch::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -99,6 +103,11 @@ void AWitch::Move(const FInputActionInstance& Instance)
 		const FVector Movement = FVector(RotatedInput.X, -RotatedInput.Y, 0.0);
 		AddMovementInput(Movement);
 	}
+}
+
+USphereComponent* AWitch::GetInteractionVolume() const
+{
+	return InteractionVolume;
 }
 
 UWitchForestASC* AWitch::GetWitchForestASC() const

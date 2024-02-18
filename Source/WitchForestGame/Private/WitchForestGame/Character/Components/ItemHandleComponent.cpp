@@ -19,6 +19,7 @@ APickup* UItemHandleComponent::ConsumeItem()
 	}
 	APickup* Item = HeldItem.Get();
 	Item->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	Item->bHeld = false;
 	HeldItem.Reset();
 
 	if (AWitchPlayerState* PlayerState = Cast<AWitchPlayerState>(GetOwner()))
@@ -43,6 +44,7 @@ void UItemHandleComponent::PickupItem(APickup* Item)
 	HeldItem = Item;
 	Item->DisableMovement();
 	Item->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Item->bHeld = true;
 	if (AWitchPlayerState* PlayerState = Cast<AWitchPlayerState>(PawnOwner->GetPlayerState()))
 	{
 		if (!Item->GetGrantedAbilitySet())
