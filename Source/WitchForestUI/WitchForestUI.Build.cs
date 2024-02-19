@@ -2,19 +2,18 @@
 
 using UnrealBuildTool;
 
-public class WitchForestAbility : ModuleRules
+public class WitchForestUI : ModuleRules
 {
-	public WitchForestAbility(ReadOnlyTargetRules Target) : base(Target)
+	public WitchForestUI(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] {
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-			"GameplayAbilities", "GameplayTasks"
+			"Core", "CoreUObject", "Engine"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-			"GameplayTags", "WitchForestGame"
+			"WitchForestGame", "WitchForestAbility", "GameplayAbilities"
 		});
 	}
 }

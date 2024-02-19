@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
+
 #include "AbilitySystemComponent.h"
 
 #include "BaseAttributeSet.generated.h"
@@ -21,14 +22,20 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 	
 	UBaseAttributeSet();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
 public:
 
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
+
+	UFUNCTION()
+	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
+
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement)
 	FGameplayAttributeData MovementSpeed;
@@ -36,6 +43,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = Health, ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
+
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth)
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
 
 	DECLARE_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
 	FOnDeath OnDeath;

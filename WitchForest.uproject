@@ -22,6 +22,16 @@
 				"Engine",
 				"GameplayAbilities"
 			]
+		},
+		{
+			"Name": "WitchForestUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"ModelViewViewModelBlueprint",
+				"ModelViewViewModel"
+			]
 		}
 	],
 	"Plugins": [
@@ -266,6 +276,10 @@
 		},
 		{
 			"Name": "StateTree",
+			"Enabled": true
+		},
+		{
+			"Name": "ModelViewViewModel",
 			"Enabled": true
 		}
 	]

@@ -16,11 +16,13 @@ UBaseAttributeSet::UBaseAttributeSet()
 	Health.SetCurrentValue(100.0f);
 }
 
+
 void UBaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(UBaseAttributeSet, Health, COND_None, REPNOTIFY_Always);
 }
+
 
 void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
@@ -33,7 +35,33 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 }
 
+
+void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
+		return;
+	}
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		// If we decreased the max health, clamp our health so it isn't greater than max
+		float CurrentHealth = Health.GetCurrentValue();
+		if (NewValue < CurrentHealth)
+		{
+			Health.SetCurrentValue(NewValue);
+		}
+	}
+}
+
+
 void UBaseAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UBaseAttributeSet, Health, OldHealth);
+}
+
+
+void UBaseAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UBaseAttributeSet, MaxHealth, OldMaxHealth);
 }

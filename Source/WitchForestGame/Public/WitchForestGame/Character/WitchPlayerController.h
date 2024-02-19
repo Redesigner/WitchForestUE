@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UWitchForestASC;
+class UHealthViewModel;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
@@ -18,6 +19,8 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
 
 public:
+	AWitchPlayerController();
+
 	void BeginPlay() override;
 
 	UWitchForestASC* GetWitchForestASC() const;

@@ -11,6 +11,7 @@
 class UWitchForestASC;
 class UWitchForestAbilitySet;
 class UInventoryComponent;
+class UBaseAttributeSet;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface
@@ -25,6 +26,9 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attributes, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBaseAttributeSet> AttributeSet;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
 
@@ -34,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
 	UWitchForestASC* GetWitchForestASC() const { return AbilitySystem; }
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
+	UBaseAttributeSet* GetAttributeSet() const;
 
 	void BeginPlay() override;
 

@@ -9,6 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
+AWitchPlayerController::AWitchPlayerController()
+{
+}
+
 void AWitchPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,6 +37,7 @@ UWitchForestASC* AWitchPlayerController::GetWitchForestASC() const
     }
     return nullptr;
 }
+
 
 void AWitchPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
 {
