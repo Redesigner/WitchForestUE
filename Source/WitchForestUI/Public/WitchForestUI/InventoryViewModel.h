@@ -9,6 +9,7 @@
 #include "InventoryViewModel.generated.h"
 
 class UItemSet;
+class UMaterialInterface;
 class UInventoryComponent;
 
 UCLASS()
@@ -26,7 +27,7 @@ class WITCHFORESTUI_API UInventoryViewModel : public UMVVMViewModelBase
 
 	// Item's preview icon
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> DisplayIcon;
+	TObjectPtr<UMaterialInterface> DisplayIcon;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
 	FText DisplayName;

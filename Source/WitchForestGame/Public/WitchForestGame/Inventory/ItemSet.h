@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-
 #include "NativeGameplayTags.h"
 
 #include "ItemSet.generated.h"
 
-class APickup;
-
 WITCHFORESTGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_ItemEmpty);
+
+class APickup;
 
 USTRUCT(BlueprintType)
 struct WITCHFORESTGAME_API FInventoryItemData
@@ -21,7 +20,7 @@ struct WITCHFORESTGAME_API FInventoryItemData
 
 public:
 	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UTexture2D> ItemIcon;
+	TSoftObjectPtr<UMaterialInterface> ItemIcon;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APickup> PickupClass;
@@ -51,6 +50,8 @@ class WITCHFORESTGAME_API UItemSet : public UPrimaryDataAsset
 	
 public:
 	bool FindItemDataForTag(const FGameplayTag& InputTag, FInventoryItemData& DataOut) const;
+
+	bool FindItemTagFromClass(TSubclassOf<APickup> InputClass, FGameplayTag& TagOut) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "ItemTag"))
 	TArray<FItemSetEntry> Items;

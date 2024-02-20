@@ -5,6 +5,7 @@
 
 #include "WitchForestGame/Dynamic/Pickup.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
+#include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
 UItemHandleComponent::UItemHandleComponent()
@@ -22,9 +23,12 @@ APickup* UItemHandleComponent::ConsumeItem()
 	Item->bHeld = false;
 	HeldItem.Reset();
 
-	if (AWitchPlayerState* PlayerState = Cast<AWitchPlayerState>(GetOwner()))
+	if (AWitch* Witch = Cast<AWitch>(GetOwner()))
 	{
-		GrantedHandles.TakeFromAbilitySystem(PlayerState->GetWitchForestASC());
+		if (AWitchPlayerState* PlayerState = Cast<AWitchPlayerState>(Witch->GetPlayerState()))
+		{
+			GrantedHandles.TakeFromAbilitySystem(PlayerState->GetWitchForestASC());
+		}
 	}
 	Item->EnableMovement();
 	return Item;
