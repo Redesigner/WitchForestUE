@@ -55,11 +55,16 @@ public:
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 
 
+	// Native Actions
 	void Move(const FInputActionInstance& Instance);
+
+	void ShiftSlot(const FInputActionInstance& Instance);
+
 
 	// Consider making Interaction Volume a seprate component so we can use GetComponentByClass instead
 	USphereComponent* GetInteractionVolume() const;
 
 private:
+	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
 };

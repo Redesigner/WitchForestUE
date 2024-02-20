@@ -25,7 +25,7 @@ public:
 };
 
 UCLASS(BlueprintType, Const)
-class UWitchForestInputConfig : public UDataAsset
+class WITCHFORESTABILITY_API UWitchForestInputConfig : public UDataAsset
 {
 	GENERATED_BODY()
 

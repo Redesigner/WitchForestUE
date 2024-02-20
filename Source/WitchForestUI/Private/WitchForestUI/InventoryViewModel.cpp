@@ -23,7 +23,10 @@ void UInventoryViewModel::BindInventory(UInventoryComponent* Inventory, UItemSet
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayIcon, InventoryItemData.ItemIcon.Get());
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayName, FText::FromName(InventoryItemData.ItemName));
 	}
+	UE_MVVM_SET_PROPERTY_VALUE(bSelected, Inventory->GetSelectedIndex() == Index);
+
 	Inventory->OnSlotChanged.AddUObject(this, &ThisClass::OnInventorySlotChanged);
+	Inventory->OnSelectedIndexChanged.AddUObject(this, &ThisClass::OnSelectedIndexChanged);
 }
 
 void UInventoryViewModel::OnInventorySlotChanged(FGameplayTag NewTag, uint8 Index)
@@ -46,4 +49,9 @@ void UInventoryViewModel::OnInventorySlotChanged(FGameplayTag NewTag, uint8 Inde
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayIcon, InventoryItemData.ItemIcon.Get());
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayName, FText::FromName(InventoryItemData.ItemName));
 	}
+}
+
+void UInventoryViewModel::OnSelectedIndexChanged(uint8 Index)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(bSelected, SlotIndex == Index);
 }

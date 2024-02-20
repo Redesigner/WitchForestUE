@@ -37,7 +37,7 @@ void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return;
 	}
 	// @TODO: This should be packed into the ability activation request by the client, since the server won't know which item is selected
-	uint8 SelectedIndex = 0;
+	uint8 SelectedIndex = Inventory->GetSelectedIndex();
 	FGameplayTag HeldItemTag = Inventory->ConsumeItem(SelectedIndex);
 	if (!HeldItemTag.IsValid() || HeldItemTag.MatchesTagExact(FGameplayTag::EmptyTag))
 	{

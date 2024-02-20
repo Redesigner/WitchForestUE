@@ -32,6 +32,9 @@ class WITCHFORESTUI_API UInventoryViewModel : public UMVVMViewModelBase
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
 	FText DisplayName;
 
+	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
+	bool bSelected = false;
+
 	uint8 SlotIndex = 0;
 
 	// Store the tag so we can check if it changed before trying to pull the relevant data from the ItemSet
@@ -42,4 +45,6 @@ public:
 	void BindInventory(UInventoryComponent* Inventory, UItemSet* ItemSet, uint8 Index);
 
 	void OnInventorySlotChanged(FGameplayTag NewTag, uint8 Index);
+
+	void OnSelectedIndexChanged(uint8 Index);
 };

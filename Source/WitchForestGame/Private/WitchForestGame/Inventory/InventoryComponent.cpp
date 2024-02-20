@@ -94,3 +94,48 @@ TArray<FGameplayTag> UInventoryComponent::GetItemSlots() const
 {
 	return InventorySlots;
 }
+
+
+uint8 UInventoryComponent::GetSelectedIndex() const
+{
+	return SelectedIndex;
+}
+
+
+void UInventoryComponent::SetSelectedIndex(uint8 Value)
+{
+	if (SelectedIndex == Value || Value >= InventorySlots.Num())
+	{
+		return;
+	}
+	SelectedIndex = Value;
+	OnSelectedIndexChanged.Broadcast(Value);
+}
+
+
+void UInventoryComponent::ShiftUp()
+{
+	if (SelectedIndex == InventorySlots.Num() - 1)
+	{
+		SelectedIndex = 0;
+	}
+	else
+	{
+		SelectedIndex++;
+	}
+	OnSelectedIndexChanged.Broadcast(SelectedIndex);
+}
+
+
+void UInventoryComponent::ShiftDown()
+{
+	if (SelectedIndex == 0)
+	{
+		SelectedIndex = InventorySlots.Num() - 1;
+	}
+	else
+	{
+		SelectedIndex--;
+	}
+	OnSelectedIndexChanged.Broadcast(SelectedIndex);
+}

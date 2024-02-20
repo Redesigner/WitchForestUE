@@ -19,7 +19,7 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	AActor* Pawn = Owner;
 
 	UInventoryComponent* Inventory = Owner->GetComponentByClass<UInventoryComponent>();
-	if (!Inventory)
+	if (!Inventory || Inventory->GetItemBySlot(Inventory->GetSelectedIndex()) != TAG_ItemEmpty) // If the current slot is not empty, exit
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
@@ -56,7 +56,7 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 	TSubclassOf<APickup> PickupClass = ItemToStore->GetClass();
 	ItemToStore->Destroy();
-	uint8 SelectedIndex = 0;
+	uint8 SelectedIndex = Inventory->GetSelectedIndex();
 	FGameplayTag ItemTag;
 	if (ItemSet->FindItemTagFromClass(PickupClass, ItemTag))
 	{

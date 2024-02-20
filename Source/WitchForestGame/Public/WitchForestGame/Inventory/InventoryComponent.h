@@ -17,6 +17,11 @@ class WITCHFORESTGAME_API UInventoryComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (Categories = "ItemTag", AllowPrivateAccess = true))
 	TArray<FGameplayTag> InventorySlots;
 
+	// The currently selected slot
+	// This should only be modified on the client side, any inventory changes should pack this value into the server request
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	uint8 SelectedIndex = 0;
+
 public:	
 	UInventoryComponent();
 
@@ -34,6 +39,19 @@ public:
 
 	TArray<FGameplayTag> GetItemSlots() const;
 
+	// Selected index... should this be moved elsewhere?
+	uint8 GetSelectedIndex() const;
+
+	void SetSelectedIndex(uint8 Value);
+
+	void ShiftUp();
+
+	void ShiftDown();
+
+
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlotChanged, FGameplayTag, uint8)
 	FOnSlotChanged OnSlotChanged;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedIndexChanged, uint8);
+	FOnSelectedIndexChanged OnSelectedIndexChanged;
 };

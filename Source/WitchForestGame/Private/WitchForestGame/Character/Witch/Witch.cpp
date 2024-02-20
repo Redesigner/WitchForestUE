@@ -15,6 +15,7 @@
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
+#include "WitchForestGame/Game/WitchForestGameplayTags.h"
 
 #include "WitchForestAbility/Input/WitchForestInputConfig.h"
 #include "WitchForestAbility/WitchForestASC.h"
@@ -49,8 +50,8 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 
 void AWitch::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	Input->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AWitch::Move);
+	// UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	// Input->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AWitch::Move);
 	BindActions(PlayerInputComponent);
 }
 
@@ -68,6 +69,11 @@ void AWitch::BindActions(UInputComponent* PlayerInputComponent)
 	}
 	TArray<uint32> BindHandles;
 	WitchForestInputComponent->BindAbilityActions(InputConfig, this, &AWitch::Input_AbilityInputTagPressed, &AWitch::Input_AbilityInputTagReleased, BindHandles);
+
+	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_Move,
+		ETriggerEvent::Triggered, this, &ThisClass::Move, /*bLogIfNotFound=*/ false);
+	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_ShiftSlot,
+		ETriggerEvent::Triggered, this, &ThisClass::ShiftSlot, /*bLogIfNotFound=*/ false);
 }
 
 void AWitch::Input_AbilityInputTagPressed(FGameplayTag InputTag)
@@ -102,6 +108,29 @@ void AWitch::Move(const FInputActionInstance& Instance)
 		const FVector2D RotatedInput = Input.GetRotated(-Rotation);
 		const FVector Movement = FVector(RotatedInput.X, -RotatedInput.Y, 0.0);
 		AddMovementInput(Movement);
+	}
+}
+
+void AWitch::ShiftSlot(const FInputActionInstance& Instance)
+{
+	UInventoryComponent* InventoryComponent = GetPlayerState()->GetComponentByClass<UInventoryComponent>();
+	if (!InventoryComponent)
+	{
+		return;
+	}
+
+	float Input = Instance.GetValue().GetMagnitude();
+	if (FMath::Abs(Input) <= 0.9f)
+	{
+		return;
+	}
+	if (Input > 0.0f)
+	{
+		InventoryComponent->ShiftUp();
+	}
+	else
+	{
+		InventoryComponent->ShiftDown();
 	}
 }
 

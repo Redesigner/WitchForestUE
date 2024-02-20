@@ -23,6 +23,7 @@ public:
 
 	void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
 
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
