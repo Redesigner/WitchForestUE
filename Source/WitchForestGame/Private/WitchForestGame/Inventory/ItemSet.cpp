@@ -3,6 +3,8 @@
 
 #include "WitchForestGame/Inventory/ItemSet.h"
 
+UE_DEFINE_GAMEPLAY_TAG(TAG_ItemEmpty, "Item.Empty")
+
 bool UItemSet::FindItemDataForTag(const FGameplayTag& InputTag, FInventoryItemData& DataOut) const
 {
 	for (const FItemSetEntry& Entry : Items)

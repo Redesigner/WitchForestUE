@@ -6,12 +6,16 @@
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
 
+#include "NativeGameplayTags.h"
+
 #include "ItemSet.generated.h"
 
 class APickup;
 
+WITCHFORESTGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_ItemEmpty);
+
 USTRUCT(BlueprintType)
-struct FInventoryItemData
+struct WITCHFORESTGAME_API FInventoryItemData
 {
 	GENERATED_BODY()
 

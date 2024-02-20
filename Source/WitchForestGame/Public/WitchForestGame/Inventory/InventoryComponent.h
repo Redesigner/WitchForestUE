@@ -20,6 +20,10 @@ class WITCHFORESTGAME_API UInventoryComponent : public UActorComponent
 public:	
 	UInventoryComponent();
 
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
 	FGameplayTag GetItemBySlot(uint8 SlotIndex) const;
 
 	bool SetItemBySlot(uint8 SlotIndex, FGameplayTag NewValue);
@@ -27,4 +31,9 @@ public:
 	bool HasItem(FGameplayTag ItemToFind) const;
 
 	FGameplayTag ConsumeItem(uint8 SlotIndex);
+
+	TArray<FGameplayTag> GetItemSlots() const;
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlotChanged, FGameplayTag, uint8)
+	FOnSlotChanged OnSlotChanged;
 };

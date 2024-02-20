@@ -16,7 +16,7 @@ class WITCHFORESTUI_API UHealthViewModel : public UMVVMViewModelBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, BlueprintReadOnly,FieldNotify, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
 	float CurrentHealth;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
@@ -27,4 +27,6 @@ public:
 	void BindAttributeSet(UWitchForestASC* AbilitySystemComponent, UBaseAttributeSet* AttributeSet);
 
 	void HealthChanged(const FOnAttributeChangeData& Data);
+
+	void MaxHealthChanged(const FOnAttributeChangeData& Data);
 };
