@@ -20,6 +20,7 @@ void UInventoryViewModel::BindInventory(UInventoryComponent* Inventory, UItemSet
 	FInventoryItemData InventoryItemData;
 	if (RelevantItemSet->FindItemDataForTag(SlotTag, InventoryItemData))
 	{
+		TSoftObjectPtr<UMaterialInterface> ItemIcon = InventoryItemData.ItemIcon;
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayIcon, InventoryItemData.ItemIcon.Get());
 		UE_MVVM_SET_PROPERTY_VALUE(DisplayName, FText::FromName(InventoryItemData.ItemName));
 	}

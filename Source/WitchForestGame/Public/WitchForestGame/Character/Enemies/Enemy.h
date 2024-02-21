@@ -14,6 +14,7 @@ class UEnemyMovementComponent;
 class UWitchForestASC;
 class UAbilitySystemComponent;
 class UBaseAttributeSet;
+class UDropTableComponent;
 
 UCLASS()
 class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
@@ -21,16 +22,22 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* Capsule;
+	TObjectPtr<UCapsuleComponent> Capsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
-	UEnemyMovementComponent* MovementComponent;
+	TObjectPtr<UEnemyMovementComponent> MovementComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
-	UWitchForestASC* AbilitySystem;
+	TObjectPtr<UWitchForestASC> AbilitySystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDropTableComponent> DropTableComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
-	UBaseAttributeSet* AttributeSet;
+	TObjectPtr<UBaseAttributeSet> AttributeSet;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	bool bAlive = true;
 
 public:
 	AEnemy(const FObjectInitializer& ObjectInitializer);
@@ -56,4 +63,7 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTakeDamage, AActor*, Source, FHitResult, Hit);
 	UPROPERTY(BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;
+
+	DECLARE_MULTICAST_DELEGATE(FOnDeath)
+	FOnDeath OnDeath;
 };

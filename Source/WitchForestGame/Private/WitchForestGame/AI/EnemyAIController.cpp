@@ -32,7 +32,9 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		return;
 	}
 	EnemyPawn = Enemy;
-	Enemy->OnTakeDamage.AddDynamic(this, &AEnemyAIController::DamageReceived);
+	Enemy->OnTakeDamage.AddDynamic(this, &ThisClass::DamageReceived);
+	Enemy->OnDeath.AddUObject(this, &ThisClass::OnDeath);
+	Blackboard->SetValueAsBool("Alive", true);
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
@@ -62,6 +64,13 @@ void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)
 		Target = TargetPlayerState->GetPawn();
 	}
 	SetTarget(Target);
+}
+
+void AEnemyAIController::OnDeath()
+{
+	Blackboard->SetValueAsBool("Alive", false);
+	// Clear our target to make sure we don't look at it anymore
+	SetTarget(nullptr);
 }
 
 void AEnemyAIController::SetTarget(AActor* Target)

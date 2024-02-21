@@ -37,6 +37,8 @@ public:
 	UFUNCTION()
 	void DamageReceived(AActor* Source, FHitResult Hit);
 
+	void OnDeath();
+
 private:
 	void SetTarget(AActor* Target);
 };

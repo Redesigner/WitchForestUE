@@ -5,6 +5,7 @@
 
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 #include "WitchForestGame/AI/EnemyAIController.h"
+#include "WitchForestGame/Character/Components/DropTableComponent.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 
@@ -23,6 +24,8 @@ AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
 	AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("Character attribute set"));
 
 	AbilitySystem->OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &AEnemy::GameplayEffectApplied);
+
+	DropTableComponent = CreateDefaultSubobject<UDropTableComponent>(TEXT("DropTableComponent"));
 }
 
 void AEnemy::BeginPlay()
@@ -54,11 +57,23 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 {
 	for (const FGameplayEffectModifiedAttribute& ModifiedAttribute : GameplayEffectSpec.ModifiedAttributes)
 	{
+		if (!bAlive)
+		{
+			return;
+		}
 		if (ModifiedAttribute.Attribute == AttributeSet->GetHealthAttribute())
 		{
 			AActor* Damager = GameplayEffectSpec.GetContext().GetInstigator();
 			FHitResult Hit = *GameplayEffectSpec.GetContext().GetHitResult();
 			OnTakeDamage.Broadcast(Damager, Hit);
+			float NewHealth = ModifiedAttribute.Attribute.GetNumericValue(AttributeSet);
+			if (NewHealth <= 0.0f)
+			{
+				bAlive = false;
+				DropTableComponent->DropItems();
+				SetLifeSpan(2.0f);
+				OnDeath.Broadcast();
+			}
 		}
 	}
 }
