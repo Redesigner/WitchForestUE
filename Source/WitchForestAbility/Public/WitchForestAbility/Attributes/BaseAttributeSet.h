@@ -40,11 +40,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement)
 	FGameplayAttributeData MovementSpeed;
 
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = Health, ReplicatedUsing = OnRep_Health)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
 
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
 

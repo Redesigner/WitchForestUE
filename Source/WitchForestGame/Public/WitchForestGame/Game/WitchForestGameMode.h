@@ -5,9 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h" 
 
-#include "Engine/StreamableManager.h" 
-
-
 #include "WitchForestGameMode.generated.h"
 
 class UItemSet;
@@ -19,9 +16,6 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UItemSet> CurrentItemSet;
-
-	// @TODO: Put this in a much safer place, like the Game Instance for example
-	FStreamableManager StreamableManager;
 
 public:
 	AWitchForestGameMode();

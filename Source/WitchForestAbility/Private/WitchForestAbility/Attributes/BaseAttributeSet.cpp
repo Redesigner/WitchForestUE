@@ -14,6 +14,9 @@ UBaseAttributeSet::UBaseAttributeSet()
 
 	Health.SetBaseValue(100.0f);
 	Health.SetCurrentValue(100.0f);
+
+	MaxHealth.SetBaseValue(100.0f);
+	MaxHealth.SetCurrentValue(100.0f);
 }
 
 
