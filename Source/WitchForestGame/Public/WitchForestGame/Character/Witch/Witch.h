@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "GameplayTagContainer.h"
+#include "AbilitySystemInterface.h"
 
 #include "Witch.generated.h"
 
@@ -19,7 +21,7 @@ class USphereComponent;
 struct FInputActionInstance;
 
 UCLASS()
-class WITCHFORESTGAME_API AWitch : public ACharacter
+class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -65,6 +67,7 @@ public:
 	USphereComponent* GetInteractionVolume() const;
 
 private:
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
 };

@@ -139,18 +139,23 @@ USphereComponent* AWitch::GetInteractionVolume() const
 	return InteractionVolume;
 }
 
+UAbilitySystemComponent* AWitch::GetAbilitySystemComponent() const
+{
+	return GetWitchForestASC();
+}
+
 UWitchForestASC* AWitch::GetWitchForestASC() const
 {
 	APlayerState* State = GetPlayerState();
 	if (!State)
 	{
-		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to activate ability input in AWitch {Name}. The player state is invalid.", GetName());
+		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to get ASC in AWitch {Name}. The player state is invalid.", GetName());
 		return nullptr;
 	}
 	AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(State);
 	if (!WitchPlayerState)
 	{
-		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to activate ability input in AWitch {Name}. The player state is an unexpected type. It must be of type AWitchPlayerState.", GetName());
+		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to get ASC in AWitch {Name}. The player state is an unexpected type. It must be of type AWitchPlayerState.", GetName());
 		return nullptr;
 	}
 	return WitchPlayerState->GetWitchForestASC();
