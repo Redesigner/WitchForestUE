@@ -14,12 +14,14 @@ UEnemyMovementComponent::UEnemyMovementComponent()
 	PendingImpulses = FVector::Zero();
 }
 
+
 void UEnemyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	PhysMovement(DeltaTime);
 }
+
 
 void UEnemyMovementComponent::SetUpdatedComponent(USceneComponent* Component)
 {
@@ -28,22 +30,26 @@ void UEnemyMovementComponent::SetUpdatedComponent(USceneComponent* Component)
 	EnemyOwner = Cast<AEnemy>(PawnOwner);
 }
 
+
 void UEnemyMovementComponent::AddImpulse(FVector Impulse)
 {
 	// DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + Impulse, 25.0f, FColor::Red, false, 2.0f);
 	PendingImpulses += Impulse;
 }
 
+
 void UEnemyMovementComponent::SetMovementMode(EEnemyMovementMode NewMovementMode)
 {
 	MovementMode = NewMovementMode;
 }
+
 
 void UEnemyMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetDefaultMovementMode();
 }
+
 
 #if WITH_EDITOR
 void UEnemyMovementComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -56,6 +62,7 @@ void UEnemyMovementComponent::PostEditChangeProperty(FPropertyChangedEvent& Prop
 	}
 }
 #endif
+
 
 void UEnemyMovementComponent::HandleBlockingImpact(FHitResult ImpactHitResult)
 {
@@ -76,6 +83,7 @@ void UEnemyMovementComponent::HandleBlockingImpact(FHitResult ImpactHitResult)
 	}
 }
 
+
 void UEnemyMovementComponent::PhysMovement(float DeltaTime)
 {
 	switch (MovementMode)
@@ -93,6 +101,7 @@ void UEnemyMovementComponent::PhysMovement(float DeltaTime)
 	}
 }
 
+
 void UEnemyMovementComponent::PhysFalling(float DeltaTime)
 {
 	Velocity += FVector(0.0f, 0.0f, GetWorld()->GetGravityZ() * DeltaTime);
@@ -105,6 +114,7 @@ void UEnemyMovementComponent::PhysFalling(float DeltaTime)
 		HandleBlockingImpact(MoveHitResult);
 	}
 }
+
 
 void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 {
@@ -148,6 +158,7 @@ void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 	// Apply any impulses we have after we've applied the friction
 	FVector Impulses = ConsumeImpulses();
 	Velocity += Impulses;
+	ApplyRootMotionToVelocity(DeltaTime);
 
 	FHitResult MoveHitResult;
 	const FVector DeltaLocation = Velocity * DeltaTime;
@@ -179,6 +190,7 @@ void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 	UpdateRotation(DeltaTime);
 }
 
+
 void UEnemyMovementComponent::UpdateRotation(float DeltaTime)
 {
 	const FVector Normal2D = Velocity.GetSafeNormal2D();
@@ -196,12 +208,14 @@ void UEnemyMovementComponent::UpdateRotation(float DeltaTime)
 	PawnOwner->SetActorRotation(NewRotation);
 }
 
+
 FVector UEnemyMovementComponent::ConsumeImpulses()
 {
 	FVector Impulses = PendingImpulses;
 	PendingImpulses = FVector::Zero();
 	return Impulses;
 }
+
 
 void UEnemyMovementComponent::SetDefaultMovementMode()
 {
@@ -212,6 +226,7 @@ void UEnemyMovementComponent::SetDefaultMovementMode()
 	}
 	MovementMode = EEnemyMovementMode::MOVE_Falling;
 }
+
 
 bool UEnemyMovementComponent::FindFloor(FHitResult& OutHitResult) const
 {
@@ -242,6 +257,7 @@ bool UEnemyMovementComponent::FindFloor(FHitResult& OutHitResult) const
 	return false;
 }
 
+
 bool UEnemyMovementComponent::SnapToFloor()
 {
 	FHitResult HitResult;
@@ -263,36 +279,61 @@ bool UEnemyMovementComponent::SnapToFloor()
 	return bFoundFloor;
 }
 
+
 void UEnemyMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)
 {
 	// DrawDebugDirectionalArrow(GetWorld(), PawnOwner->GetActorLocation(), PawnOwner->GetActorLocation() + RequestedVelocity.GetSafeNormal() * 300.0f, 25.0f, FColor::Blue, false, -1.0f);
 	RequestedVelocity = MoveVelocity;
 }
 
+
 void UEnemyMovementComponent::RequestPathMove(const FVector& MoveInput)
 {
 	Super::RequestPathMove(MoveInput);
 }
+
 
 bool UEnemyMovementComponent::CanStartPathFollowing() const
 {
 	return true;
 }
 
+
 bool UEnemyMovementComponent::CanStopPathFollowing() const
 {
 	return !IsFalling();
 }
+
 
 void UEnemyMovementComponent::StopActiveMovement()
 {
 	RequestedVelocity = FVector::Zero();
 }
 
+
 bool UEnemyMovementComponent::IsFalling() const
 {
 	return MovementMode == EEnemyMovementMode::MOVE_Falling;
 }
+
+
+void UEnemyMovementComponent::ApplyRootMotionToVelocity(float DeltaTime)
+{
+	USkeletalMeshComponent* Mesh = EnemyOwner->GetSkeletalMesh();
+	if (!Mesh)
+	{
+		return;
+	}
+	FRootMotionMovementParams RootMotionParams = Mesh->ConsumeRootMotion();
+	// Animation root motion is distinct from root motion sources right now and takes precedence
+	if (Mesh->IsPlayingRootMotion() && RootMotionParams.bHasRootMotion && DeltaTime > 0.f)
+	{
+		FTransform DeltaTransformFromRootMotion = Mesh->ConvertLocalRootMotionToWorld(RootMotionParams.GetRootMotionTransform());
+		Velocity += DeltaTransformFromRootMotion.GetLocation() / DeltaTime;
+		return;
+	}
+}
+
 
 void UEnemyMovementComponent::SetOrientRotationToMovement(bool bValue)
 {

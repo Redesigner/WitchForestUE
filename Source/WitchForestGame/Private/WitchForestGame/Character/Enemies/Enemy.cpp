@@ -21,6 +21,9 @@ AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
 	MovementComponent = CreateDefaultSubobject<UEnemyMovementComponent>(TEXT("Movement Component"));
 	// MovementComponent->SetUpdatedComponent(RootComponent);
 
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	Mesh->SetupAttachment(RootComponent);
+
 	AbilitySystem = CreateDefaultSubobject<UWitchForestASC>(TEXT("AbilitySystem"));
 	AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("Character attribute set"));
 
@@ -103,5 +106,19 @@ UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
 UEnemyMovementComponent* AEnemy::GetEnemyMovementComponent() const
 {
 	return MovementComponent;
+}
+
+bool AEnemy::IsPlayingRootMotion() const
+{
+	if (Mesh)
+	{
+		return Mesh->IsPlayingRootMotion();
+	}
+	return false;
+}
+
+USkeletalMeshComponent* AEnemy::GetSkeletalMesh() const
+{
+	return Mesh;
 }
 

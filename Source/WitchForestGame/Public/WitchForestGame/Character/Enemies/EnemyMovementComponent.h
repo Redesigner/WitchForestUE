@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PawnMovementComponent.h"
+
 #include "EnemyMovementComponent.generated.h"
 
 class AEnemy;
@@ -100,6 +101,8 @@ protected:
 	virtual bool SnapToFloor();
 
 	bool IsFalling() const;
+
+	void ApplyRootMotionToVelocity(float DeltaTime);
 
 
 	//  BEGIN INTERFACE Navigation Movement component
