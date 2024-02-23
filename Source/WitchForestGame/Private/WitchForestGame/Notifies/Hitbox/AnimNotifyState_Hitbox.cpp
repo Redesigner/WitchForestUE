@@ -11,9 +11,9 @@
 void UAnimNotifyState_Hitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 #if WITH_EDITOR
-	if (GetWorld()->WorldType == EWorldType::Editor)
+	if (MeshComp->GetWorld()->WorldType == EWorldType::EditorPreview)
 	{
-		SpawnEditorShape();
+		//SpawnEditorShape(MeshComp->GetWorld(), MeshComp);
 		return;
 	}
 #endif
@@ -28,16 +28,6 @@ void UAnimNotifyState_Hitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 
 void UAnimNotifyState_Hitbox::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-#if WITH_EDITOR
-	if (GetWorld()->WorldType == EWorldType::Editor)
-	{
-		if (HitboxPreviewShape)
-		{
-			HitboxPreviewShape->DestroyComponent();
-		}
-		return;
-	}
-#endif
 	AActor* OwnerActor = MeshComp->GetOwner();
 	UMeleeComponent* MeleeComponent = OwnerActor->GetComponentByClass<UMeleeComponent>();
 	if (!MeleeComponent)
@@ -52,35 +42,32 @@ void UAnimNotifyState_Hitbox::PostEditChangeProperty(FPropertyChangedEvent& Prop
 }
 
 #if WITH_EDITOR
-void UAnimNotifyState_Hitbox::SpawnEditorShape()
+void UAnimNotifyState_Hitbox::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
-	UShapeComponent* SpawnedShape = nullptr;
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+
+	if (MeshComp->GetWorld()->WorldType != EWorldType::EditorPreview)
+	{
+		return;
+	}
+
 	switch (HitboxParameters.Shape)
 	{
-		case Box:
-		{
-			UBoxComponent* Box = NewObject<UBoxComponent>();
-			Box->SetBoxExtent(HitboxParameters.BoxExtents);
-			SpawnedShape = Box;
-			break;
-		}
-		case Capsule:
-		{
-			UCapsuleComponent* Capsule = NewObject<UCapsuleComponent>();
-			Capsule->SetCapsuleRadius(HitboxParameters.Radius);
-			Capsule->SetCapsuleHalfHeight(HitboxParameters.HalfHeight);
-			SpawnedShape = Capsule;
-			break;
-		}
-		case Sphere:
-		{
-			USphereComponent* Sphere = NewObject<USphereComponent>();
-			Sphere->SetSphereRadius(HitboxParameters.Radius);
-			SpawnedShape = Sphere;
-			break;
-		}
+	case Box:
+	{
+		DrawDebugBox(MeshComp->GetWorld(), HitboxParameters.Position, HitboxParameters.BoxExtents, HitboxParameters.Rotation.Quaternion(), FColor::Red, false, FrameDeltaTime * 2.0f);
+		break;
 	}
-	SpawnedShape->SetWorldLocationAndRotation(HitboxParameters.Position, HitboxParameters.Rotation);
-	SpawnedShape->RegisterComponentWithWorld(GetWorld());
+	case Capsule:
+	{
+		DrawDebugCapsule(MeshComp->GetWorld(), HitboxParameters.Position, HitboxParameters.HalfHeight, HitboxParameters.Radius, HitboxParameters.Rotation.Quaternion(), FColor::Red, false, FrameDeltaTime);
+		break;
+	}
+	case Sphere:
+	{
+		DrawDebugSphere(MeshComp->GetWorld(), HitboxParameters.Position, HitboxParameters.Radius, 32, FColor::Red, false, FrameDeltaTime);
+		break;
+	}
+	}
 }
 #endif

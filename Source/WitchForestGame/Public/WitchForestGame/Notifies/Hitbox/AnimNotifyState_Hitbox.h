@@ -17,12 +17,8 @@ class WITCHFORESTGAME_API UAnimNotifyState_Hitbox : public UAnimNotifyState
 {
 	GENERATED_BODY()
 
-#if WITH_EDITORONLY_DATA
-	UPROPERTY()
-	TObjectPtr<UShapeComponent> HitboxPreviewShape;
-#endif
 
-	UPROPERTY(BlueprintReadWrite, Category = Shape, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shape, meta = (AllowPrivateAccess = true))
 	FMeleeHitboxSpawnParameters HitboxParameters;
 
 	TWeakObjectPtr<UShapeComponent> Hitbox;
@@ -36,6 +32,8 @@ class WITCHFORESTGAME_API UAnimNotifyState_Hitbox : public UAnimNotifyState
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	
 #if WITH_EDITOR
-	void SpawnEditorShape();
+	void SpawnEditorShape(UWorld* World, USkeletalMeshComponent* MeshComp);
+
+	void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
 #endif
 };

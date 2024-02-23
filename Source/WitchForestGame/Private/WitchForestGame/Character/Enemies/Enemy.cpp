@@ -8,6 +8,7 @@
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 
 #include "Components/CapsuleComponent.h"
 
@@ -31,6 +32,15 @@ AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (const UWitchForestAbilitySet* AbilitySet : AbilitySets)
+	{
+		if (!AbilitySet)
+		{
+			continue;
+		}
+		AbilitySet->GiveToAbilitySystem(AbilitySystem, nullptr);
+	}
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -64,8 +74,15 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 		if (ModifiedAttribute.Attribute == AttributeSet->GetHealthAttribute())
 		{
 			AActor* Damager = GameplayEffectSpec.GetContext().GetInstigator();
-			FHitResult Hit = *GameplayEffectSpec.GetContext().GetHitResult();
-			OnTakeDamage.Broadcast(Damager, Hit);
+			if (GameplayEffectSpec.GetContext().GetHitResult())
+			{
+				FHitResult Hit = *GameplayEffectSpec.GetContext().GetHitResult();
+				OnTakeDamage.Broadcast(Damager, Hit);
+			}
+			else
+			{
+				OnTakeDamage.Broadcast(Damager, FHitResult());
+			}
 			float NewHealth = ModifiedAttribute.Attribute.GetNumericValue(AttributeSet);
 			if (NewHealth <= 0.0f)
 			{

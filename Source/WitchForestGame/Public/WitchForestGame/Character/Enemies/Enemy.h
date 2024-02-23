@@ -15,6 +15,7 @@ class UWitchForestASC;
 class UAbilitySystemComponent;
 class UBaseAttributeSet;
 class UDropTableComponent;
+class UWitchForestAbilitySet;
 
 UCLASS()
 class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
@@ -29,6 +30,9 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWitchForestASC> AbilitySystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDropTableComponent> DropTableComponent;

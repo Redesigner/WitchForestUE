@@ -17,6 +17,9 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor
 
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
+	// The actor that owns this projectile. Filtered out by collision events
+	TWeakObjectPtr<AActor> OwningActor;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	FVector Velocity;
 
@@ -26,6 +29,8 @@ public:
 	void Tick(float DeltaTime) override;
 
 	void SetEffectHandle(FGameplayEffectSpecHandle InHandle);
+
+	void SetOwningActor(AActor* Actor);
 
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
 

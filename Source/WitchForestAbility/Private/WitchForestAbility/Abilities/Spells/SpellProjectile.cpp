@@ -31,9 +31,18 @@ void ASpellProjectile::SetEffectHandle(FGameplayEffectSpecHandle InHandle)
 	EffectHandle = InHandle;
 }
 
+void ASpellProjectile::SetOwningActor(AActor* Actor)
+{
+	OwningActor = Actor;
+}
+
 void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
+	if (OtherActor == OwningActor)
+	{
+		return;
+	}
 
 	// Generate a fake hit with our projectile's velocity as our normal
 	// We don't necessarily have a PrimitiveComponent, so this will be null
@@ -56,7 +65,10 @@ void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult Hi
 	if (IAbilitySystemInterface* ActorAbility = Cast<IAbilitySystemInterface>(Target))
 	{
 		FGameplayEffectContextHandle EffectContext = EffectHandle.Data->GetContext();
-		EffectContext.AddHitResult(HitResult);
+		// We have to reset the effectcontext's hit results, otherwise we may be
+		// trying to apply effects with hit results that have fallen out of scope,
+		// since internally they are stored as sharedptrs
+		EffectContext.AddHitResult(HitResult, true);
 
 		ActorsHit.Add(Target);
 		ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*EffectHandle.Data.Get());

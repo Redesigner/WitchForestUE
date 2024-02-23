@@ -33,6 +33,7 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	FTransform ProjectileTransform = OwnerActor->GetActorTransform();
 	ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
 	Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
+	Projectile->SetOwningActor(OwnerActor);
 	Projectile->FinishSpawning(ProjectileTransform);
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
 }

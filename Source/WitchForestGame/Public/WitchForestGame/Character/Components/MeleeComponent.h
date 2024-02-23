@@ -30,13 +30,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FRotator Rotation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == Sphere || Shape == Capsule", HideEditConditionToggle, ClampMin = 0.0f))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == 1 || Shape == 2", EditConditionHides, ClampMin = 0.0f))
 	float Radius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == Capsule", HideEditConditionToggle, ClampMin = 0.0f))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == 2", EditConditionHides, ClampMin = 0.0f))
 	float HalfHeight;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == Box", HideEditConditionToggle, ClampMin = 0.0f))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "Shape == 0", EditConditionHides, ClampMin = 0.0f))
 	FVector BoxExtents;
 };
 
