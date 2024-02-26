@@ -47,13 +47,10 @@ void AEnemyAIController::Tick(float DeltaTime)
 		return;
 	}
 	const float DistanceSquared = (TargetActor->GetActorLocation() - OwnerPawn->GetActorLocation()).SquaredLength();
-	bool bInRange = DistanceSquared <= MinimumRange * MinimumRange;
-	SetFocus(TargetActor.Get());
+	const float TargetDistance = sqrtf(DistanceSquared);
+	// SetFocus(TargetActor.Get());
 
-	if (Blackboard->GetValueAsBool("InRange") != bInRange)
-	{
-		Blackboard->SetValueAsBool("InRange", bInRange);
-	}
+	Blackboard->SetValueAsFloat("TargetDistance", TargetDistance);
 }
 
 void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)

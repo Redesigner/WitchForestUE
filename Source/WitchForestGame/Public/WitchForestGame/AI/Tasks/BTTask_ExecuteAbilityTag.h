@@ -17,8 +17,11 @@ class WITCHFORESTGAME_API UBTTask_ExecuteAbilityTag : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = AbilityTag, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ability, meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer AbilityTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ability, meta = (AllowPrivateAccess = true))
+	bool bAllowAbilityReactivation = false;
 
 	TWeakObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 

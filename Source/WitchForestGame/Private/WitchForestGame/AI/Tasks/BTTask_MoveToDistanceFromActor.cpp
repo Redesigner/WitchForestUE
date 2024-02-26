@@ -174,7 +174,7 @@ EBTNodeResult::Type UBTTask_MoveToDistanceFromActor::AbortTask(UBehaviorTreeComp
 		UAITask_MoveTo* MoveTask = MyMemory->Task.Get();
 		if (MoveTask)
 		{
-			MoveTask->ExternalCancel();
+			// MoveTask->ExternalCancel();
 		}
 	}
 	return Super::AbortTask(OwnerComp, NodeMemory);
@@ -205,22 +205,24 @@ uint16 UBTTask_MoveToDistanceFromActor::GetInstanceMemorySize() const
 }
 
 
+// This function is automatically called by our AITask's ResetObservers() method
 void UBTTask_MoveToDistanceFromActor::OnGameplayTaskDeactivated(UGameplayTask& Task)
 {
 	UAITask_MoveTo* MoveTask = Cast<UAITask_MoveTo>(&Task);
-	if (MoveTask && MoveTask->GetAIController() && MoveTask->GetState() != EGameplayTaskState::Paused)
+	if (!MoveTask || !MoveTask->GetAIController() || MoveTask->GetState() == EGameplayTaskState::Paused)
 	{
-		UBehaviorTreeComponent* BehaviorComp = GetBTComponentForTask(Task);
-		if (BehaviorComp)
-		{
-			uint8* RawMemory = BehaviorComp->GetNodeMemory(this, BehaviorComp->FindInstanceContainingNode(this));
-			const MemoryType* MyMemory = CastInstanceNodeMemory<MemoryType>(RawMemory);
+		return;
+	}
+	UBehaviorTreeComponent* BehaviorComp = GetBTComponentForTask(Task);
+	if (BehaviorComp)
+	{
+		uint8* RawMemory = BehaviorComp->GetNodeMemory(this, BehaviorComp->FindInstanceContainingNode(this));
+		const MemoryType* MyMemory = CastInstanceNodeMemory<MemoryType>(RawMemory);
 
-			if (MyMemory && MyMemory->bObserverCanFinishTask && (MoveTask == MyMemory->Task))
-			{
-				const bool bSuccess = MoveTask->WasMoveSuccessful();
-				FinishLatentTask(*BehaviorComp, bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
-			}
+		if (MyMemory && MyMemory->bObserverCanFinishTask && (MoveTask == MyMemory->Task))
+		{
+			const bool bSuccess = MoveTask->WasMoveSuccessful();
+			FinishLatentTask(*BehaviorComp, bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
 		}
 	}
 }
