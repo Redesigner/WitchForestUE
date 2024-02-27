@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Stephen Melnick
 
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
@@ -34,7 +34,17 @@ void APickup::AddImpulse(FVector Impulse)
     CollisionSphere->AddImpulse(Impulse);
 }
 
+void APickup::SetVelocity(FVector Velocity)
+{
+    CollisionSphere->SetPhysicsLinearVelocity(Velocity);
+}
+
 UWitchForestAbilitySet* APickup::GetGrantedAbilitySet() const
 {
     return GrantedAbilitySet;
+}
+
+void APickup::SetLastHeldASC(UAbilitySystemComponent* ASC)
+{
+    LastHolder = ASC;
 }

@@ -3,7 +3,7 @@
 
 #include "WitchForestGame/Inventory/ItemSet.h"
 
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_ItemEmpty, "ItemTag.Empty")

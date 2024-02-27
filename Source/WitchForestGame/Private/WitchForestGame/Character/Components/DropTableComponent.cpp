@@ -6,7 +6,7 @@
 #include "WitchForestGame/Inventory/DropTable.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "Kismet/GameplayStatics.h"
 

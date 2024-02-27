@@ -3,7 +3,7 @@
 
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestAbility/WitchForestASC.h"

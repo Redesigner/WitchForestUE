@@ -5,7 +5,7 @@
 
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/PlayerState.h"

@@ -7,7 +7,7 @@
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
-#include "WitchForestGame/Dynamic/Pickup.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemComponent.h"
