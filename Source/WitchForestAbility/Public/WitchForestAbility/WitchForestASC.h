@@ -16,6 +16,8 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
+	static void InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert);
+
 public:
 	UWitchForestASC();
 
@@ -30,8 +32,11 @@ public:
 
 	void ClearAbilityInput();
 
+	bool TryActivateAbilitiesByTag(FGameplayTag& Tag, bool bAllowRemoteActivation = true);
+
 protected:
-	TArray<FGameplayAbilitySpecHandle> InputPressedSpecHandles;
+	// Abilities grouped together by InputTags
+	TArray<TArray<FGameplayAbilitySpec>> InputPressedSpecs;
 
 	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
 

@@ -12,15 +12,7 @@
 
 void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	AActor* Owner = GetOwningActorFromActorInfo();
-
-	APlayerState* PlayerState = Cast<APlayerState>(Owner);
-	if (!PlayerState)
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-	AWitch* Witch = Cast<AWitch>(PlayerState->GetPawn());
+	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
 	if (!Witch)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
@@ -49,4 +41,48 @@ void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		return;
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+}
+
+bool UPickupItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	// Check normal activation first, this is **VERY** important
+
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	// We can now do our own logic here
+
+	// A lot of these checks are going to be repeated in ActivateAbility, but since it's dependent
+	// on certain components existing, there isn't a way around it
+	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	if (!Witch)
+	{
+		// For now, only witches can use this ability, because it requires an interaction volume.
+		// In the future, this should be an interface or something similar
+		return false;
+	}
+
+	// Make sure we have all of our necessary components, and we aren't carrying anything
+	UItemHandleComponent* ItemHandle = Witch->GetComponentByClass<UItemHandleComponent>();
+	USphereComponent* InteractVolume = Witch->GetInteractionVolume();
+	if (!ItemHandle || ItemHandle->HoldingItem() || !InteractVolume)
+	{
+		return false;
+	}
+
+	// Check that we have at least one pickup that is not being held by someone else
+	TSet<AActor*> OverlappingActors;
+	InteractVolume->GetOverlappingActors(OverlappingActors, APickup::StaticClass());
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		APickup* OverlappingPickup = Cast<APickup>(OverlappingActor);
+		if (!OverlappingPickup || OverlappingPickup->bHeld)
+		{
+			continue;
+		}
+		return true;
+	}
+	return false;
 }

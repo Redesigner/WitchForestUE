@@ -5,9 +5,9 @@
 
 #include "GameFramework/PlayerState.h"
 
-APawn* UWitchForestGameplayAbility::GetOwningPawnFromActorInfo() const
+APawn* UWitchForestGameplayAbility::GetOwningPawnFromActorInfo(const FGameplayAbilityActorInfo* ActorInfo)
 {
-    AActor* Actor = GetOwningActorFromActorInfo();
+    AActor* Actor = ActorInfo->OwnerActor.Get();
     if (APawn* Pawn = Cast<APawn>(Actor))
     {
         return Pawn;

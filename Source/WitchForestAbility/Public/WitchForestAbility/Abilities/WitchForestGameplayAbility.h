@@ -20,8 +20,18 @@ class WITCHFORESTABILITY_API UWitchForestGameplayAbility : public UGameplayAbili
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability, meta = (AllowPrivateAccess = true))
+	uint8 Priority = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability, meta = (AllowPrivateAccess = true))
+	bool bConsumeInput = false;
+
 public:
 	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
+
+	uint8 GetPriority() const { return Priority; }
+
+	bool ConsumesInput() const { return bConsumeInput; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
@@ -29,5 +39,5 @@ protected:
 
 	// Get the owning pawn, as the owning actor might be a player state
 	// @returns Owning pawn, or nullptr if none can be found
-	APawn* GetOwningPawnFromActorInfo() const;
+	static APawn* GetOwningPawnFromActorInfo(const FGameplayAbilityActorInfo* ActorInfo);
 };

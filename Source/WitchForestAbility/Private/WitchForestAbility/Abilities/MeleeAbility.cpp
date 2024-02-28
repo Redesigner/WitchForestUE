@@ -16,7 +16,7 @@ void UMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		return;
 	}
-	APawn* Owner = GetOwningPawnFromActorInfo();
+	APawn* Owner = GetOwningPawnFromActorInfo(ActorInfo);
 	if (!Owner)
 	{
 		return;

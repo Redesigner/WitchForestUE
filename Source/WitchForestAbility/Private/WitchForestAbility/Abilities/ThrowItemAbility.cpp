@@ -13,15 +13,14 @@
 
 void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	AActor* Owner = GetOwningActorFromActorInfo();
-	AActor* Pawn = Owner;
-
-	// Since the ASC can live on the PlayerState for player characters, check here and get their pawns.
-	// Otherwise, the ASC should be owned by the pawn -- for enemies and other NPCs
-	if (APlayerState* PlayerState = Cast<APlayerState>(Owner))
+	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	if (!Pawn)
 	{
-		Pawn = PlayerState->GetPawn();
+		UE_LOGFMT(LogWitchForestAbility, Warning, "ThrowItemAbility failed. Could not find pawn.");
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
 	}
+
 	UItemHandleComponent* ItemHandle = Pawn->GetComponentByClass<UItemHandleComponent>();
 	if (!ItemHandle)
 	{
@@ -37,8 +36,8 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			CurrentPawnVelocity = MovementComponent->Velocity;
 		}
-		ThrownItem->SetVelocity(CurrentPawnVelocity);
-		ThrownItem->AddImpulse(Pawn->GetActorForwardVector() * 10000.0f);
+		ThrownItem->SetVelocity(CurrentPawnVelocity * 2.0f);
+		// ThrownItem->AddImpulse(Pawn->GetActorForwardVector() * 10000.0f);
 		ThrownItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
 	}
 	else
@@ -46,4 +45,25 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		UE_LOGFMT(LogWitchForestAbility, Warning, "ThrowItemAbility failed. Unable to consume pickup.");
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+}
+
+bool UThrowItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	if (!Pawn)
+	{
+		return false;
+	}
+
+	UItemHandleComponent* ItemHandleComponent = Pawn->GetComponentByClass<UItemHandleComponent>();
+	if (!ItemHandleComponent)
+	{
+		return false;
+	}
+	return ItemHandleComponent->HoldingItem();
 }
