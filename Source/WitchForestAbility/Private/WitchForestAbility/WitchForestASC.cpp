@@ -155,9 +155,10 @@ void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 	{
 		for (FGameplayAbilitySpec* AbilitySpec : AbilitySpecBucket)
 		{
+			// Grab the ability before activating, in case the spec is removed
+			UWitchForestGameplayAbility* WitchForestAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability);
 			if (TryActivateAbility(AbilitySpec->Handle))
 			{
-				UWitchForestGameplayAbility* WitchForestAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability);
 				if (WitchForestAbility && WitchForestAbility->ConsumesInput())
 				{
 					UE_LOGFMT(LogWitchForestAbility, Verbose, "WitchForestASC: Ability {AbilityName} consumed input.", WitchForestAbility->GetName());

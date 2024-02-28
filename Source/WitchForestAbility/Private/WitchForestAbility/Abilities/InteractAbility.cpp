@@ -5,28 +5,71 @@
 
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
+#include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
 #include "WitchForestAbility/WitchForestASC.h"
+
+#include "Components/SphereComponent.h"
 
 void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	APawn* OwningPawn = GetOwningPawnFromActorInfo(ActorInfo);
-	if (!OwningPawn)
+	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	if (!Witch)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
-	UItemHandleComponent* ItemHandleComponent = OwningPawn->GetComponentByClass<UItemHandleComponent>();
-	if (ItemHandleComponent && ItemHandleComponent->HoldingItem())
+	USphereComponent* InteractionVolume = Witch->GetInteractionVolume();
+	if (!InteractionVolume)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-		UWitchForestASC* ASC = Cast<UWitchForestASC>(GetAbilitySystemComponentFromActorInfo());
-		ASC->TryActivateAbilitiesByTag(HeldItemAbilityTag);
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
-	/*if (AWitch* Witch = Cast<AWitch>(OwningPawn))
+	TSet<AActor*> OverlappingActors;
+	InteractionVolume->GetOverlappingActors(OverlappingActors);
+	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		Witch->GetInteractionVolume()
-	}*/
+		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
+		{
+			Interactable->Interact(Witch);
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+			return;
+		}
+	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+}
+
+bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	if (!Witch)
+	{
+		return false;
+	}
+
+	USphereComponent* InteractionVolume = Witch->GetInteractionVolume();
+	UItemHandleComponent* ItemHandle = Witch->GetComponentByClass<UItemHandleComponent>();
+	if (!InteractionVolume || !ItemHandle || ItemHandle->HoldingItem())
+	{
+		return false;
+	}
+
+	TSet<AActor*> OverlappingActors;
+	InteractionVolume->GetOverlappingActors(OverlappingActors);
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		if (OverlappingActor->Implements<UInteractableInterface>())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

@@ -20,10 +20,10 @@ class WITCHFORESTABILITY_API UWitchForestGameplayAbility : public UGameplayAbili
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = AbilityActivation, meta = (AllowPrivateAccess = true))
 	uint8 Priority = 0;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = AbilityActivation, meta = (AllowPrivateAccess = true))
 	bool bConsumeInput = false;
 
 public:

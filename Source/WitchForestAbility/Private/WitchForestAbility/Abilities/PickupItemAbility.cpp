@@ -18,9 +18,10 @@ void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
+
 	UItemHandleComponent* ItemHandle = Witch->GetComponentByClass<UItemHandleComponent>();
 	USphereComponent* InteractVolume = Witch->GetInteractionVolume();
-	if (!ItemHandle || ItemHandle->HoldingItem() || !InteractVolume)
+	if (!ItemHandle || !InteractVolume)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
@@ -40,8 +41,10 @@ void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
+
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 }
+
 
 bool UPickupItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
