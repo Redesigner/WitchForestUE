@@ -52,7 +52,7 @@ void APotion::Burst()
 	World->OverlapMultiByChannel(OverlapResults, GetActorLocation(), GetActorQuat(), ECC_WorldDynamic, Sphere, CollisionQueryParams);
 
 	// if draw flag
-	DrawDebugSphere(World, GetActorLocation(), SplashRadius, 32, FColor::Red, false, 1.0f);
+	// DrawDebugSphere(World, GetActorLocation(), SplashRadius, 32, FColor::Red, false, 1.0f);
 	TimerManager.SetTimer(BurstDebounceTimer, 0.5f, false);
 	TArray<AActor*> HitActors;
 	for (FOverlapResult OverlapResult : OverlapResults)
@@ -72,4 +72,5 @@ void APotion::Burst()
 		FGameplayEffectSpecHandle GameplayEffectSpec = LastHolder->MakeOutgoingSpec(SplashEffect, 0.0f, LastHolder->MakeEffectContext());
 		LastHolder->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpec.Data.Get(), TargetASC);
 	}
+	Destroy();
 }

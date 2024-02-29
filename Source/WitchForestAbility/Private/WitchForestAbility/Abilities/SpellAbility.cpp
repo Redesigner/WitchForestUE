@@ -35,6 +35,8 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
 	Projectile->SetOwningActor(OwnerActor);
 	Projectile->FinishSpawning(ProjectileTransform);
+	FVector ProjectileVelocity = Projectile->GetVelocity() + OwnerActor->GetVelocity();
+	// Projectile->SetVe
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
 }
 
