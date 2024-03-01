@@ -139,3 +139,14 @@ void UInventoryComponent::ShiftDown()
 	}
 	OnSelectedIndexChanged.Broadcast(SelectedIndex);
 }
+
+
+void UInventoryComponent::DropItems()
+{
+	for (int i = 0; i < InventorySlots.Num(); ++i)
+	{
+		FGameplayTag& Tag = InventorySlots[i];
+		Tag = TAG_ItemEmpty;
+		OnSlotChanged.Broadcast(Tag, i);
+	}
+}

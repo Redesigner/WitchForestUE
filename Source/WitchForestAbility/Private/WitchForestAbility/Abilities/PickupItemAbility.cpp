@@ -12,7 +12,7 @@
 
 void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
 	if (!Witch)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
@@ -59,7 +59,7 @@ bool UPickupItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	// A lot of these checks are going to be repeated in ActivateAbility, but since it's dependent
 	// on certain components existing, there isn't a way around it
-	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
 	if (!Witch)
 	{
 		// For now, only witches can use this ability, because it requires an interaction volume.

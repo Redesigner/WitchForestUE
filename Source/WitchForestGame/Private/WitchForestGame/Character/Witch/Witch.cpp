@@ -62,11 +62,13 @@ void AWitch::BindActions(UInputComponent* PlayerInputComponent)
 		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to bind actions to input component on pawn {Name}. InputConfig is not set.", GetName());
 		return;
 	}
+
 	UWitchForestInputComponent* WitchForestInputComponent = Cast<UWitchForestInputComponent>(PlayerInputComponent);
 	if (!WitchForestInputComponent)
 	{
 		return;
 	}
+
 	TArray<uint32> BindHandles;
 	WitchForestInputComponent->BindAbilityActions(InputConfig, this, &AWitch::Input_AbilityInputTagPressed, &AWitch::Input_AbilityInputTagReleased, BindHandles);
 
@@ -74,6 +76,25 @@ void AWitch::BindActions(UInputComponent* PlayerInputComponent)
 		ETriggerEvent::Triggered, this, &ThisClass::Move, /*bLogIfNotFound=*/ false);
 	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_ShiftSlot,
 		ETriggerEvent::Triggered, this, &ThisClass::ShiftSlot, /*bLogIfNotFound=*/ false);
+}
+
+void AWitch::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AWitchPlayerState* WitchPlayerState = NewController->GetPlayerState<AWitchPlayerState>();
+	if (!WitchPlayerState)
+	{
+		return;
+	}
+
+	UAbilitySystemComponent* ASC = WitchPlayerState->GetAbilitySystemComponent();
+	if (!ASC)
+	{
+		return;
+	}
+
+	ASC->SetAvatarActor(this);
 }
 
 void AWitch::Input_AbilityInputTagPressed(FGameplayTag InputTag)

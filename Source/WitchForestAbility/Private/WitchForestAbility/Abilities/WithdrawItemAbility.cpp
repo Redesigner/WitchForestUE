@@ -16,7 +16,7 @@
 void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	AActor* Owner = GetOwningActorFromActorInfo();
-	AActor* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	AActor* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 
 	UInventoryComponent* Inventory = Owner->GetComponentByClass<UInventoryComponent>();
 	UItemHandleComponent* ItemHandle = Pawn->GetComponentByClass<UItemHandleComponent>();
@@ -70,7 +70,7 @@ bool UWithdrawItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle H
 		return false;
 	}
 
-	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
 		return false;

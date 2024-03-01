@@ -16,7 +16,7 @@ void UMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		return;
 	}
-	APawn* Owner = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Owner = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Owner)
 	{
 		return;
@@ -44,6 +44,7 @@ void UMeleeAbility::ForceEndAbility()
 	{
 		MeleeComponent->OnActorHit.Remove(ActorHitDelegateHandle);
 	}
+
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
 }
 
@@ -54,12 +55,19 @@ void UMeleeAbility::OnEnemyHit(AActor* Enemy)
 	{
 		return;
 	}
+
 	auto Predicate = [Enemy](const TWeakObjectPtr<AActor>& OldEnemy) { return Enemy == OldEnemy; };
 	if (DamagedActors.ContainsByPredicate(Predicate))
 	{
 		return;
 	}
+
 	UAbilitySystemComponent* EnemyASC = ActorAbility->GetAbilitySystemComponent();
+	if (!EnemyASC)
+	{
+		return;
+	}
+
 	for (TSubclassOf<UGameplayEffect> GameplayEffectClass : EffectsToApply)
 	{
 		FGameplayEffectSpecHandle GameplayEffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);

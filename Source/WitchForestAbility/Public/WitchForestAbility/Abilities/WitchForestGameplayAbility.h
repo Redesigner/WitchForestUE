@@ -37,7 +37,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAbilityActivationPolicy ActivationPolicy;
 
-	// Get the owning pawn, as the owning actor might be a player state
-	// @returns Owning pawn, or nullptr if none can be found
-	static APawn* GetOwningPawnFromActorInfo(const FGameplayAbilityActorInfo* ActorInfo);
 };

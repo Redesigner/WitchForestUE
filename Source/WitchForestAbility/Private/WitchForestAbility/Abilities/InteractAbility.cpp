@@ -12,7 +12,7 @@
 
 void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
 	if (!Witch)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
@@ -48,7 +48,7 @@ bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 		return false;
 	}
 
-	AWitch* Witch = Cast<AWitch>(GetOwningPawnFromActorInfo(ActorInfo));
+	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
 	if (!Witch)
 	{
 		return false;

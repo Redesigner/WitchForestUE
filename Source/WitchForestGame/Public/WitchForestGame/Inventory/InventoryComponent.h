@@ -48,6 +48,8 @@ public:
 
 	void ShiftDown();
 
+	void DropItems();
+
 
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlotChanged, FGameplayTag, uint8)
 	FOnSlotChanged OnSlotChanged;

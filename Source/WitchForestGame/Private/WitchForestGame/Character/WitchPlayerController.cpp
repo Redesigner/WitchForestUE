@@ -35,6 +35,7 @@ UWitchForestASC* AWitchPlayerController::GetWitchForestASC() const
     {
         return WitchPlayerState->GetWitchForestASC();
     }
+
     return nullptr;
 }
 
@@ -48,5 +49,6 @@ void AWitchPlayerController::PostProcessInput(const float DeltaTime, const bool 
     {
         return;
     }
+
     WitchForestASC->ProcessAbilityInput(DeltaTime, bGamePaused);
 }

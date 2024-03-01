@@ -44,6 +44,8 @@ void AEnemy::BeginPlay()
 		}
 		AbilitySet->GiveToAbilitySystem(AbilitySystem, nullptr);
 	}
+
+	AbilitySystem->SetAvatarActor(this);
 }
 
 void AEnemy::Tick(float DeltaTime)

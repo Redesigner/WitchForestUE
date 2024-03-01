@@ -13,7 +13,7 @@
 
 void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
 		UE_LOGFMT(LogWitchForestAbility, Warning, "ThrowItemAbility failed. Could not find pawn.");
@@ -44,6 +44,7 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		UE_LOGFMT(LogWitchForestAbility, Warning, "ThrowItemAbility failed. Unable to consume pickup.");
 	}
+
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 }
 
@@ -54,7 +55,7 @@ bool UThrowItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return false;
 	}
 
-	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
 		return false;

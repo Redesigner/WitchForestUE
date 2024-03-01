@@ -51,6 +51,8 @@ public:
 
 	void BindActions(UInputComponent* PlayerInputComponent);
 
+	void PossessedBy(AController* NewController) override;
+
 
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 

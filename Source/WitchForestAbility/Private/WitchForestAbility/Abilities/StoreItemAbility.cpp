@@ -18,7 +18,7 @@
 void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	AActor* Owner = GetOwningActorFromActorInfo();
-	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 
 	UInventoryComponent* Inventory = Owner->GetComponentByClass<UInventoryComponent>();
 	UItemHandleComponent* ItemHandle = Pawn->GetComponentByClass<UItemHandleComponent>();
@@ -83,7 +83,7 @@ bool UStoreItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return false;
 	}
 
-	APawn* Pawn = GetOwningPawnFromActorInfo(ActorInfo);
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
 		return false;

@@ -7,6 +7,8 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h" 
 
+#include "WitchForestGame/WitchForestGameplayTags.h"
+
 UBaseAttributeSet::UBaseAttributeSet()
 {
 	MovementSpeed.SetBaseValue(600.0f);
@@ -34,6 +36,14 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		if (Data.EvaluatedData.Attribute.GetNumericValue(this) <= 0.0f)
 		{
 			OnDeath.ExecuteIfBound(Data.EffectSpec);
+
+			FGameplayEventData Payload;
+			Payload.EventTag = WitchForestGameplayTags::GameplayEvent_Death;
+			Payload.Instigator = Data.EffectSpec.GetEffectContext().GetEffectCauser();
+			Payload.Target = GetOwningAbilitySystemComponent()->GetOwnerActor();
+			Payload.ContextHandle = Data.EffectSpec.GetEffectContext();
+
+			GetOwningAbilitySystemComponent()->HandleGameplayEvent(Payload.EventTag, &Payload);
 		}
 	}
 }
