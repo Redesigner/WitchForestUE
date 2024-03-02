@@ -32,7 +32,7 @@ void APotion::Burst()
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Potion burst"));
+
 	UWorld* World = GetWorld();
 	check(World);
 
@@ -72,5 +72,8 @@ void APotion::Burst()
 		FGameplayEffectSpecHandle GameplayEffectSpec = LastHolder->MakeOutgoingSpec(SplashEffect, 0.0f, LastHolder->MakeEffectContext());
 		LastHolder->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpec.Data.Get(), TargetASC);
 	}
+
+	HandleBurst();
+
 	Destroy();
 }

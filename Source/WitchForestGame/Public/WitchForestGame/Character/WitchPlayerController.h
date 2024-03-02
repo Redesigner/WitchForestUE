@@ -18,6 +18,9 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
 
+
+	void OnPossess(APawn* InPawn) override;
+
 public:
 	AWitchPlayerController();
 

@@ -49,6 +49,8 @@ void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	if (GameMode->GetItemSet()->FindItemDataForTag(HeldItemTag, ItemData))
 	{
 		APickup* PickedUpItem = GetWorld()->SpawnActorDeferred<APickup>(ItemData.PickupClass, Pawn->GetTransform());
+		// Set held early, to make sure it isn't collected by any volumes
+		PickedUpItem->bHeld = true;
 		PickedUpItem->FinishSpawning(Pawn->GetTransform());
 		ItemHandle->PickupItem(PickedUpItem);
 	}

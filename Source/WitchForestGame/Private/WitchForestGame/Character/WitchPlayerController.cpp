@@ -13,6 +13,17 @@ AWitchPlayerController::AWitchPlayerController()
 {
 }
 
+
+void AWitchPlayerController::OnPossess(APawn* InPawn)
+{
+    Super::OnPossess(InPawn);
+
+    if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
+    {
+        WitchPlayerState->InitializeAttributes();
+    }
+}
+
 void AWitchPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

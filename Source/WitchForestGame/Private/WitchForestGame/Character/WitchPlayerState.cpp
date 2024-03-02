@@ -47,3 +47,8 @@ void AWitchPlayerState::GrantAbilities()
         AbilitySet->GiveToAbilitySystem(AbilitySystem, nullptr);
     }
 }
+
+void AWitchPlayerState::InitializeAttributes()
+{
+    AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+}

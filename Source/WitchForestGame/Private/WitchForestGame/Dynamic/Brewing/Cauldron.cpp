@@ -32,6 +32,8 @@ void ACauldron::Interact(AActor* Source)
 
 	FGameplayTag RecipeResult = RecipeBook->MakeItem(HeldIngredients);
 	HeldIngredients.Reset();
+	OnContentsChanged.Broadcast();
+
 	if (RecipeResult == TAG_RecipeFailed)
 	{
 		return;
@@ -111,6 +113,19 @@ void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	if (ItemSet->FindItemTagFromClass(Pickup->GetClass(), ItemTag))
 	{
 		HeldIngredients.Add(ItemTag);
+		OnContentsChanged.Broadcast();
 		Pickup->Destroy();
 	}
+}
+
+FString ACauldron::GetContentsString() const
+{
+	FString Result;
+
+	for (const FGameplayTag& Ingredient : HeldIngredients)
+	{
+		Result.Append(Ingredient.GetTagName().ToString());
+		Result.Append("\n");
+	}
+	return Result;
 }

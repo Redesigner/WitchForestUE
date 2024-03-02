@@ -24,4 +24,8 @@ class WITCHFORESTGAME_API APotion : public APickup
     void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	void Burst();
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleBurst();
 };

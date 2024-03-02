@@ -31,6 +31,8 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 
 	FTimerHandle CooldownTimerHandle;
 
+	FString ContentString;
+
 
 	void Interact(AActor* Source) override;
 
@@ -41,4 +43,11 @@ public:
 
 	UFUNCTION()
 	void VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetContentsString() const;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentsChanged);
+	UPROPERTY(BlueprintAssignable)
+	FOnContentsChanged OnContentsChanged;
 };

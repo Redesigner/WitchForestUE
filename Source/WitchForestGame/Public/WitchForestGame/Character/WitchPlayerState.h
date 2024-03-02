@@ -32,6 +32,9 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
 
+	void GrantAbilities();
+	
+	/// Set our attributes to their default values;
 public:
 	AWitchPlayerState();
 
@@ -44,7 +47,5 @@ public:
 
 	void BeginPlay() override;
 
-private:
-	void GrantAbilities();
-	
+	void InitializeAttributes();	
 };
