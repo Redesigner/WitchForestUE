@@ -14,6 +14,7 @@
 
 class USphereComponent;
 class UPotionRecipeSet;
+class UItemSet;
 
 UCLASS()
 class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterface
@@ -29,6 +30,9 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPotionRecipeSet> RecipeBook;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
+	uint8 Capacity = 4;
+
 	FTimerHandle CooldownTimerHandle;
 
 	FString ContentString;
@@ -37,6 +41,10 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	void Interact(AActor* Source) override;
 
 	FVector MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const;
+
+	void LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet);
+
+	void StartCooldown();
 
 public:	
 	ACauldron();

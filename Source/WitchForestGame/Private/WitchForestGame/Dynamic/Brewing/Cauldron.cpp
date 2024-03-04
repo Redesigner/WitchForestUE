@@ -22,20 +22,39 @@ ACauldron::ACauldron()
 }
 
 
+void ACauldron::LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet)
+{
+	FInventoryItemData ItemData;
+	if (ItemSet->FindItemDataForTag(Item, ItemData))
+	{
+		APickup* LaunchedItem = GetWorld()->SpawnActor<APickup>(ItemData.PickupClass, CauldronVolume->GetComponentLocation(), CauldronVolume->GetComponentRotation());
+		if (!LaunchedItem)
+		{
+			UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' failed to spawn item of class `{ItemClassName}', matching tag '{ItemTag}'.", GetName(), ItemData.PickupClass->GetName(), Item.GetTagName());
+			return;
+		}
+		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
+		constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
+		const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
+		LaunchedItem->AddImpulse(LaunchVector);
+	}
+}
+
+void ACauldron::StartCooldown()
+{
+	FTimerDelegate EndCooldown = FTimerDelegate::CreateLambda([this]()
+		{
+			CauldronVolume->SetGenerateOverlapEvents(true);
+		});
+
+	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, EndCooldown, 2.0f, false);
+}
+
 void ACauldron::Interact(AActor* Source)
 {
 	if (!RecipeBook)
 	{
 		UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' is missing a Recipe Book. Make sure one is set.", GetName());
-		return;
-	}
-
-	FGameplayTag RecipeResult = RecipeBook->MakeItem(HeldIngredients);
-	HeldIngredients.Reset();
-	OnContentsChanged.Broadcast();
-
-	if (RecipeResult == TAG_RecipeFailed)
-	{
 		return;
 	}
 
@@ -57,23 +76,25 @@ void ACauldron::Interact(AActor* Source)
 		return;
 	}
 
-	FInventoryItemData ItemData;
-	if (ItemSet->FindItemDataForTag(RecipeResult, ItemData))
+	// Disable overlap events here, to prevent any side effects
+	CauldronVolume->SetGenerateOverlapEvents(false);
+	FGameplayTag RecipeResult = RecipeBook->MakeItem(HeldIngredients);
+	if (RecipeResult == TAG_RecipeFailed)
 	{
-		CauldronVolume->SetGenerateOverlapEvents(false);
-		FTimerDelegate EndCooldown = FTimerDelegate::CreateLambda([this]()
-			{
-				CauldronVolume->SetGenerateOverlapEvents(true);
-			});
-
-		World->GetTimerManager().SetTimer(CooldownTimerHandle, EndCooldown, 2.0f, false);
-
-		APickup* BrewedItem = World->SpawnActor<APickup>(ItemData.PickupClass, CauldronVolume->GetComponentLocation(), CauldronVolume->GetComponentRotation());
-		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
-		constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
-		const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
-		BrewedItem->AddImpulse(LaunchVector);
+		TArray<FGameplayTag> PreviouslyHeldItems = HeldIngredients;
+		for (const FGameplayTag& Item : PreviouslyHeldItems)
+		{
+			LaunchItem(Item, ItemSet);
+		}
 	}
+	else
+	{
+		LaunchItem(RecipeResult, ItemSet);
+	}
+
+	HeldIngredients.Reset();
+	OnContentsChanged.Broadcast();
+	StartCooldown();
 }
 
 FVector ACauldron::MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const
@@ -88,12 +109,21 @@ FVector ACauldron::MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPit
 		FMath::Sin(LaunchPitch)) * LaunchSpeed;
 }
 
-
 void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APickup* Pickup = Cast<APickup>(OtherActor);
 	if (!Pickup || Pickup->bHeld)
 	{
+		return;
+	}
+
+	if (HeldIngredients.Num() >= Capacity)
+	{
+		Pickup->SetVelocity(FVector::Zero());
+		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
+		constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
+		const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
+		Pickup->AddImpulse(LaunchVector);
 		return;
 	}
 
