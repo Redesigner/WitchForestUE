@@ -11,6 +11,7 @@
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "GameFramework/PlayerState.h"
+#include "GameFramework/GameState.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
@@ -28,7 +29,7 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameState(Owner)->GameModeClass->ClassDefaultObject);
 	if (!GameMode)
 	{
 		UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. The GameMode is the wrong type.");
@@ -80,12 +81,14 @@ bool UStoreItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 	AActor* Owner = ActorInfo->OwnerActor.Get();
 	if (!Owner)
 	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Owner was invalid'.");
 		return false;
 	}
 
 	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Owner '{OwnerName}' was not a pawn.", Owner->GetName());
 		return false;
 	}
 

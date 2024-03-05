@@ -10,6 +10,7 @@
 
 UItemHandleComponent::UItemHandleComponent()
 {
+	SetIsReplicatedByDefault(true);
 }
 
 APickup* UItemHandleComponent::ConsumeItem()
@@ -18,6 +19,7 @@ APickup* UItemHandleComponent::ConsumeItem()
 	{
 		return nullptr;
 	}
+
 	APickup* Item = HeldItem.Get();
 	Item->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Item->bHeld = false;
@@ -30,6 +32,7 @@ APickup* UItemHandleComponent::ConsumeItem()
 			GrantedHandles.TakeFromAbilitySystem(PlayerState->GetWitchForestASC());
 		}
 	}
+
 	Item->EnableMovement();
 	return Item;
 }
@@ -40,11 +43,13 @@ void UItemHandleComponent::PickupItem(APickup* Item)
 	{
 		return;
 	}
+
 	APawn* PawnOwner = Cast<APawn>(GetOwner());
 	if (!PawnOwner)
 	{
 		return;
 	}
+
 	HeldItem = Item;
 	Item->DisableMovement();
 	Item->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);

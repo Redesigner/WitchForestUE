@@ -24,6 +24,21 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
     }
 }
 
+void AWitchPlayerController::BeginPlayingState()
+{
+    Super::BeginPlayingState();
+
+    if (!IsLocalPlayerController())
+    {
+        return;
+    }
+
+    if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
+    {
+        SetupUI(WitchPlayerState);
+    }
+}
+
 void AWitchPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

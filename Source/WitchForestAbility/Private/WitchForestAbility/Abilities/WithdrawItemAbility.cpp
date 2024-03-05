@@ -10,6 +10,7 @@
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "GameFramework/PlayerState.h"
+#include "GameFramework/GameState.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -38,7 +39,7 @@ void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 
 	// Get the data table for items from our game mode. Should this be different?
-	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameState(Owner)->GameModeClass->ClassDefaultObject);
 	if (!GameMode)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);

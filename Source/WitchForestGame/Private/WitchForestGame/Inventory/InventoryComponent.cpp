@@ -5,8 +5,25 @@
 
 #include "WitchForestGame/Inventory/ItemSet.h"
 
+#include "Net/UnrealNetwork.h"
+
+
 UInventoryComponent::UInventoryComponent()
 {
+	SetIsReplicatedByDefault(true);
+}
+
+void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, InventorySlots)
+}
+
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
 }
 
 #if WITH_EDITOR
@@ -112,6 +129,14 @@ void UInventoryComponent::SetSelectedIndex(uint8 Value)
 	OnSelectedIndexChanged.Broadcast(Value);
 }
 
+void UInventoryComponent::ServerSetSelectedIndex_Implementation(uint8 Value)
+{
+	if (Value < InventorySlots.Num())
+	{
+		SelectedIndex = Value;
+	}
+}
+
 
 void UInventoryComponent::ShiftUp()
 {
@@ -124,6 +149,7 @@ void UInventoryComponent::ShiftUp()
 		SelectedIndex++;
 	}
 	OnSelectedIndexChanged.Broadcast(SelectedIndex);
+	ServerSetSelectedIndex(SelectedIndex);
 }
 
 
@@ -138,6 +164,7 @@ void UInventoryComponent::ShiftDown()
 		SelectedIndex--;
 	}
 	OnSelectedIndexChanged.Broadcast(SelectedIndex);
+	ServerSetSelectedIndex(SelectedIndex);
 }
 
 
@@ -148,5 +175,17 @@ void UInventoryComponent::DropItems()
 		FGameplayTag& Tag = InventorySlots[i];
 		Tag = TAG_ItemEmpty;
 		OnSlotChanged.Broadcast(Tag, i);
+	}
+}
+
+
+void UInventoryComponent::OnRep_Inventory(const TArray<FGameplayTag>& OldInventory)
+{
+	for (int i = 0; i < InventorySlots.Num(); ++i)
+	{
+		if (OldInventory[i] != InventorySlots[i])
+		{
+			OnSlotChanged.Broadcast(InventorySlots[i], i);
+		}
 	}
 }

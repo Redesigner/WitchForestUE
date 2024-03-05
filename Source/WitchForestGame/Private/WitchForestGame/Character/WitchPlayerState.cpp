@@ -8,6 +8,8 @@
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 AWitchPlayerState::AWitchPlayerState()
 {

@@ -34,7 +34,6 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 
 	void GrantAbilities();
 	
-	/// Set our attributes to their default values;
 public:
 	AWitchPlayerState();
 
@@ -47,5 +46,6 @@ public:
 
 	void BeginPlay() override;
 
+	/// Set our attributes to their default values;
 	void InitializeAttributes();	
 };

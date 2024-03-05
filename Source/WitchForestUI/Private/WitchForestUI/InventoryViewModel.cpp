@@ -3,16 +3,27 @@
 
 #include "WitchForestUI/InventoryViewModel.h"
 
+#include "WitchForestUI.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
+
+#include "Logging/StructuredLog.h"
 
 
 void UInventoryViewModel::BindInventory(UInventoryComponent* Inventory, UItemSet* ItemSet, uint8 Index)
 {
-	if (!Inventory || !ItemSet)
+	if (!Inventory)
 	{
+		UE_LOGFMT(LogWitchForestUI, Error, "InventoryViewModel '{ModelName}' failed to bind Inventory. Inventory was invalid.", GetName());
 		return;
 	}
+
+	if (!ItemSet)
+	{
+		UE_LOGFMT(LogWitchForestUI, Error, "InventoryViewModel '{ModelName}' failed to bind Inventory. ItemSet was invalid.", GetName());
+		return;
+	}
+
 	RelevantItemSet = ItemSet;
 	SlotIndex = Index;
 	SlotTag = Inventory->GetItemBySlot(Index);

@@ -28,6 +28,8 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 
 	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
+	void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
+
 
 public:
 

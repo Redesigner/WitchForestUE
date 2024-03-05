@@ -9,6 +9,7 @@
 
 APickup::APickup()
 {
+    bReplicates = true;
     CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
     RootComponent = CollisionSphere;
 }

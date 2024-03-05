@@ -14,13 +14,18 @@ class WITCHFORESTGAME_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (Categories = "ItemTag", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_Inventory, meta = (Categories = "ItemTag", AllowPrivateAccess = true))
 	TArray<FGameplayTag> InventorySlots;
 
 	// The currently selected slot
 	// This should only be modified on the client side, any inventory changes should pack this value into the server request
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	uint8 SelectedIndex = 0;
+
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void BeginPlay() override;
 
 public:	
 	UInventoryComponent();
@@ -44,11 +49,17 @@ public:
 
 	void SetSelectedIndex(uint8 Value);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetSelectedIndex(uint8 Value);
+
 	void ShiftUp();
 
 	void ShiftDown();
 
 	void DropItems();
+
+	UFUNCTION()
+	void OnRep_Inventory(const TArray<FGameplayTag>& OldInventory);
 
 
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlotChanged, FGameplayTag, uint8)

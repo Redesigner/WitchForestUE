@@ -26,6 +26,7 @@ void UBaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(UBaseAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UBaseAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
 
@@ -64,6 +65,15 @@ void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 		{
 			Health.SetCurrentValue(NewValue);
 		}
+	}
+}
+
+void UBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
+		return;
 	}
 }
 

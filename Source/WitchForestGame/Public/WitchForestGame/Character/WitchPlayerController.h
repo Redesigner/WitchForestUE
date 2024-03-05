@@ -21,6 +21,8 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController
 
 	void OnPossess(APawn* InPawn) override;
 
+	void BeginPlayingState() override;
+
 public:
 	AWitchPlayerController();
 
@@ -30,4 +32,8 @@ public:
 	UWitchForestASC* GetWitchForestASC() const;
 
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetupUI(AWitchPlayerState* WitchPlayerState);
 };
