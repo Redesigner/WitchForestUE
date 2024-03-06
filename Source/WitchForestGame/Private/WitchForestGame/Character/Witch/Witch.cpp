@@ -134,7 +134,13 @@ void AWitch::Move(const FInputActionInstance& Instance)
 
 void AWitch::ShiftSlot(const FInputActionInstance& Instance)
 {
-	UInventoryComponent* InventoryComponent = GetPlayerState()->GetComponentByClass<UInventoryComponent>();
+	APlayerState* MyPlayerState = GetPlayerState();
+	if (!MyPlayerState)
+	{
+		return;
+	}
+
+	UInventoryComponent* InventoryComponent = MyPlayerState->GetComponentByClass<UInventoryComponent>();
 	if (!InventoryComponent)
 	{
 		return;
@@ -145,6 +151,7 @@ void AWitch::ShiftSlot(const FInputActionInstance& Instance)
 	{
 		return;
 	}
+
 	if (Input > 0.0f)
 	{
 		InventoryComponent->ShiftUp();

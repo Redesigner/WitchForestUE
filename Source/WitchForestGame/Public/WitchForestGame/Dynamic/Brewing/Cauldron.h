@@ -24,7 +24,7 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> CauldronVolume;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Brewing, ReplicatedUsing = OnRep_HeldIngredients, meta = (AllowPrivateAccess = true))
 	TArray<FGameplayTag> HeldIngredients;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
@@ -38,6 +38,8 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	FString ContentString;
 
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void Interact(AActor* Source) override;
 
 	FVector MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const;
@@ -45,6 +47,9 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	void LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet);
 
 	void StartCooldown();
+
+	UFUNCTION()
+	void OnRep_HeldIngredients(TArray<FGameplayTag> OldTags);
 
 public:	
 	ACauldron();

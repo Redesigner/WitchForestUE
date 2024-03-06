@@ -40,6 +40,7 @@ void APotion::Burst()
 	{
 		return;
 	}
+
 	if (!SplashEffect)
 	{
 		return;
@@ -62,11 +63,13 @@ void APotion::Burst()
 		{
 			continue;
 		}
+
 		IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OverlappedActor);
 		if (!AbilitySystemInterface)
 		{
 			continue;
 		}
+
 		HitActors.Add(OverlappedActor);
 		UAbilitySystemComponent* TargetASC = AbilitySystemInterface->GetAbilitySystemComponent();
 		FGameplayEffectSpecHandle GameplayEffectSpec = LastHolder->MakeOutgoingSpec(SplashEffect, 0.0f, LastHolder->MakeEffectContext());

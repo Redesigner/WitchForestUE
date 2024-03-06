@@ -16,10 +16,18 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<APickup> HeldItem;
+	UPROPERTY(ReplicatedUsing = OnRep_HeldItem, VisibleAnywhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = true))
+	TObjectPtr<APickup> HeldItem;
 
 	FWitchForestAbilitySet_GrantedHandles GrantedHandles;
+
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_HeldItem(APickup* OldHeldItem);
+
+	void DropAllItems();
 
 public:	
 	UItemHandleComponent();

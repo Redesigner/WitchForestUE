@@ -19,6 +19,7 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		UE_LOG(LogWitchForestAbility, Warning, TEXT("Failed to spawn projectile, Projectile Class is invalid."));
 		return;
 	}
+
 	UWorld* World = GetWorld();
 	if (!World)
 	{
@@ -30,13 +31,19 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		OwnerActor = PlayerState->GetPawn();
 	}
-	FTransform ProjectileTransform = OwnerActor->GetActorTransform();
-	ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
-	Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
-	Projectile->SetOwningActor(OwnerActor);
-	Projectile->FinishSpawning(ProjectileTransform);
-	FVector ProjectileVelocity = Projectile->GetVelocity() + OwnerActor->GetVelocity();
-	// Projectile->SetVe
+
+	// Only spawn the projectile on the server, and replicate out from there
+	if (ActorInfo->IsNetAuthority())
+	{
+		FTransform ProjectileTransform = OwnerActor->GetActorTransform();
+		ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
+		Projectile->SetReplicates(true);
+		Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
+		Projectile->SetOwningActor(OwnerActor);
+		Projectile->FinishSpawning(ProjectileTransform);
+		FVector ProjectileVelocity = Projectile->GetVelocity() + OwnerActor->GetVelocity();
+	}
+
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
 }
 

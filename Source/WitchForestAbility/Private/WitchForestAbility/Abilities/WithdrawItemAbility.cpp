@@ -46,14 +46,17 @@ void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return;
 	}
 
-	FInventoryItemData ItemData;
-	if (GameMode->GetItemSet()->FindItemDataForTag(HeldItemTag, ItemData))
+	if (!IsLocallyControlled())
 	{
-		APickup* PickedUpItem = GetWorld()->SpawnActorDeferred<APickup>(ItemData.PickupClass, Pawn->GetTransform());
-		// Set held early, to make sure it isn't collected by any volumes
-		PickedUpItem->bHeld = true;
-		PickedUpItem->FinishSpawning(Pawn->GetTransform());
-		ItemHandle->PickupItem(PickedUpItem);
+		FInventoryItemData ItemData;
+		if (GameMode->GetItemSet()->FindItemDataForTag(HeldItemTag, ItemData))
+		{
+			APickup* PickedUpItem = GetWorld()->SpawnActorDeferred<APickup>(ItemData.PickupClass, Pawn->GetTransform());
+			// Set held early, to make sure it isn't collected by any volumes
+			PickedUpItem->bHeld = true;
+			PickedUpItem->FinishSpawning(Pawn->GetTransform());
+			ItemHandle->PickupItem(PickedUpItem);
+		}
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);

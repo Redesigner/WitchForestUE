@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
+#include "Net/UnrealNetwork.h"
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
@@ -48,6 +49,17 @@ void ACauldron::StartCooldown()
 		});
 
 	GetWorld()->GetTimerManager().SetTimer(CooldownTimerHandle, EndCooldown, 2.0f, false);
+}
+
+void ACauldron::OnRep_HeldIngredients(TArray<FGameplayTag> OldTags)
+{
+	OnContentsChanged.Broadcast();
+}
+
+void ACauldron::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, HeldIngredients);
 }
 
 void ACauldron::Interact(AActor* Source)
