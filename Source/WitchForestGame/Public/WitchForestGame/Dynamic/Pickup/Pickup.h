@@ -22,15 +22,8 @@ class WITCHFORESTGAME_API APickup : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestAbilitySet> GrantedAbilitySet;
 
-	FVector LastReplicatedPosition;
-	FVector LastReplicatedVelocity;
-
 
 	void Tick(float DeltaSeconds) override;
-
-	void OnRep_ReplicatedMovement() override;
-
-	void GatherCurrentMovement() override;
 
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects
@@ -43,16 +36,8 @@ public:
 
 	void DisableMovement();
 
-	void RestoreLastReplicatedMovement();
-
 	UFUNCTION(Server, Unreliable)
 	void ServerSetLocationAndVelocity(FVector Location, FVector Velocity, AActor* InstigatorAvatar);
-
-	UFUNCTION(Server, Reliable)
-	void ServerRequestReplicatedMovementUpdate();
-
-	UFUNCTION(Client, Reliable)
-	void ClientForceReplicatedMovementUpdate(FVector Location, FVector Velocity);
 
 	void AddImpulse(FVector Impulse);
 

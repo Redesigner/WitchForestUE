@@ -112,9 +112,7 @@ void UPickupItemAbility::ActivateAbilityFailed(const FGameplayAbilitySpecHandle 
 	if (APickup* HeldItem = ItemHandleComponent->ConsumeItem())
 	{
 		HeldItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		HeldItem->ServerRequestReplicatedMovementUpdate();
 		HeldItem->SetOwner(nullptr);
-		// HeldItem->SetReplicatingMovement(true);
 		UE_LOGFMT(LogWitchForestAbility, Display, "PickupItemAbility '{AbilityName}': Dropped item because the prediction key was rejected.", GetName());
 	}
 }

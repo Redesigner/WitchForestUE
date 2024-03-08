@@ -12,26 +12,6 @@ void APickup::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
-void APickup::OnRep_ReplicatedMovement()
-{
-    Super::OnRep_ReplicatedMovement();
-
-    LastReplicatedPosition = GetActorLocation();
-    LastReplicatedVelocity = GetVelocity();
-}
-
-void APickup::GatherCurrentMovement()
-{
-    /*
-    if (GetOwner() && GetOwner()->GetLocalRole() > ENetRole::ROLE_SimulatedProxy)
-    {
-        // UE_LOG(LogTemp, Display, TEXT("Ignoring replication because this client has assumed ownership of the object."))
-        return;
-    }
-    */
-    Super::GatherCurrentMovement();
-}
-
 APickup::APickup()
 {
     bReplicates = true;
@@ -51,12 +31,6 @@ void APickup::DisableMovement()
     CollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void APickup::RestoreLastReplicatedMovement()
-{
-    SetActorLocation(LastReplicatedPosition);
-    SetVelocity(LastReplicatedVelocity);
-}
-
 void APickup::ServerSetLocationAndVelocity_Implementation(FVector Location, FVector Velocity, AActor* InstigatorAvatar)
 {
     if (!bHeld)
@@ -71,17 +45,6 @@ void APickup::ServerSetLocationAndVelocity_Implementation(FVector Location, FVec
 
     SetActorLocation(Location);
     CollisionSphere->SetPhysicsLinearVelocity(Velocity);
-}
-
-void APickup::ServerRequestReplicatedMovementUpdate_Implementation()
-{
-    ClientForceReplicatedMovementUpdate(GetActorLocation(), GetVelocity());
-}
-
-void APickup::ClientForceReplicatedMovementUpdate_Implementation(FVector Location, FVector Velocity)
-{
-    SetActorLocation(Location);
-    SetVelocity(Velocity);
 }
 
 void APickup::AddImpulse(FVector Impulse)
