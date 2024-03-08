@@ -18,6 +18,8 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 
 	static void InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert);
 
+	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
+
 public:
 	UWitchForestASC();
 

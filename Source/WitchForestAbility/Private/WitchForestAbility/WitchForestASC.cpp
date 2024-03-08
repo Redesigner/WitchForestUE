@@ -242,3 +242,20 @@ void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FG
 
 	Array.Insert(SpecToInsert, i);
 }
+
+void UWitchForestASC::ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey)
+{
+	Super::ClientActivateAbilityFailed_Implementation(AbilityToActivate, PredictionKey);
+
+	FGameplayAbilitySpec* FailedAbilitySpec = FindAbilitySpecFromHandle(AbilityToActivate);
+	if (!FailedAbilitySpec)
+	{
+		return;
+	}
+	
+	if (UWitchForestGameplayAbility* FailedAbility = Cast<UWitchForestGameplayAbility>(FailedAbilitySpec->Ability))
+	{
+		const FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
+		FailedAbility->ActivateAbilityFailed(AbilityToActivate, ActorInfo, FailedAbilitySpec->ActivationInfo, PredictionKey);
+	}
+}
