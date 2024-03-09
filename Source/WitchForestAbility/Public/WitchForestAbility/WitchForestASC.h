@@ -20,6 +20,8 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 
 	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
 
+	void ClientActivateAbilitySucceed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, FPredictionKey PredictionKey) override;
+
 public:
 	UWitchForestASC();
 

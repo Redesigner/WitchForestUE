@@ -29,7 +29,12 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 
 	void DropAllItems();
 
-public:	
+
+public:
+	TWeakObjectPtr<APickup> FakePickup;
+	TWeakObjectPtr<APickup> RequestedPickup;
+
+
 	UItemHandleComponent();
 
 	APickup* ConsumeItem();

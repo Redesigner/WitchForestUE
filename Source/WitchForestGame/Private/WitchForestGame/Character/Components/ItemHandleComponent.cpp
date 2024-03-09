@@ -74,8 +74,6 @@ void UItemHandleComponent::OnRep_HeldItem(APickup* OldHeldItem)
 			UE_LOGFMT(LogWitchForestGame, Display, "ItemHandleComponent '{SelfName}' in '{ActorName}' Held Item Replication: previously held item '{ItemName}' was incorrect, picking up item '{NewItemname}'.",
 				GetName(), GetOwner()->GetName(), OldHeldItem ? OldHeldItem->GetName() : "None", HeldItem->GetName());
 
-			DropAllItems();
-
 			HeldItem->DisableMovement();
 			HeldItem->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			HeldItem->bHeld = true;

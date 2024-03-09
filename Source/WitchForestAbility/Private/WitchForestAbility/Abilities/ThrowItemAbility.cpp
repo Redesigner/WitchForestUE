@@ -36,20 +36,23 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			CurrentPawnVelocity = MovementComponent->Velocity;
 		}
-		ThrownItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
-		// ThrownItem->SetReplicatingMovement(false);
 
+		ThrownItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
 		ThrownItem->SetVelocity(CurrentPawnVelocity * 1.5f);
+
+		/*
 		if (IsLocallyControlled())
 		{
 			ThrownItem->ServerSetLocationAndVelocity(ItemHandle->GetComponentLocation(), CurrentPawnVelocity * 1.5f, ActorInfo->AvatarActor.Get());
 			FTimerHandle TimerHandle;
 			FTimerDelegate EnableReplicationDelegate;
-			EnableReplicationDelegate.BindLambda([ThrownItem]() {
-				ThrownItem->SetOwner(nullptr);
+			EnableReplicationDelegate.BindLambda([ThrownItem]()
+				{
+					// ThrownItem->ServerSetLocationAndVelocity(ThrownItem->GetActorLocation(), ThrownItem->GetVelocity(), nullptr);
+					ThrownItem->SetOwner(nullptr);
 				});
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, EnableReplicationDelegate, 1.0f, false);
-		}
+		}*/
 	}
 	else
 	{

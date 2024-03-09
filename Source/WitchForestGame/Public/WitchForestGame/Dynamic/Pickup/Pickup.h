@@ -25,6 +25,8 @@ class WITCHFORESTGAME_API APickup : public AActor
 
 	void Tick(float DeltaSeconds) override;
 
+	void OnRep_ReplicatedMovement() override;
+
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects
 	TWeakObjectPtr<UAbilitySystemComponent> LastHolder;
@@ -38,6 +40,12 @@ public:
 
 	UFUNCTION(Server, Unreliable)
 	void ServerSetLocationAndVelocity(FVector Location, FVector Velocity, AActor* InstigatorAvatar);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestChangeOwner(AActor* NewOwner);
+
+	UFUNCTION(Client, Reliable)
+	void ClientChangeOwner(AActor* NewOwner);
 
 	void AddImpulse(FVector Impulse);
 

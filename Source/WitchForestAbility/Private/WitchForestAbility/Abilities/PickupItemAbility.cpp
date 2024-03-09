@@ -40,9 +40,7 @@ void UPickupItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 			continue;
 		}
 
-		ItemHandle->PickupItem(OverlappingPickup);
-		UE_LOGFMT(LogWitchForestAbility, Display, "PickupItemAbility: taking item '{ItemName}' from Owner '{OwnerName}'.", OverlappingPickup->GetName(), OverlappingPickup->GetOwner() ? OverlappingPickup->GetOwner()->GetName() : "null");
-		OverlappingPickup->SetOwner(Witch);
+		PickupItem(OverlappingPickup, ItemHandle);
 
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
@@ -103,16 +101,88 @@ void UPickupItemAbility::ActivateAbilityFailed(const FGameplayAbilitySpecHandle 
 		return;
 	}
 
-	UItemHandleComponent* ItemHandleComponent = ActorInfo->AvatarActor->GetComponentByClass<UItemHandleComponent>();
-	if (!ItemHandleComponent)
+	UItemHandleComponent* ItemHandle = ActorInfo->AvatarActor->GetComponentByClass<UItemHandleComponent>();
+	if (!ItemHandle)
 	{
 		return;
 	}
 
-	if (APickup* HeldItem = ItemHandleComponent->ConsumeItem())
+	if (ItemHandle->FakePickup.IsValid())
 	{
-		HeldItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		HeldItem->SetOwner(nullptr);
-		UE_LOGFMT(LogWitchForestAbility, Display, "PickupItemAbility '{AbilityName}': Dropped item because the prediction key was rejected.", GetName());
+		ItemHandle->FakePickup->Destroy();
 	}
+
+	if (ItemHandle->RequestedPickup.IsValid())
+	{
+		ItemHandle->RequestedPickup->bHeld = false;
+		ItemHandle->RequestedPickup->SetActorHiddenInGame(false);
+		ItemHandle->RequestedPickup.Reset();
+	}
+}
+
+void UPickupItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FPredictionKey& PredictionKey)
+{
+
+	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
+	if (!Witch)
+	{
+		return;
+	}
+
+	UItemHandleComponent* ItemHandle = Witch->GetComponentByClass<UItemHandleComponent>();
+	if (!ItemHandle)
+	{
+		return;
+	}
+
+	if (!ItemHandle->RequestedPickup.IsValid() || !ItemHandle->RequestedPickup.IsValid())
+	{
+		return;
+	}
+
+	ItemHandle->FakePickup->Destroy();
+	ItemHandle->PickupItem(ItemHandle->RequestedPickup.Get());
+	ItemHandle->RequestedPickup->SetOwner(Witch);
+	ItemHandle->RequestedPickup->SetActorHiddenInGame(false);
+
+	ItemHandle->RequestedPickup.Reset();
+	ItemHandle->FakePickup.Reset();
+}
+
+void UPickupItemAbility::PickupItem(APickup* Item, UItemHandleComponent* ItemHandle)
+{
+	if (IsPredictingClient())
+	{
+		SimulatePickupItem(Item, ItemHandle);
+	}
+	else
+	{
+		ServerPickupItem(Item, ItemHandle);
+	}
+}
+
+void UPickupItemAbility::SimulatePickupItem(APickup* Item, UItemHandleComponent* ItemHandle)
+{
+	ItemHandle->FakePickup = GetWorld()->SpawnActorDeferred<APickup>(Item->GetClass(), Item->GetTransform());
+	if (!ItemHandle->FakePickup.Get())
+	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "PickupItemAbility '{AbilityName}' failed to spawn fake pickup actor from template pickup '{PickupName}'.", GetName(), Item->GetName());
+		return;
+	}
+	ItemHandle->FakePickup->SetReplicates(false);
+	ItemHandle->FakePickup->FinishSpawning(Item->GetActorTransform());
+
+	// ItemHandle->PickupItem(FakePickup);
+	ItemHandle->FakePickup->DisableMovement();
+	ItemHandle->FakePickup->AttachToComponent(ItemHandle, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	ItemHandle->RequestedPickup = Item;
+	ItemHandle->RequestedPickup->bHeld = true;
+	ItemHandle->RequestedPickup->SetActorHiddenInGame(true);
+}
+
+void UPickupItemAbility::ServerPickupItem(APickup* Item, UItemHandleComponent* ItemHandle)
+{
+	ItemHandle->PickupItem(Item);
+	// Item->SetOwner(ItemHandle->GetOwner());
 }
