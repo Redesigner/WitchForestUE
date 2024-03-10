@@ -97,6 +97,16 @@ void UItemHandleComponent::DropAllItems()
 	}
 }
 
+void UItemHandleComponent::SetFakePickup(APickup* Fake)
+{
+	if (FakePickup.IsValid())
+	{
+		FakePickup->Destroy();
+	}
+
+	FakePickup = Fake;
+}
+
 APickup* UItemHandleComponent::ConsumeItem()
 {
 	if (!HeldItem)
@@ -151,4 +161,12 @@ void UItemHandleComponent::PickupItem(APickup* Item)
 bool UItemHandleComponent::HoldingItem() const
 {
 	return HeldItem != nullptr;
+}
+
+void UItemHandleComponent::SetHeldItemHidden(bool bHidden)
+{
+	if (HeldItem)
+	{
+		HeldItem->SetActorHiddenInGame(bHidden);
+	}
 }

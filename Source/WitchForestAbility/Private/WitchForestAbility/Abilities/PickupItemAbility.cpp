@@ -107,9 +107,9 @@ void UPickupItemAbility::ActivateAbilityFailed(const FGameplayAbilitySpecHandle 
 		return;
 	}
 
-	if (ItemHandle->FakePickup.IsValid())
+	if (ItemHandle->GetFakePickup())
 	{
-		ItemHandle->FakePickup->Destroy();
+		ItemHandle->GetFakePickup()->Destroy();
 	}
 
 	if (ItemHandle->RequestedPickup.IsValid())
@@ -140,13 +140,12 @@ void UPickupItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle
 		return;
 	}
 
-	ItemHandle->FakePickup->Destroy();
+	ItemHandle->SetFakePickup(nullptr);
 	ItemHandle->PickupItem(ItemHandle->RequestedPickup.Get());
 	ItemHandle->RequestedPickup->SetOwner(Witch);
 	ItemHandle->RequestedPickup->SetActorHiddenInGame(false);
 
 	ItemHandle->RequestedPickup.Reset();
-	ItemHandle->FakePickup.Reset();
 }
 
 void UPickupItemAbility::PickupItem(APickup* Item, UItemHandleComponent* ItemHandle)
@@ -163,22 +162,30 @@ void UPickupItemAbility::PickupItem(APickup* Item, UItemHandleComponent* ItemHan
 
 void UPickupItemAbility::SimulatePickupItem(APickup* Item, UItemHandleComponent* ItemHandle)
 {
-	ItemHandle->FakePickup = GetWorld()->SpawnActorDeferred<APickup>(Item->GetClass(), Item->GetTransform());
-	if (!ItemHandle->FakePickup.Get())
+	APickup* FakePickup = GetWorld()->SpawnActorDeferred<APickup>(Item->GetClass(), Item->GetTransform());
+	if (!FakePickup)
 	{
 		UE_LOGFMT(LogWitchForestAbility, Error, "PickupItemAbility '{AbilityName}' failed to spawn fake pickup actor from template pickup '{PickupName}'.", GetName(), Item->GetName());
 		return;
 	}
-	ItemHandle->FakePickup->SetReplicates(false);
-	ItemHandle->FakePickup->FinishSpawning(Item->GetActorTransform());
+
+	FakePickup->SetReplicates(false);
+	FakePickup->FinishSpawning(Item->GetActorTransform());
 
 	// ItemHandle->PickupItem(FakePickup);
-	ItemHandle->FakePickup->DisableMovement();
-	ItemHandle->FakePickup->AttachToComponent(ItemHandle, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	FakePickup->DisableMovement();
+	FakePickup->AttachToComponent(ItemHandle, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	ItemHandle->SetFakePickup(FakePickup);
 
+	Item->bHeld = true;
+	Item->SetActorHiddenInGame(true);
+
+	if (ItemHandle->RequestedPickup.IsValid())
+	{
+		UE_LOGFMT(LogWitchForestAbility, Warning, "PickupItemAbility '{AbilityName}' requested item '{ItemName}' from the server, but was still holding item '{OldItemName}'.", GetName(), Item->GetName(), ItemHandle->RequestedPickup->GetName());
+		ItemHandle->RequestedPickup->SetActorHiddenInGame(false);
+	}
 	ItemHandle->RequestedPickup = Item;
-	ItemHandle->RequestedPickup->bHeld = true;
-	ItemHandle->RequestedPickup->SetActorHiddenInGame(true);
 }
 
 void UPickupItemAbility::ServerPickupItem(APickup* Item, UItemHandleComponent* ItemHandle)

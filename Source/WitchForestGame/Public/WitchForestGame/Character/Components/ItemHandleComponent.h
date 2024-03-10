@@ -19,6 +19,8 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 	UPROPERTY(ReplicatedUsing = OnRep_HeldItem, VisibleAnywhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = true))
 	TObjectPtr<APickup> HeldItem;
 
+	TWeakObjectPtr<APickup> FakePickup;
+
 	FWitchForestAbilitySet_GrantedHandles GrantedHandles;
 
 
@@ -29,9 +31,7 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 
 	void DropAllItems();
 
-
 public:
-	TWeakObjectPtr<APickup> FakePickup;
 	TWeakObjectPtr<APickup> RequestedPickup;
 
 
@@ -39,7 +39,15 @@ public:
 
 	APickup* ConsumeItem();
 
+	APickup* GetHeldItem() const { return HeldItem; }
+
+	APickup* GetFakePickup() const { return FakePickup.Get(); }
+
+	void SetFakePickup(APickup* Fake);
+
 	void PickupItem(APickup* Item);
 
 	bool HoldingItem() const;
+
+	void SetHeldItemHidden(bool bHidden);
 };

@@ -22,10 +22,14 @@ class WITCHFORESTGAME_API APickup : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestAbilitySet> GrantedAbilitySet;
 
+	TWeakObjectPtr<APickup> FakeOwner;
+
 
 	void Tick(float DeltaSeconds) override;
 
 	void OnRep_ReplicatedMovement() override;
+
+	bool bIsFake = false;
 
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects
@@ -57,4 +61,6 @@ public:
 	bool bHeld = false;
 
 	void SetLastHeldASC(UAbilitySystemComponent* ASC);
+
+	void AttachFakeTo(APickup* Other);
 };

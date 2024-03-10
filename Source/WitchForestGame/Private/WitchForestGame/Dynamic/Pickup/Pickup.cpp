@@ -10,6 +10,38 @@
 void APickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
+    if (bIsFake)
+    {
+        if (!FakeOwner.IsValid())
+        {
+            SetLifeSpan(0.1f);
+            return;
+        }
+
+        FVector Delta = FakeOwner->GetActorLocation() - GetActorLocation();
+        float SquaredLength = Delta.SquaredLength();
+        if (SquaredLength <= 1.0f)
+        {
+            FakeOwner->SetActorHiddenInGame(false);
+            Destroy();
+            return;
+        }
+
+        if (SquaredLength >= 50000.0f)
+        {
+            // UE_LOG(LogTemp, Warning, TEXT("Pickup fake simulation was too far away from replicated position, teleporting."));
+            DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 0.5f);
+            DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 0.5f);
+            DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 0.5f);
+
+            SetActorLocation(FakeOwner->GetActorLocation());
+            SetVelocity(FakeOwner->GetVelocity());
+            return;
+        }
+
+        AddActorWorldOffset(Delta * FMath::Clamp(DeltaSeconds, 0.0f, 1.0f));
+    }
 }
 
 void APickup::OnRep_ReplicatedMovement()
@@ -27,6 +59,7 @@ void APickup::OnRep_ReplicatedMovement()
 APickup::APickup()
 {
     bReplicates = true;
+    PrimaryActorTick.bCanEverTick = true;
     CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
     RootComponent = CollisionSphere;
 }
@@ -96,4 +129,11 @@ UWitchForestAbilitySet* APickup::GetGrantedAbilitySet() const
 void APickup::SetLastHeldASC(UAbilitySystemComponent* ASC)
 {
     LastHolder = ASC;
+}
+
+void APickup::AttachFakeTo(APickup* Other)
+{
+    bIsFake = true;
+    SetActorTickEnabled(true);
+    FakeOwner = Other;
 }
