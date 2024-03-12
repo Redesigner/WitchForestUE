@@ -11,43 +11,45 @@ void APickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (bIsShadowingReal)
+    if (!bIsShadowingReal)
     {
-        if (!FakeOwner.IsValid())
-        {
-            SetLifeSpan(0.1f);
-            return;
-        }
-
-        FVector Delta = FakeOwner->GetActorLocation() - GetActorLocation();
-        float SquaredLength = Delta.SquaredLength();
-        if (SquaredLength <= 1.0f)
-        {
-            FakeOwner->SetActorHiddenInGame(false);
-            Destroy();
-            return;
-        }
-
-        if (SquaredLength >= MaxTeleportDistance * MaxTeleportDistance)
-        {
-            CurrentError += SquaredLength * DeltaSeconds;
-        }
-
-        if (CurrentError >= MaxTeleportDistance * MaxTeleportDistance)
-        {
-            // UE_LOG(LogTemp, Warning, TEXT("Pickup fake simulation was too far away from replicated position, teleporting."));
-            // Move these to VLOGGER
-            DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 1.5f);
-            DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 1.5f);
-            DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
-
-            FakeOwner->SetActorHiddenInGame(false);
-            Destroy();
-            return;
-        }
-
-        AddActorWorldOffset(Delta * FMath::Clamp(DeltaSeconds * InterpolationRate, 0.0f, 1.0f));
+        return;
     }
+
+    if (!FakeOwner.IsValid())
+    {
+        Destroy();
+        return;
+    }
+
+    FVector Delta = FakeOwner->GetActorLocation() - GetActorLocation();
+    float SquaredLength = Delta.SquaredLength();
+    if (SquaredLength <= 1.0f)
+    {
+        FakeOwner->SetActorHiddenInGame(false);
+        Destroy();
+        return;
+    }
+
+    if (SquaredLength >= MaxTeleportDistance * MaxTeleportDistance)
+    {
+        CurrentError += SquaredLength * DeltaSeconds;
+    }
+
+    if (CurrentError >= MaxTeleportDistance * MaxTeleportDistance)
+    {
+        // UE_LOG(LogTemp, Warning, TEXT("Pickup fake simulation was too far away from replicated position, teleporting."));
+        // Move these to VLOGGER
+        DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 1.5f);
+        DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 1.5f);
+        DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
+
+        FakeOwner->SetActorHiddenInGame(false);
+        Destroy();
+        return;
+    }
+
+    AddActorWorldOffset(Delta * FMath::Clamp(DeltaSeconds * InterpolationRate, 0.0f, 1.0f));
 }
 
 void APickup::OnRep_ReplicatedMovement()

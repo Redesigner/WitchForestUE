@@ -4,21 +4,30 @@
 #include "WitchForestGame/Dynamic/Pickup/Potion.h"
 
 #include "AbilitySystemInterface.h"
+#include "Logging/StructuredLog.h"
 
+#include "WitchForestGame.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
 void APotion::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (GetVelocity().SquaredLength() <= 1000.0f)
+	if (GetVelocity().SquaredLength() <= 10000.0f)
 	{
 		return;
 	}
+
 	if (!OtherComp)
 	{
 		return;
 	}
+
+	if (IsFake())
+	{
+		UE_LOGFMT(LogWitchForestGame, Display, "Potion '{PotionName}' impacted a surface, but was a simulated pickup.", GetName());
+	}
+
 	if (OtherComp->GetCollisionObjectType() == ECC_WorldStatic)
 	{
 		Burst();
@@ -38,11 +47,13 @@ void APotion::Burst()
 
 	if (!LastHolder.IsValid())
 	{
+		UE_LOGFMT(LogWitchForestGame, Display, "Potion '{PotionName}' hit another actor, but it didn't have an ASC assigned to it in order to apply its effects.", GetName());
 		return;
 	}
 
 	if (!SplashEffect)
 	{
+		UE_LOGFMT(LogWitchForestGame, Display, "Potion '{PotionName}' hit another actor, but it didn't have a GameplayEffect associated with it.", GetName());
 		return;
 	}
 

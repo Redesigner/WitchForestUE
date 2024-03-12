@@ -105,10 +105,11 @@ void UThrowItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle 
 	{
 		// HeldItem->SetActorHiddenInGame(false);
 		HeldItem->SetOwner(nullptr);
+		HeldItem->SetLastHeldASC(ActorInfo->AbilitySystemComponent.Get());
 
 		if (ItemHandleComponent->GetFakePickup())
 		{
-			// ItemHandleComponent->GetFakePickup()->Destroy();
+			// ItemHandleComponent->GetFakePickup()->SetLastHeldASC(nullptr);
 			ItemHandleComponent->GetFakePickup()->AttachFakeTo(HeldItem);
 		}
 	}
@@ -148,6 +149,7 @@ void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandl
 	FakePickup->SetActorLocation(ItemHandle->GetComponentLocation());
 	FakePickup->FinishSpawning(Item->GetActorTransform());
 	FakePickup->SetVelocity(CurrentPawnVelocity * 1.5f);
+	FakePickup->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
 	ItemHandle->SetFakePickup(FakePickup);
 	ItemHandle->SetHeldItemHidden(true);
 }
