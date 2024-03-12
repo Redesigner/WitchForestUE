@@ -24,12 +24,21 @@ class WITCHFORESTGAME_API APickup : public AActor
 
 	TWeakObjectPtr<APickup> FakeOwner;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CustomReplication, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float MaxTeleportDistance = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CustomReplication, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float InterpolationRate = 1.0f;
+
+	float CurrentError = 0.0f;
+
 
 	void Tick(float DeltaSeconds) override;
 
 	void OnRep_ReplicatedMovement() override;
 
 	bool bIsFake = false;
+	bool bIsShadowingReal = false;
 
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects
@@ -55,10 +64,14 @@ public:
 
 	void SetVelocity(FVector Velocity);
 
+	void DisableReplication();
+
 	UWitchForestAbilitySet* GetGrantedAbilitySet() const;
 
 	// @TODO: Make a more robust system
 	bool bHeld = false;
+
+	bool IsFake() const;
 
 	void SetLastHeldASC(UAbilitySystemComponent* ASC);
 

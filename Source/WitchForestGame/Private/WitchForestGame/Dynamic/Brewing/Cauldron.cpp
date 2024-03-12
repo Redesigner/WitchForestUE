@@ -28,17 +28,45 @@ void ACauldron::LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet)
 	FInventoryItemData ItemData;
 	if (ItemSet->FindItemDataForTag(Item, ItemData))
 	{
-		APickup* LaunchedItem = GetWorld()->SpawnActor<APickup>(ItemData.PickupClass, CauldronVolume->GetComponentLocation(), CauldronVolume->GetComponentRotation());
-		if (!LaunchedItem)
-		{
-			UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' failed to spawn item of class `{ItemClassName}', matching tag '{ItemTag}'.", GetName(), ItemData.PickupClass->GetName(), Item.GetTagName());
-			return;
-		}
-		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
-		constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
-		const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
-		LaunchedItem->AddImpulse(LaunchVector);
+		LaunchItem(ItemData.PickupClass);
 	}
+}
+
+void ACauldron::LaunchItem(TSubclassOf<APickup> Item)
+{
+	if (!GetWorld())
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' world was invalid.", GetName());
+		return;
+	}
+
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	APickup* LaunchedItem = GetWorld()->SpawnActorDeferred<APickup>(Item, CauldronVolume->GetComponentTransform());
+	if (!LaunchedItem)
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' failed to spawn item of class `{ItemClassName}'.", GetName(), Item->GetName());
+		return;
+	}
+
+	LaunchedItem->bHeld = true;
+	FTimerHandle WaitTimer;
+	FTimerDelegate WaitTimerDelegate;
+	WaitTimerDelegate.BindLambda([LaunchedItem]()
+		{
+			LaunchedItem->bHeld = false;
+		});
+
+	GetWorld()->GetTimerManager().SetTimer(WaitTimer, WaitTimerDelegate, 0.25f, false, -1.0f);
+
+	constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
+	constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
+	const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
+	LaunchedItem->AddImpulse(LaunchVector);
+	LaunchedItem->FinishSpawning(CauldronVolume->GetComponentTransform());
 }
 
 void ACauldron::StartCooldown()
@@ -89,7 +117,7 @@ void ACauldron::Interact(AActor* Source)
 	}
 
 	// Disable overlap events here, to prevent any side effects
-	CauldronVolume->SetGenerateOverlapEvents(false);
+	// CauldronVolume->SetGenerateOverlapEvents(false);
 	FGameplayTag RecipeResult = RecipeBook->MakeItem(HeldIngredients);
 	if (RecipeResult == TAG_RecipeFailed)
 	{
@@ -106,7 +134,7 @@ void ACauldron::Interact(AActor* Source)
 
 	HeldIngredients.Reset();
 	OnContentsChanged.Broadcast();
-	StartCooldown();
+	// StartCooldown();
 }
 
 FVector ACauldron::MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const
@@ -124,18 +152,36 @@ FVector ACauldron::MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPit
 void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APickup* Pickup = Cast<APickup>(OtherActor);
-	if (!Pickup || Pickup->bHeld)
+	if (!Pickup)
 	{
+		return;
+	}
+
+	if (Pickup->bHeld)
+	{
+		return;
+	}
+
+	if (Pickup->IsFake())
+	{
+		// DrawDebugSphere(GetWorld(), Pickup->GetActorLocation(), 32.0f, 8, FColor::Red, false, 1.5f);
+		Pickup->Destroy();
 		return;
 	}
 
 	if (HeldIngredients.Num() >= Capacity)
 	{
-		Pickup->SetVelocity(FVector::Zero());
-		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
-		constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
-		const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
-		Pickup->AddImpulse(LaunchVector);
+		TSubclassOf<APickup> PickupClass = Pickup->GetClass();
+		Pickup->Destroy();
+
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindLambda([this, PickupClass]()
+			{
+				LaunchItem(PickupClass);
+			});
+
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 0.25f, false);
 		return;
 	}
 

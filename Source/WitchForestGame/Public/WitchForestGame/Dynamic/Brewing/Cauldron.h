@@ -15,6 +15,7 @@
 class USphereComponent;
 class UPotionRecipeSet;
 class UItemSet;
+class APickup;
 
 UCLASS()
 class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterface
@@ -45,6 +46,7 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	FVector MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const;
 
 	void LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet);
+	void LaunchItem(TSubclassOf<APickup> Item);
 
 	void StartCooldown();
 

@@ -79,13 +79,14 @@ bool UPickupItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Han
 		return false;
 	}
 
-	// Check that we have at least one pickup that is not being held by someone else
+	// Check that we have at least one pickup that is not being held by someone else,
+	// or that isn't a fake one run on a simulate client
 	TSet<AActor*> OverlappingActors;
 	InteractVolume->GetOverlappingActors(OverlappingActors, APickup::StaticClass());
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
 		APickup* OverlappingPickup = Cast<APickup>(OverlappingActor);
-		if (!OverlappingPickup || OverlappingPickup->bHeld)
+		if (!OverlappingPickup || OverlappingPickup->bHeld || OverlappingPickup->IsFake())
 		{
 			continue;
 		}
@@ -169,7 +170,7 @@ void UPickupItemAbility::SimulatePickupItem(APickup* Item, UItemHandleComponent*
 		return;
 	}
 
-	FakePickup->SetReplicates(false);
+	FakePickup->DisableReplication();
 	FakePickup->FinishSpawning(Item->GetActorTransform());
 
 	// ItemHandle->PickupItem(FakePickup);

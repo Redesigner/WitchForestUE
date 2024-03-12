@@ -11,7 +11,7 @@ void APickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    if (bIsFake)
+    if (bIsShadowingReal)
     {
         if (!FakeOwner.IsValid())
         {
@@ -28,28 +28,34 @@ void APickup::Tick(float DeltaSeconds)
             return;
         }
 
-        if (SquaredLength >= 50000.0f)
+        if (SquaredLength >= MaxTeleportDistance * MaxTeleportDistance)
+        {
+            CurrentError += SquaredLength * DeltaSeconds;
+        }
+
+        if (CurrentError >= MaxTeleportDistance * MaxTeleportDistance)
         {
             // UE_LOG(LogTemp, Warning, TEXT("Pickup fake simulation was too far away from replicated position, teleporting."));
-            DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 0.5f);
-            DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 0.5f);
-            DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 0.5f);
+            // Move these to VLOGGER
+            DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 1.5f);
+            DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 1.5f);
+            DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
 
-            SetActorLocation(FakeOwner->GetActorLocation());
-            SetVelocity(FakeOwner->GetVelocity());
+            FakeOwner->SetActorHiddenInGame(false);
+            Destroy();
             return;
         }
 
-        AddActorWorldOffset(Delta * FMath::Clamp(DeltaSeconds, 0.0f, 1.0f));
+        AddActorWorldOffset(Delta * FMath::Clamp(DeltaSeconds * InterpolationRate, 0.0f, 1.0f));
     }
 }
 
 void APickup::OnRep_ReplicatedMovement()
 {
-    if (HasLocalNetOwner())
+    /* if(HasLocalNetOwner())
     {
         return;
-    }
+    } */
 
     // DrawDebugSphere(GetWorld(), GetReplicatedMovement().Location, 32.0f, 8, FColor::Blue, false, 0.5f);
 
@@ -121,9 +127,21 @@ void APickup::SetVelocity(FVector Velocity)
     CollisionSphere->SetPhysicsLinearVelocity(Velocity);
 }
 
+// Mostly just a workaround for the error messages
+void APickup::DisableReplication()
+{
+    bIsFake = true;
+    bReplicates = false;
+}
+
 UWitchForestAbilitySet* APickup::GetGrantedAbilitySet() const
 {
     return GrantedAbilitySet;
+}
+
+bool APickup::IsFake() const
+{
+    return bIsFake;
 }
 
 void APickup::SetLastHeldASC(UAbilitySystemComponent* ASC)
@@ -133,7 +151,7 @@ void APickup::SetLastHeldASC(UAbilitySystemComponent* ASC)
 
 void APickup::AttachFakeTo(APickup* Other)
 {
-    bIsFake = true;
+    bIsShadowingReal = true;
     SetActorTickEnabled(true);
     FakeOwner = Other;
 }

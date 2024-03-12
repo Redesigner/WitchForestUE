@@ -143,7 +143,8 @@ void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandl
 		return;
 	}
 
-	FakePickup->SetReplicates(false);
+	FakePickup->DisableReplication();
+	FakePickup->bHeld = false;
 	FakePickup->SetActorLocation(ItemHandle->GetComponentLocation());
 	FakePickup->FinishSpawning(Item->GetActorTransform());
 	FakePickup->SetVelocity(CurrentPawnVelocity * 1.5f);
