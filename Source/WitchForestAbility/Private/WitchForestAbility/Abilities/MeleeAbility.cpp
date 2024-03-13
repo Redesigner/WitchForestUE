@@ -16,21 +16,24 @@ void UMeleeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	{
 		return;
 	}
+
 	APawn* Owner = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Owner)
 	{
 		return;
 	}
+
 	UMeleeComponent* Melee = Owner->GetComponentByClass<UMeleeComponent>();
 	if (!Melee)
 	{
 		return;
 	}
+
 	MeleeComponent = Melee;
 	ActorHitDelegateHandle = MeleeComponent->OnActorHit.AddUObject(this, &ThisClass::OnEnemyHit);
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("MeleeAnimation"), MeleeAnimation);
-	PlayMontageTask->OnBlendOut.AddDynamic(this, &ThisClass::ForceEndAbility);
+	// PlayMontageTask->OnBlendOut.AddDynamic(this, &ThisClass::ForceEndAbility);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &ThisClass::ForceEndAbility);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &ThisClass::ForceEndAbility);
 	PlayMontageTask->OnCancelled.AddDynamic(this, &ThisClass::ForceEndAbility);
@@ -43,6 +46,7 @@ void UMeleeAbility::ForceEndAbility()
 	if (MeleeComponent.IsValid())
 	{
 		MeleeComponent->OnActorHit.Remove(ActorHitDelegateHandle);
+		MeleeComponent->DestroyAllHitboxes();
 	}
 
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);

@@ -63,10 +63,11 @@ UShapeComponent* UMeleeComponent::SpawnHitbox(FMeleeHitboxSpawnParameters SpawnP
 
 	// Overlaps are automatically updated here
 	SpawnedShape->RegisterComponentWithWorld(GetWorld());
-	TOverlapArrayView Overlaps;
+	// TOverlapArrayView Overlaps;
 
-	TArray<FOverlapResult> OverlapResults;
-	GetWorld()->OverlapMultiByProfile(OverlapResults, SpawnedShape->GetComponentLocation(), SpawnedShape->GetComponentQuat(), SpawnedShape->GetCollisionProfileName(), SpawnedShape->GetCollisionShape());	UE_LOG(LogTemp, Display, TEXT("%i overlaps found when using world overlap test."), OverlapResults.Num());
+	// TArray<FOverlapResult> OverlapResults;
+	// GetWorld()->OverlapMultiByProfile(OverlapResults, SpawnedShape->GetComponentLocation(), SpawnedShape->GetComponentQuat(), SpawnedShape->GetCollisionProfileName(), SpawnedShape->GetCollisionShape());
+	// UE_LOG(LogTemp, Display, TEXT("%i overlaps found when using world overlap test."), OverlapResults.Num());
 
 	SpawnedHitboxes.AddUnique(SpawnedShape);
 	return SpawnedShape;
@@ -84,6 +85,15 @@ void UMeleeComponent::DestroyHitbox(UShapeComponent* Hitbox)
 
 void UMeleeComponent::OnHitboxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Display, TEXT("MeleeComponent began an overlap."));
 	OnActorHit.Broadcast(OtherActor);
+}
+
+void UMeleeComponent::DestroyAllHitboxes()
+{
+	for (UShapeComponent* Hitbox : SpawnedHitboxes)
+	{
+		Hitbox->DestroyComponent();
+	}
+
+	SpawnedHitboxes.Reset();
 }

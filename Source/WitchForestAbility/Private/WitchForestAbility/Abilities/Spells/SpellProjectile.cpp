@@ -12,6 +12,7 @@
 ASpellProjectile::ASpellProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 }
 
 void ASpellProjectile::Tick(float DeltaTime)
@@ -53,6 +54,11 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	if (!EffectHandle.IsValid())
 	{
 		UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The GameplayEffectHandle was invalid. Make sure to call SetEffectHandle after spawning the projectile.", GetName(), Target->GetName());

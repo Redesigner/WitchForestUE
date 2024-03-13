@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
+#include "Logging/StructuredLog.h"
 
 #include "WitchForestAbility.h"
 #include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
@@ -16,32 +17,42 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 	if (!ProjectileClass)
 	{
-		UE_LOG(LogWitchForestAbility, Warning, TEXT("Failed to spawn projectile, Projectile Class is invalid."));
+		UE_LOGFMT(LogWitchForestAbility, Warning, "SpellAbility '{AbilityName}' failed to spawn projectile, Projectile Class is invalid.", GetName());
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
 	UWorld* World = GetWorld();
 	if (!World)
 	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "SpellAbility '{AbilityName}' failed to spawn projectile, world is invalid.", GetName());
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
-	AActor* OwnerActor = ActorInfo->OwnerActor.Get();
-	if (APlayerState* PlayerState = Cast<APlayerState>(OwnerActor))
+	if (!ActorInfo->AvatarActor.IsValid())
 	{
-		OwnerActor = PlayerState->GetPawn();
+		UE_LOGFMT(LogWitchForestAbility, Warning, "SpellAbility '{AbilityName}' failed to spawn projectile '{ProjectileName}', AbilitySystemComponent does not have a valid AvatarActor.", GetName(), ProjectileClass->GetName());
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
 	}
 
 	// Only spawn the projectile on the server, and replicate out from there
 	if (ActorInfo->IsNetAuthority())
 	{
-		FTransform ProjectileTransform = OwnerActor->GetActorTransform();
+		FTransform ProjectileTransform = ActorInfo->AvatarActor->GetActorTransform();
 		ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
-		Projectile->SetReplicates(true);
-		Projectile->SetEffectHandle(MakeOutgoingGameplayEffectSpec(SpellEffect));
-		Projectile->SetOwningActor(OwnerActor);
+		// Projectile->SetReplicates(true);
+		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
+		if (!NewEffectSpec.IsValid())
+		{
+			UE_LOGFMT(LogWitchForestAbility, Warning, "SpellAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
+		}
+
+		Projectile->SetEffectHandle(NewEffectSpec);
+		Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
 		Projectile->FinishSpawning(ProjectileTransform);
-		FVector ProjectileVelocity = Projectile->GetVelocity() + OwnerActor->GetVelocity();
+		FVector ProjectileVelocity = Projectile->GetVelocity() + ActorInfo->AvatarActor->GetVelocity();
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);

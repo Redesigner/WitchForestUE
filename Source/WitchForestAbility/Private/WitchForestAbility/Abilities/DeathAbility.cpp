@@ -3,6 +3,7 @@
 
 #include "WitchForestAbility/Abilities/DeathAbility.h"
 
+#include "WitchForestAbility.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Character/Witch/SoulSprite.h"
@@ -10,6 +11,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "Logging/StructuredLog.h"
 
 UDeathAbility::UDeathAbility()
 {
@@ -49,7 +51,15 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 		if (APlayerController* PlayerController = Cast<APlayerController>(AvatarController))
 		{
-			PlayerController->SetViewTarget(SoulSprite);
+			if (SoulSprite)
+			{
+				PlayerController->SetViewTarget(SoulSprite);
+			}
+			else
+			{
+				UE_LOGFMT(LogWitchForestAbility, Error, "DeathAbility '{AbilityName}' failed to spawn SoulSprite for Player '{PCName}'.", GetName(), PlayerController->GetName());
+			}
+
 			SoulSprite->SetOwningASC(ActorInfo->AbilitySystemComponent.Get());
 			ActorInfo->AbilitySystemComponent->SetAvatarActor(SoulSprite);
 		}

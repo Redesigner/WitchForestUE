@@ -17,12 +17,14 @@ void UAnimNotifyState_Hitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 		return;
 	}
 #endif
+
 	AActor* OwnerActor = MeshComp->GetOwner();
 	UMeleeComponent* MeleeComponent = OwnerActor->GetComponentByClass<UMeleeComponent>();
 	if (!MeleeComponent)
 	{
 		return;
 	}
+
 	Hitbox = MeleeComponent->SpawnHitbox(HitboxParameters);
 }
 
@@ -34,6 +36,7 @@ void UAnimNotifyState_Hitbox::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	{
 		return;
 	}
+
 	MeleeComponent->DestroyHitbox(Hitbox.Get());
 }
 
