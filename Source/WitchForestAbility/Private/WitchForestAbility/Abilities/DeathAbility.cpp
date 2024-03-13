@@ -5,8 +5,10 @@
 
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
+#include "WitchForestGame/Character/Witch/SoulSprite.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
+#include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
 
 UDeathAbility::UDeathAbility()
@@ -41,11 +43,18 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	AvatarPawn->DetachFromControllerPendingDestroy();
 	AvatarPawn->SetLifeSpan(0.1f);
 
-	if (SpawnedPawnClass && GetWorld() && AvatarController)
+	if (SpawnedSpriteClass && GetWorld() && AvatarController)
 	{
-		APawn* NewPawn = GetWorld()->SpawnActor<APawn>(SpawnedPawnClass, AvatarPawn->GetActorLocation(), FRotator());
-		AvatarController->Possess(NewPawn);
+		ASoulSprite* SoulSprite = GetWorld()->SpawnActor<ASoulSprite>(SpawnedSpriteClass, AvatarPawn->GetActorLocation(), FRotator());
 
+		if (APlayerController* PlayerController = Cast<APlayerController>(AvatarController))
+		{
+			PlayerController->SetViewTarget(SoulSprite);
+			SoulSprite->SetOwningASC(ActorInfo->AbilitySystemComponent.Get());
+			ActorInfo->AbilitySystemComponent->SetAvatarActor(SoulSprite);
+		}
+
+		/*
 		FTimerHandle RespawnTimer;
 		FTimerDelegate RespawnDelegate;
 		RespawnDelegate.BindLambda([AvatarController]() {
@@ -60,6 +69,7 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			}
 			});
 		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, RespawnDelegate, 5.0f, false);
+		*/
 	}
 
 	if (UItemHandleComponent* ItemHandle = AvatarPawn->GetComponentByClass<UItemHandleComponent>())

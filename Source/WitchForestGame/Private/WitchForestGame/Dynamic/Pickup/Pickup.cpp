@@ -157,3 +157,12 @@ void APickup::AttachFakeTo(APickup* Other)
     SetActorTickEnabled(true);
     FakeOwner = Other;
 }
+
+void APickup::OnConsume()
+{
+}
+
+bool APickup::CanBeStored() const
+{
+    return true;
+}

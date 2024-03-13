@@ -29,6 +29,12 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	if (ItemHandle->GetHeldItem() && ItemHandle->GetHeldItem()->CanBeStored())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameState(Owner)->GameModeClass->ClassDefaultObject);
 	if (!GameMode)
 	{
@@ -97,7 +103,7 @@ bool UStoreItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	// Check that our currently selected slot is free, and we are holding an item
 	if ((!Inventory || Inventory->GetItemBySlot(Inventory->GetSelectedIndex()) != TAG_ItemEmpty) ||
-		(!ItemHandle || !ItemHandle->HoldingItem()))
+		(!ItemHandle || !ItemHandle->HoldingItem() || !ItemHandle->GetHeldItem()->CanBeStored()))
 	{
 		return false;
 	}

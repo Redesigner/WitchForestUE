@@ -58,10 +58,12 @@ void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult Hi
 		UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The GameplayEffectHandle was invalid. Make sure to call SetEffectHandle after spawning the projectile.", GetName(), Target->GetName());
 		return;
 	}
+
 	if (ActorsHit.Contains(Target))
 	{
 		return;
 	}
+
 	if (IAbilitySystemInterface* ActorAbility = Cast<IAbilitySystemInterface>(Target))
 	{
 		FGameplayEffectContextHandle EffectContext = EffectHandle.Data->GetContext();

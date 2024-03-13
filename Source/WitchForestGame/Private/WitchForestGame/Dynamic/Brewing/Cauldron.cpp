@@ -162,13 +162,6 @@ void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		return;
 	}
 
-	if (Pickup->IsFake())
-	{
-		// DrawDebugSphere(GetWorld(), Pickup->GetActorLocation(), 32.0f, 8, FColor::Red, false, 1.5f);
-		Pickup->Destroy();
-		return;
-	}
-
 	if (HeldIngredients.Num() >= Capacity)
 	{
 		TSubclassOf<APickup> PickupClass = Pickup->GetClass();
@@ -200,8 +193,13 @@ void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	FGameplayTag ItemTag;
 	if (ItemSet->FindItemTagFromClass(Pickup->GetClass(), ItemTag))
 	{
-		HeldIngredients.Add(ItemTag);
-		OnContentsChanged.Broadcast();
+		if (!Pickup->IsFake())
+		{
+			Pickup->OnConsume();
+			HeldIngredients.Add(ItemTag);
+			OnContentsChanged.Broadcast();
+		}
+
 		Pickup->Destroy();
 	}
 }

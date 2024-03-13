@@ -76,4 +76,8 @@ public:
 	void SetLastHeldASC(UAbilitySystemComponent* ASC);
 
 	void AttachFakeTo(APickup* Other);
+
+	virtual void OnConsume();
+
+	virtual bool CanBeStored() const;
 };
