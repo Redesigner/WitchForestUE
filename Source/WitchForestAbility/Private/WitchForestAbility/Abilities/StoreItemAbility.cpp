@@ -29,7 +29,7 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	if (ItemHandle->GetHeldItem() && ItemHandle->GetHeldItem()->CanBeStored())
+	if (ItemHandle->GetHeldItem() && !ItemHandle->GetHeldItem()->CanBeStored())
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;

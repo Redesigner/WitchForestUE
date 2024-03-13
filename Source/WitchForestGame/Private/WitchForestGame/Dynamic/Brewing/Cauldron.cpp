@@ -196,8 +196,12 @@ void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		if (!Pickup->IsFake())
 		{
 			Pickup->OnConsume();
-			HeldIngredients.Add(ItemTag);
-			OnContentsChanged.Broadcast();
+
+			if (ItemTag != TAG_ItemEmpty)
+			{
+				HeldIngredients.Add(ItemTag);
+				OnContentsChanged.Broadcast();
+			}
 		}
 
 		Pickup->Destroy();

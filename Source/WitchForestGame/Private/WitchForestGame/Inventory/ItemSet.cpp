@@ -10,6 +10,11 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_ItemEmpty, "ItemTag.Empty")
 
 bool UItemSet::FindItemDataForTag(const FGameplayTag& InputTag, FInventoryItemData& DataOut) const
 {
+	if (InputTag == TAG_ItemEmpty)
+	{
+		return false;
+	}
+
 	for (const FItemSetEntry& Entry : Items)
 	{
 		if (InputTag.MatchesTagExact(Entry.ItemTag))
