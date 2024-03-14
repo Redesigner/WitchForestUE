@@ -43,8 +43,6 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 
 	void Interact(AActor* Source) override;
 
-	FVector MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const;
-
 	void LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet);
 	void LaunchItem(TSubclassOf<APickup> Item);
 

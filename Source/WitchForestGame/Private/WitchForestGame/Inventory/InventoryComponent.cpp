@@ -3,9 +3,15 @@
 
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
+#include "WitchForestGame.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
+#include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
+#include "WitchForestGame/Math/WitchForestMath.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Logging/StructuredLog.h"
 
 
 UInventoryComponent::UInventoryComponent()
@@ -98,6 +104,7 @@ FGameplayTag UInventoryComponent::ConsumeItem(uint8 SlotIndex)
 	{
 		return TAG_ItemEmpty;
 	}
+
 	FGameplayTag ConsumedItem = InventorySlots[SlotIndex];
 	InventorySlots[SlotIndex] = TAG_ItemEmpty;
 
@@ -168,11 +175,36 @@ void UInventoryComponent::ShiftDown()
 }
 
 
-void UInventoryComponent::DropItems()
+void UInventoryComponent::DropItems(FVector Location)
 {
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+	if (!GameMode || !GameMode->GetItemSet())
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "InventoryComponent '{ComponentName}' failed to drop items. Unable to get ItemSet from the GameMode.", GetName());
+		return;
+	}
+
+	UItemSet* ItemSet = GameMode->GetItemSet();
+	UWorld* World = GetWorld();
+
 	for (int i = 0; i < InventorySlots.Num(); ++i)
 	{
 		FGameplayTag& Tag = InventorySlots[i];
+
+		FInventoryItemData ItemData;
+		if (!ItemSet->FindItemDataForTag(Tag, ItemData))
+		{
+			continue;
+		}
+		const float RandomYaw = FMath::FRandRange(0.0f, 360.0f);
+		const FRotator SpawnRotator = FRotator(0.0f, RandomYaw, 0.0f);
+		APickup* NewPickup = World->SpawnActor<APickup>(ItemData.PickupClass, Location, SpawnRotator);
+
+		constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
+		constexpr float MaxPitch = FMath::DegreesToRadians(85.0f);
+		const FVector LaunchVector = WitchForestMath::MakeLaunchVector(20000.0f, 5000.0f, MinPitch, MaxPitch);
+		NewPickup->AddImpulse(LaunchVector);
+
 		Tag = TAG_ItemEmpty;
 		OnSlotChanged.Broadcast(Tag, i);
 	}

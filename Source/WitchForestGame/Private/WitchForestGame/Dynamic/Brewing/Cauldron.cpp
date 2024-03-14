@@ -13,6 +13,7 @@
 #include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
+#include "WitchForestGame/Math/WitchForestMath.h"
 
 
 ACauldron::ACauldron()
@@ -64,7 +65,7 @@ void ACauldron::LaunchItem(TSubclassOf<APickup> Item)
 
 	constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
 	constexpr float MaxPitch = FMath::DegreesToRadians(75.0f);
-	const FVector LaunchVector = MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
+	const FVector LaunchVector = WitchForestMath::MakeLaunchVector(15000.0f, 30000.0f, MinPitch, MaxPitch);
 	LaunchedItem->AddImpulse(LaunchVector);
 	LaunchedItem->FinishSpawning(CauldronVolume->GetComponentTransform());
 }
@@ -135,18 +136,6 @@ void ACauldron::Interact(AActor* Source)
 	HeldIngredients.Reset();
 	OnContentsChanged.Broadcast();
 	// StartCooldown();
-}
-
-FVector ACauldron::MakeLaunchVector(float MaxSpeed, float MinSpeed, float MinPitch, float MaxPitch) const
-{
-	const float LaunchPitch = FMath::FRandRange(MinPitch, MaxPitch);
-	const float LaunchYaw = FMath::FRandRange(-PI, PI);
-	const float LaunchSpeed = FMath::FRandRange(MinSpeed, MaxSpeed);
-	const float CircleRadius = FMath::Cos(LaunchPitch);
-	return FVector(
-		FMath::Cos(LaunchYaw) * CircleRadius,
-		FMath::Sin(LaunchYaw) * CircleRadius,
-		FMath::Sin(LaunchPitch)) * LaunchSpeed;
 }
 
 void ACauldron::VolumeOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

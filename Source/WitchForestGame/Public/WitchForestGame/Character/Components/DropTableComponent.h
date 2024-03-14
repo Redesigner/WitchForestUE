@@ -16,11 +16,6 @@ class WITCHFORESTGAME_API UDropTableComponent : public UActorComponent
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Drops, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDropTable> DropTable;
 
-public:	
-	UDropTableComponent();
-
+public:
 	void DropItems();
-
-private:
-	FVector GetLaunchVector() const;
 };

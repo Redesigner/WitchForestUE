@@ -56,7 +56,7 @@ public:
 
 	void ShiftDown();
 
-	void DropItems();
+	void DropItems(FVector Location);
 
 	UFUNCTION()
 	void OnRep_Inventory(const TArray<FGameplayTag>& OldInventory);

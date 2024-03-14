@@ -63,23 +63,6 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			SoulSprite->SetOwningASC(ActorInfo->AbilitySystemComponent.Get());
 			ActorInfo->AbilitySystemComponent->SetAvatarActor(SoulSprite);
 		}
-
-		/*
-		FTimerHandle RespawnTimer;
-		FTimerDelegate RespawnDelegate;
-		RespawnDelegate.BindLambda([AvatarController]() {
-			if (APlayerController* PlayerController = Cast<APlayerController>(AvatarController))
-			{
-				if (APawn* OldPawn = PlayerController->GetPawn())
-				{
-					OldPawn->DetachFromControllerPendingDestroy();
-					OldPawn->SetLifeSpan(0.1f);
-				}
-				PlayerController->ServerRestartPlayer_Implementation();
-			}
-			});
-		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, RespawnDelegate, 5.0f, false);
-		*/
 	}
 
 	if (UItemHandleComponent* ItemHandle = AvatarPawn->GetComponentByClass<UItemHandleComponent>())
@@ -89,7 +72,7 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 
 	if (UInventoryComponent* InventoryComponent = ActorInfo->OwnerActor->GetComponentByClass<UInventoryComponent>())
 	{
-		InventoryComponent->DropItems();
+		InventoryComponent->DropItems(AvatarPawn->GetActorLocation());
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

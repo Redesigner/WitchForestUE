@@ -7,12 +7,10 @@
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
+#include "WitchForestGame/Math/WitchForestMath.h"
 
 #include "Kismet/GameplayStatics.h"
 
-UDropTableComponent::UDropTableComponent()
-{
-}
 
 void UDropTableComponent::DropItems()
 {
@@ -20,11 +18,13 @@ void UDropTableComponent::DropItems()
 	{
 		return;
 	}
+
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
 	if (!GameMode || !GameMode->GetItemSet())
 	{
 		return;
 	}
+
 	UItemSet* ItemSet = GameMode->GetItemSet();
 	UWorld* World = GetWorld();
 	AActor* Actor = GetOwner();
@@ -36,24 +36,17 @@ void UDropTableComponent::DropItems()
 		{
 			continue;
 		}
+
 		for (int i = 0; i < DropTableAmount.Amount; ++i)
 		{
 			const float RandomYaw = FMath::FRandRange(0.0f, 360.0f);
 			const FRotator SpawnRotator = FRotator(0.0f, RandomYaw, 0.0f);
 			APickup* NewPickup = World->SpawnActor<APickup>(ItemData.PickupClass, SpawnLocation, SpawnRotator);
-			NewPickup->AddImpulse(GetLaunchVector());
+
+			constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
+			constexpr float MaxPitch = FMath::DegreesToRadians(85.0f);
+			const FVector LaunchVector = WitchForestMath::MakeLaunchVector(20000.0f, 5000.0f, MinPitch, MaxPitch);
+			NewPickup->AddImpulse(LaunchVector);
 		}
 	}
-}
-
-FVector UDropTableComponent::GetLaunchVector() const
-{
-	const float LaunchPitch = FMath::FRandRange(PI / 4.0f, PI / 2.0f);
-	const float LaunchYaw = FMath::FRandRange(-PI, PI);
-	const float LaunchSpeed = FMath::FRandRange(5000.0f, 20000.0f);
-	const float CircleRadius = FMath::Cos(LaunchPitch);
-	return FVector(
-		FMath::Cos(LaunchYaw) * CircleRadius,
-		FMath::Sin(LaunchYaw) * CircleRadius,
-		FMath::Sin(LaunchPitch)) * LaunchSpeed;
 }
