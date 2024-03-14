@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 
+#include "GameplayEffect.h" 
+
 #include "WitchPlayerState.generated.h"
 
 class UWitchForestASC;
@@ -32,6 +34,9 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
 
+	bool bAlive = false;
+
+
 	void GrantAbilities();
 	
 public:
@@ -47,5 +52,12 @@ public:
 	void BeginPlay() override;
 
 	/// Set our attributes to their default values;
-	void InitializeAttributes();	
+	void InitializeAttributes();
+
+	void OnAttributeSetDeath(FGameplayEffectSpec SpecCauser);
+
+	bool IsAlive() const { return bAlive; }
+
+	DECLARE_MULTICAST_DELEGATE(FOnDeath)
+	FOnDeath OnDeath;
 };

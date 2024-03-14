@@ -51,6 +51,6 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
 
-	DECLARE_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
 	FOnDeath OnDeath;
 };

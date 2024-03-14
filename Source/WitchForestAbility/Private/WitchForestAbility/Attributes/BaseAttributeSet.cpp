@@ -36,7 +36,7 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		if (Data.EvaluatedData.Attribute.GetNumericValue(this) <= 0.0f)
 		{
-			OnDeath.ExecuteIfBound(Data.EffectSpec);
+			OnDeath.Broadcast(Data.EffectSpec);
 
 			FGameplayEventData Payload;
 			Payload.EventTag = WitchForestGameplayTags::GameplayEvent_Death;

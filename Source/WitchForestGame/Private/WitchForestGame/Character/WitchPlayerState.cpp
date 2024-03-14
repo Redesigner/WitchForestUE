@@ -18,6 +18,7 @@ AWitchPlayerState::AWitchPlayerState()
     Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
     AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("AttributeSet"));
+    AttributeSet->OnDeath.AddUObject(this, &ThisClass::OnAttributeSetDeath);
 }
 
 
@@ -53,4 +54,11 @@ void AWitchPlayerState::GrantAbilities()
 void AWitchPlayerState::InitializeAttributes()
 {
     AttributeSet->SetHealth(AttributeSet->GetMaxHealth());
+    bAlive = true;
+}
+
+void AWitchPlayerState::OnAttributeSetDeath(FGameplayEffectSpec SpecCauser)
+{
+    bAlive = false;
+    OnDeath.Broadcast();
 }

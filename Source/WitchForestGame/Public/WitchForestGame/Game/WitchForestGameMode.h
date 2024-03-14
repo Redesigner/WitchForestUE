@@ -17,10 +17,15 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UItemSet> CurrentItemSet;
 
+
+	void PostLogin(APlayerController* NewPlayer) override;
+
 public:
 	AWitchForestGameMode();
 
 	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	UItemSet* GetItemSet() const;
+
+	void RestartIfNoLivingPlayers();
 };
