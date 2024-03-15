@@ -203,7 +203,9 @@ FString ACauldron::GetContentsString() const
 
 	for (const FGameplayTag& Ingredient : HeldIngredients)
 	{
-		Result.Append(Ingredient.GetTagName().ToString());
+		FString ShortName = Ingredient.ToString();
+		ShortName.RemoveFromStart("ItemTag.");
+		Result.Append(ShortName);
 		Result.Append("\n");
 	}
 	return Result;

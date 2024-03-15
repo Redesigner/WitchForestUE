@@ -16,4 +16,6 @@ class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementCom
 	GENERATED_BODY()
 
 	UWitchMovementComponent();
+
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

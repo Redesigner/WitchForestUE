@@ -46,7 +46,7 @@ void UWithdrawItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return;
 	}
 
-	if (!IsLocallyControlled())
+	if (!IsPredictingClient())
 	{
 		FInventoryItemData ItemData;
 		if (GameMode->GetItemSet()->FindItemDataForTag(HeldItemTag, ItemData))

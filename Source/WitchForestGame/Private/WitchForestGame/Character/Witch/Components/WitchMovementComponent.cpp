@@ -5,3 +5,8 @@
 UWitchMovementComponent::UWitchMovementComponent()
 {
 }
+
+void UWitchMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}

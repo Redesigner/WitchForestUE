@@ -17,7 +17,23 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> StaticMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDropTableComponent> DropTableComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true))
+	bool bActivateCooldownOnSpawn = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true, EditCondition = bActivateCooldownOnSpawn))
+	float CooldownTime = 5.0f;
+
+	FTimerHandle CooldownTimerHandle;
+
+
+	void StartCooldown();
+
+	void EndCooldown();
 
 public:	
 	AResourceSpawner();

@@ -4,10 +4,12 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Components/SphereComponent.h"
 #include "Logging/StructuredLog.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
@@ -46,6 +48,16 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionVolume"));
 	InteractionVolume->SetupAttachment(RootComponent);
+}
+
+void AWitch::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (GetActorLocation().Z <= -200.0f)
+	{
+		TeleportToStart();
+	}
 }
 
 void AWitch::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -187,4 +199,24 @@ UWitchForestASC* AWitch::GetWitchForestASC() const
 		return nullptr;
 	}
 	return WitchPlayerState->GetWitchForestASC();
+}
+
+void AWitch::TeleportToStart()
+{
+	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(GetWorld());
+	if (!GameModeBase)
+	{
+		return;
+	}
+
+	AController* MyPlayerController = GetController();
+	if (!MyPlayerController)
+	{
+		return;
+	}
+
+	if (AActor* StartActor = GameModeBase->FindPlayerStart(MyPlayerController))
+	{
+		TeleportTo(StartActor->GetActorLocation(), GetActorRotation());
+	}
 }

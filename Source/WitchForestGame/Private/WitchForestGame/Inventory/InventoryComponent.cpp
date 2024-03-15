@@ -69,6 +69,7 @@ bool UInventoryComponent::SetItemBySlot(uint8 SlotIndex, FGameplayTag NewValue)
 	{
 		return false;
 	}
+
 	if (InventorySlots[SlotIndex].MatchesTagExact(TAG_ItemEmpty))
 	{
 		InventorySlots[SlotIndex] = NewValue;
@@ -87,6 +88,7 @@ bool UInventoryComponent::HasItem(FGameplayTag ItemToFind) const
 	{
 		return false;
 	}
+
 	for (const FGameplayTag& Item : InventorySlots)
 	{
 		if (Item.MatchesTagExact(ItemToFind))
@@ -132,6 +134,7 @@ void UInventoryComponent::SetSelectedIndex(uint8 Value)
 	{
 		return;
 	}
+
 	SelectedIndex = Value;
 	OnSelectedIndexChanged.Broadcast(Value);
 }
@@ -196,6 +199,7 @@ void UInventoryComponent::DropItems(FVector Location)
 		{
 			continue;
 		}
+
 		const float RandomYaw = FMath::FRandRange(0.0f, 360.0f);
 		const FRotator SpawnRotator = FRotator(0.0f, RandomYaw, 0.0f);
 		APickup* NewPickup = World->SpawnActor<APickup>(ItemData.PickupClass, Location, SpawnRotator);

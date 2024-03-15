@@ -44,6 +44,9 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> InteractionVolume;
 
+
+	void Tick(float DeltaSeconds) override;
+
 public:
 	AWitch(const FObjectInitializer& ObjectInitializer);
 
@@ -72,4 +75,6 @@ private:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
+
+	void TeleportToStart();
 };
