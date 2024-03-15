@@ -80,14 +80,19 @@ void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult Hi
 
 		ActorsHit.Add(Target);
 		
-		if (ActorAbility->GetAbilitySystemComponent())
-		{
-			ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*EffectHandle.Data.Get());
-		}
-		else
+		if (!ActorAbility->GetAbilitySystemComponent())
 		{
 			UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The owning ASC of this projectile was invalid.", GetName(), Target->GetName());
+			return;
 		}
+
+		FGameplayEffectSpec* Spec = EffectHandle.Data.Get();
+		if (!Spec)
+		{
+			return;
+		}
+
+		ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
 	}
 }
 

@@ -7,6 +7,7 @@
 
 #include "GameplayTagContainer.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayCueInterface.h"
 
 #include "Witch.generated.h"
 
@@ -21,7 +22,7 @@ class USphereComponent;
 struct FInputActionInstance;
 
 UCLASS()
-class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInterface
+class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 

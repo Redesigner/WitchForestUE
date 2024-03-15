@@ -4,6 +4,7 @@
 #include "WitchForestAbility/Abilities/MeleeAbility.h"
 
 #include "WitchForestGame/Character/Components/MeleeComponent.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h" 
 #include "AbilitySystemInterface.h"
@@ -75,7 +76,15 @@ void UMeleeAbility::OnEnemyHit(AActor* Enemy)
 	for (TSubclassOf<UGameplayEffect> GameplayEffectClass : EffectsToApply)
 	{
 		FGameplayEffectSpecHandle GameplayEffectToApply = MakeOutgoingGameplayEffectSpec(GameplayEffectClass);
+		FGameplayEffectSpec* Spec = GameplayEffectToApply.Data.Get();
+		if (!Spec)
+		{
+			continue;
+		}
+
+		Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
 		EnemyASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectToApply.Data.Get());
 	}
+
 	DamagedActors.Add(Enemy);
 }

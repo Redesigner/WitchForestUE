@@ -10,6 +10,7 @@
 
 #include "WitchForestAbility.h"
 #include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -48,11 +49,19 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		{
 			UE_LOGFMT(LogWitchForestAbility, Warning, "SpellAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
 		}
+		else
+		{
+			FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
+			if (Spec)
+			{
+				Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
+			}
 
-		Projectile->SetEffectHandle(NewEffectSpec);
-		Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
-		Projectile->FinishSpawning(ProjectileTransform);
-		FVector ProjectileVelocity = Projectile->GetVelocity() + ActorInfo->AvatarActor->GetVelocity();
+			Projectile->SetEffectHandle(NewEffectSpec);
+			Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
+			Projectile->FinishSpawning(ProjectileTransform);
+			FVector ProjectileVelocity = Projectile->GetVelocity() + ActorInfo->AvatarActor->GetVelocity();
+		}
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);

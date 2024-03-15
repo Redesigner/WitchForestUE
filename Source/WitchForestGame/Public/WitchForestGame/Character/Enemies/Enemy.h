@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "GameplayEffect.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayCueInterface.h"
+
+#include "GameplayEffect.h"
 
 #include "Enemy.generated.h"
 
@@ -19,7 +21,7 @@ class UWitchForestAbilitySet;
 class USkeletalMeshComponent;
 
 UCLASS()
-class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface
+class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 
