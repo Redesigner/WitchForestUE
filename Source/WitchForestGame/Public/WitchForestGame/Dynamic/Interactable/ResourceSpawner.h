@@ -23,10 +23,16 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 	TObjectPtr<UDropTableComponent> DropTableComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true))
+	bool bDestroyOnSpawn = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true))
 	bool bActivateCooldownOnSpawn = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true, EditCondition = bActivateCooldownOnSpawn))
 	float CooldownTime = 5.0f;
+
+
+
 
 	FTimerHandle CooldownTimerHandle;
 

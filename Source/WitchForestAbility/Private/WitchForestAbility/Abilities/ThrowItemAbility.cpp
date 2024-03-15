@@ -150,6 +150,12 @@ void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandl
 	FakePickup->FinishSpawning(Item->GetActorTransform());
 	FakePickup->SetVelocity(CurrentPawnVelocity * 1.5f);
 	FakePickup->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
+
+	if (CurrentPawnVelocity.SquaredLength() >= 200.0f)
+	{
+		FakePickup->SetThrown(true);
+	}
+
 	ItemHandle->SetFakePickup(FakePickup);
 	ItemHandle->SetHeldItemHidden(true);
 }
@@ -167,5 +173,10 @@ void UThrowItemAbility::ServerThrowItem(APickup* Item, APawn* Pawn, UItemHandleC
 	{
 		HeldItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
 		HeldItem->SetVelocity(CurrentPawnVelocity * 1.5f);
+
+		if (CurrentPawnVelocity.SquaredLength() >= 100000.0f)
+		{
+			HeldItem->SetThrown(true);
+		}
 	}
 }

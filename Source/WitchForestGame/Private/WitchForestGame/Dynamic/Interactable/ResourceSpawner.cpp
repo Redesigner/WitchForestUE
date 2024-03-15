@@ -30,6 +30,12 @@ void AResourceSpawner::Interact(AActor* Source)
 
 	DropTableComponent->DropItems();
 
+	if (bDestroyOnSpawn)
+	{
+		Destroy();
+		return;
+	}
+
 	if (bActivateCooldownOnSpawn)
 	{
 		StartCooldown();

@@ -17,6 +17,9 @@ class WITCHFORESTGAME_API APotion : public APickup
 	float SplashRadius = 150.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Effect, meta = (AllowPrivateAccess = true))
+	float HealthAmount = 25.0f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Effect, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UGameplayEffect> SplashEffect;
 
 	FTimerHandle BurstDebounceTimer;

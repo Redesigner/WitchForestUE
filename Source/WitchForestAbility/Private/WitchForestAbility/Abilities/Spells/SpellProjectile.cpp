@@ -20,7 +20,7 @@ void ASpellProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FHitResult HitResult;
-	AddActorLocalOffset(Velocity * DeltaTime, true, &HitResult);
+	AddActorWorldOffset(Velocity * DeltaTime, true, &HitResult);
 	if (HitResult.IsValidBlockingHit())
 	{
 		ApplyGameplayEffectToTarget(HitResult.GetActor(), HitResult);
@@ -37,6 +37,11 @@ void ASpellProjectile::SetOwningActor(AActor* Actor)
 	OwningActor = Actor;
 }
 
+void ASpellProjectile::SetVelocity(FVector NewVelocity)
+{
+	Velocity = NewVelocity;
+}
+
 void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -47,7 +52,7 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	// Generate a fake hit with our projectile's velocity as our normal
 	// We don't necessarily have a PrimitiveComponent, so this will be null
-	FVector WorldVelocity = GetActorRotation().RotateVector(Velocity);
+	FVector WorldVelocity = Velocity;
 	FHitResult FakeHit = FHitResult(OtherActor, nullptr, GetActorLocation(), -WorldVelocity.GetSafeNormal());
 	ApplyGameplayEffectToTarget(OtherActor, FakeHit);
 }

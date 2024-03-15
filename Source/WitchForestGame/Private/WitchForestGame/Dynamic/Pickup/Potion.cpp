@@ -7,13 +7,14 @@
 #include "Logging/StructuredLog.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
 void APotion::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (GetVelocity().SquaredLength() <= 10000.0f)
+	if (GetVelocity().SquaredLength() <= 10000.0f || !bThrown)
 	{
 		return;
 	}
@@ -31,6 +32,7 @@ void APotion::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveCo
 	if (OtherComp->GetCollisionObjectType() == ECC_WorldStatic)
 	{
 		Burst();
+		bThrown = false;
 	}
 }
 
@@ -84,6 +86,11 @@ void APotion::Burst()
 		HitActors.Add(OverlappedActor);
 		UAbilitySystemComponent* TargetASC = AbilitySystemInterface->GetAbilitySystemComponent();
 		FGameplayEffectSpecHandle GameplayEffectSpec = LastHolder->MakeOutgoingSpec(SplashEffect, 0.0f, LastHolder->MakeEffectContext());
+		FGameplayEffectSpec* Spec = GameplayEffectSpec.Data.Get();
+		if (Spec)
+		{
+			Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, HealthAmount);
+		}
 		LastHolder->ApplyGameplayEffectSpecToTarget(*GameplayEffectSpec.Data.Get(), TargetASC);
 	}
 

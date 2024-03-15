@@ -36,6 +36,8 @@ public:
 
 	void SetOwningActor(AActor* Actor);
 
+	void SetVelocity(FVector NewVelocity);
+
 protected:
 	void ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult);
 };

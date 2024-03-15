@@ -22,27 +22,31 @@ class WITCHFORESTGAME_API APickup : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestAbilitySet> GrantedAbilitySet;
 
-	TWeakObjectPtr<APickup> FakeOwner;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CustomReplication, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float MaxTeleportDistance = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CustomReplication, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float InterpolationRate = 1.0f;
 
+
 	float CurrentError = 0.0f;
+
+	TWeakObjectPtr<APickup> FakeOwner;
+
+	bool bIsFake = false;
+
+	bool bIsShadowingReal = false;
 
 
 	void Tick(float DeltaSeconds) override;
 
 	void OnRep_ReplicatedMovement() override;
 
-	bool bIsFake = false;
-	bool bIsShadowingReal = false;
-
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects
 	TWeakObjectPtr<UAbilitySystemComponent> LastHolder;
+
+	bool bThrown = false;
 
 public:
 	APickup();
@@ -63,6 +67,8 @@ public:
 	void AddImpulse(FVector Impulse);
 
 	void SetVelocity(FVector Velocity);
+
+	void SetThrown(bool bNewValue);
 
 	void DisableReplication();
 

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "GameFramework/MovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Logging/StructuredLog.h"
 
@@ -57,10 +58,17 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 				Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
 			}
 
+			FVector OwnerVelocity;
+			if (UMovementComponent* MovementComponent = ActorInfo->AvatarActor->GetComponentByClass<UMovementComponent>())
+			{
+				OwnerVelocity = MovementComponent->Velocity;
+			}
+
 			Projectile->SetEffectHandle(NewEffectSpec);
 			Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
 			Projectile->FinishSpawning(ProjectileTransform);
-			FVector ProjectileVelocity = Projectile->GetVelocity() + ActorInfo->AvatarActor->GetVelocity();
+			FVector ProjectileVelocity = ActorInfo->AvatarActor->GetActorForwardVector() * 300.0f + OwnerVelocity;
+			Projectile->SetVelocity(ProjectileVelocity);
 		}
 	}
 

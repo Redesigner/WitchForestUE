@@ -45,7 +45,7 @@ void UDropTableComponent::DropItems()
 
 			constexpr float MinPitch = FMath::DegreesToRadians(45.0f);
 			constexpr float MaxPitch = FMath::DegreesToRadians(85.0f);
-			const FVector LaunchVector = WitchForestMath::MakeLaunchVector(20000.0f, 5000.0f, MinPitch, MaxPitch);
+			const FVector LaunchVector = WitchForestMath::MakeLaunchVector(20000.0f, 25000.0f, MinPitch, MaxPitch);
 			NewPickup->AddImpulse(LaunchVector);
 		}
 	}

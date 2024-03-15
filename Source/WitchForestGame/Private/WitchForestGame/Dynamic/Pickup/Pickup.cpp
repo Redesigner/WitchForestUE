@@ -129,6 +129,11 @@ void APickup::SetVelocity(FVector Velocity)
     CollisionSphere->SetPhysicsLinearVelocity(Velocity);
 }
 
+void APickup::SetThrown(bool bNewValue)
+{
+    bThrown = true;
+}
+
 // Mostly just a workaround for the error messages
 void APickup::DisableReplication()
 {
