@@ -70,6 +70,11 @@ UCapsuleComponent* AEnemy::GetCapsule() const
 
 void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
+	if (!AttributeSet)
+	{
+		return;
+	}
+
 	for (const FGameplayEffectModifiedAttribute& ModifiedAttribute : GameplayEffectSpec.ModifiedAttributes)
 	{
 		if (!bAlive)
@@ -88,6 +93,7 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 			{
 				OnTakeDamage.Broadcast(Damager, FHitResult());
 			}
+
 			float NewHealth = ModifiedAttribute.Attribute.GetNumericValue(AttributeSet);
 			if (NewHealth <= 0.0f)
 			{

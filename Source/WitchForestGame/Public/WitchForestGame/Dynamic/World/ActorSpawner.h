@@ -17,13 +17,13 @@ class WITCHFORESTGAME_API AActorSpawner : public AActor
 	TObjectPtr<UBoxComponent> SpawnRegion;
 
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Spawning, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Spawning, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SpawnClass;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 1))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 1))
 	uint8 MaxSpawnAmount = 1;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float SpawnDelay;
 
 	uint8 CurrentlySpawnedAmount = 0;

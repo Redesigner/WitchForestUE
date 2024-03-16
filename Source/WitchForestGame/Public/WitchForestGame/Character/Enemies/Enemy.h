@@ -25,19 +25,19 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> Capsule;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEnemyMovementComponent> MovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestASC> AbilitySystem;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDropTableComponent> DropTableComponent;
 
 
@@ -45,7 +45,7 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Instanced, EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBaseAttributeSet> AttributeSet;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
