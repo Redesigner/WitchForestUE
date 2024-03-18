@@ -30,6 +30,8 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 
 	void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 
+	void BroadcastDamageEventPerception(const FGameplayEffectModCallbackData& Data);
+
 
 public:
 

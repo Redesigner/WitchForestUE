@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h" 
+#include "Perception/AISense_Damage.h" 
 
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
@@ -47,6 +48,11 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			GetOwningAbilitySystemComponent()->HandleGameplayEvent(Payload.EventTag, &Payload);
 		}
 	}
+
+	if (Data.EvaluatedData.Magnitude < 0.0f)
+	{
+		BroadcastDamageEventPerception(Data);
+	}
 }
 
 
@@ -57,6 +63,7 @@ void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
 		return;
 	}
+
 	if (Attribute == GetMaxHealthAttribute())
 	{
 		// If we decreased the max health, clamp our health so it isn't greater than max
@@ -75,6 +82,21 @@ void UBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribu
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
 		return;
 	}
+}
+
+void UBaseAttributeSet::BroadcastDamageEventPerception(const FGameplayEffectModCallbackData& Data)
+{
+	FVector DamageLocation;
+
+	if (GetOwningAbilitySystemComponent() && GetOwningAbilitySystemComponent()->GetAvatarActor())
+	{
+		DamageLocation = GetOwningAbilitySystemComponent()->GetAvatarActor()->GetActorLocation();
+	}
+
+	UAISense_Damage::ReportDamageEvent(
+		GetWorld(), GetOwningAbilitySystemComponent()->GetOwnerActor(), Data.EffectSpec.GetEffectContext().GetEffectCauser(),
+		-Data.EvaluatedData.Magnitude, DamageLocation, DamageLocation
+	);
 }
 
 

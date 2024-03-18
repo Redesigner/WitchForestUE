@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using UnrealBuildTool.Rules;
 
 public class WitchForestAbility : ModuleRules
 {
@@ -14,7 +15,7 @@ public class WitchForestAbility : ModuleRules
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-			"GameplayTags", "WitchForestGame"
-		});
+			"GameplayTags", "WitchForestGame", "AIModule"
+        });
 	}
 }

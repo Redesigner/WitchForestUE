@@ -12,6 +12,25 @@
 #include "Logging/StructuredLog.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h" 
+#include "Perception/AIPerceptionComponent.h" 
+
+
+AEnemyAIController::AEnemyAIController()
+{
+	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
+
+	AIPerception->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::TargetPerceptionUpdated);
+}
+
+void AEnemyAIController::TargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if (!Stimulus.IsActive() || !Actor)
+	{
+		return;
+	}
+
+	SetTarget(Actor);
+}
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -32,7 +51,6 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		return;
 	}
 	EnemyPawn = Enemy;
-	Enemy->OnTakeDamage.AddDynamic(this, &ThisClass::DamageReceived);
 	Enemy->OnDeath.AddUObject(this, &ThisClass::OnDeath);
 	Blackboard->SetValueAsBool("Alive", true);
 }
@@ -51,16 +69,6 @@ void AEnemyAIController::Tick(float DeltaTime)
 	// SetFocus(TargetActor.Get());
 
 	Blackboard->SetValueAsFloat("TargetDistance", TargetDistance);
-}
-
-void AEnemyAIController::DamageReceived(AActor* Source, FHitResult Hit)
-{
-	AActor* Target = Source;
-	if (APlayerState* TargetPlayerState = Cast<APlayerState>(Source))
-	{
-		Target = TargetPlayerState->GetPawn();
-	}
-	SetTarget(Target);
 }
 
 void AEnemyAIController::OnDeath()
