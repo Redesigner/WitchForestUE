@@ -30,6 +30,9 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
 	float MinimumRange = 500.0f;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
+	FGenericTeamId TeamId;
+
 
 	TWeakObjectPtr<AEnemy> EnemyPawn;
 
@@ -48,4 +51,10 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 	void OnDeath();
 
 	void SetTarget(AActor* Target);
+
+
+	// IGenericTeamAgentInterface
+	FGenericTeamId GetGenericTeamId() const override;
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	// End IGenericTeamAgentInterface
 };

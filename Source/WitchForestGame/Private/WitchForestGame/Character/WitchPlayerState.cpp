@@ -27,6 +27,11 @@ UAbilitySystemComponent* AWitchPlayerState::GetAbilitySystemComponent() const
     return AbilitySystem;
 }
 
+FGenericTeamId AWitchPlayerState::GetGenericTeamId() const
+{
+    return FGenericTeamId();
+}
+
 UBaseAttributeSet* AWitchPlayerState::GetAttributeSet() const
 {
     return AttributeSet;

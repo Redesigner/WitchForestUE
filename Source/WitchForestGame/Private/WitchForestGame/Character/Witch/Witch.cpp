@@ -100,7 +100,7 @@ void AWitch::PossessedBy(AController* NewController)
 		return;
 	}
 
-	UAbilitySystemComponent* ASC = WitchPlayerState->GetAbilitySystemComponent();
+	UAbilitySystemComponent* ASC = WitchPlayerState->GetWitchForestASC();
 	if (!ASC)
 	{
 		return;

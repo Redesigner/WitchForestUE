@@ -12,7 +12,9 @@
 #include "Logging/StructuredLog.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h" 
-#include "Perception/AIPerceptionComponent.h" 
+#include "Perception/AIPerceptionComponent.h"
+#include "GenericTeamAgentInterface.h"
+
 
 
 AEnemyAIController::AEnemyAIController()
@@ -83,4 +85,29 @@ void AEnemyAIController::SetTarget(AActor* Target)
 	TargetActor = Target;
 	// Blackboard->SetValueAsObject(TargetKey.SelectedKeyName, Target);
 	Blackboard->SetValueAsObject("TargetActor", Target);
+}
+
+FGenericTeamId AEnemyAIController::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	if (const APawn* OtherPawn = Cast<APawn>(&Other))
+	{
+		if (const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
+		{
+			if (OtherTeamAgent->GetGenericTeamId() == GetGenericTeamId())
+			{
+				return ETeamAttitude::Friendly;
+			}
+			else
+			{
+				return ETeamAttitude::Hostile;
+			}
+		}
+	}
+
+	return ETeamAttitude::Neutral;
 }

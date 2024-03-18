@@ -78,3 +78,13 @@ void AWitchPlayerController::PostProcessInput(const float DeltaTime, const bool 
 
     WitchForestASC->ProcessAbilityInput(DeltaTime, bGamePaused);
 }
+
+FGenericTeamId AWitchPlayerController::GetGenericTeamId() const
+{
+    if (IGenericTeamAgentInterface* PlayerStateTeamAgent = Cast<IGenericTeamAgentInterface>(GetPlayerState<APlayerState>()))
+    {
+        return PlayerStateTeamAgent->GetGenericTeamId();
+    }
+
+    return FGenericTeamId::NoTeam;
+}

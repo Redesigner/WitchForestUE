@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayCueInterface.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "GameplayEffect.h"
 
@@ -21,7 +22,7 @@ class UWitchForestAbilitySet;
 class USkeletalMeshComponent;
 
 UCLASS()
-class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface, public IGameplayCueInterface
+class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface, public IGameplayCueInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -50,6 +51,12 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bAlive = true;
+
+
+	// Begin IGenericTeamAgentInterface
+	FGenericTeamId GetGenericTeamId() const override;
+	// End IGenericTeamAgentInterface
+
 
 public:
 	AEnemy(const FObjectInitializer& ObjectInitializer);

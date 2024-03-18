@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-
+#include "GenericTeamAgentInterface.h"
 #include "GameplayEffect.h" 
 
 #include "WitchPlayerState.generated.h"
@@ -16,7 +16,7 @@ class UInventoryComponent;
 class UBaseAttributeSet;
 
 UCLASS()
-class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface
+class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -34,22 +34,31 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
+	FGenericTeamId TeamId;
+
+
 	bool bAlive = false;
 
 
-	void GrantAbilities();
-	
-public:
 	AWitchPlayerState();
 
+	void GrantAbilities();
+	
+	void BeginPlay() override;
+
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	FGenericTeamId GetGenericTeamId() const override;
+
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
 	UWitchForestASC* GetWitchForestASC() const { return AbilitySystem; }
-	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
 	UBaseAttributeSet* GetAttributeSet() const;
-
-	void BeginPlay() override;
 
 	/// Set our attributes to their default values;
 	void InitializeAttributes();

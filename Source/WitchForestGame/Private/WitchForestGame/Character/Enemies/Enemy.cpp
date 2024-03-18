@@ -130,3 +130,12 @@ USkeletalMeshComponent* AEnemy::GetSkeletalMesh() const
 	return Mesh;
 }
 
+FGenericTeamId AEnemy::GetGenericTeamId() const
+{
+	if (IGenericTeamAgentInterface* ControllerGenericTeamAgent = Cast<IGenericTeamAgentInterface>(GetController()))
+	{
+		return ControllerGenericTeamAgent->GetGenericTeamId();
+	}
+
+	return FGenericTeamId::NoTeam;
+}
