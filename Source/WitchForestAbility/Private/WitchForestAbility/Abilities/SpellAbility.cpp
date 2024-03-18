@@ -58,16 +58,10 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 				Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
 			}
 
-			FVector OwnerVelocity;
-			if (UMovementComponent* MovementComponent = ActorInfo->AvatarActor->GetComponentByClass<UMovementComponent>())
-			{
-				OwnerVelocity = MovementComponent->Velocity;
-			}
-
 			Projectile->SetEffectHandle(NewEffectSpec);
 			Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
 			Projectile->FinishSpawning(ProjectileTransform);
-			FVector ProjectileVelocity = ActorInfo->AvatarActor->GetActorForwardVector() * 300.0f + OwnerVelocity;
+			FVector ProjectileVelocity = ActorInfo->AvatarActor->GetActorForwardVector() * 800.0f;
 			Projectile->SetVelocity(ProjectileVelocity);
 		}
 	}

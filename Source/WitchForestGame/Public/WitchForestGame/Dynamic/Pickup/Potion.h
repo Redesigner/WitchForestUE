@@ -24,6 +24,7 @@ class WITCHFORESTGAME_API APotion : public APickup
 
 	FTimerHandle BurstDebounceTimer;
 
+
     void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	void Burst();
@@ -31,4 +32,10 @@ class WITCHFORESTGAME_API APotion : public APickup
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleBurst();
+
+public:
+	// @TODO: Make this apply multiple set by caller specs
+	TSubclassOf<UGameplayEffect> GetPotionEffect() const { return SplashEffect; }
+
+	float GetHealthAmount() const { return HealthAmount; }
 };
