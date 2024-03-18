@@ -4,18 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagAssetInterface.h" 
+
 #include "GameplayEffectTypes.h" 
 
 #include "SpellProjectile.generated.h"
 
 UCLASS()
-class WITCHFORESTABILITY_API ASpellProjectile : public AActor
+class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	FVector Velocity;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
+	FGameplayTagContainer GameplayTags;
 
 	FGameplayEffectSpecHandle EffectHandle;
 
@@ -28,6 +32,9 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor
 	void Tick(float DeltaTime) override;
 
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+
 
 public:	
 	ASpellProjectile();

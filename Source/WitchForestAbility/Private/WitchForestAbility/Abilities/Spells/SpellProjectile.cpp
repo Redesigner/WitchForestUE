@@ -57,6 +57,11 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	ApplyGameplayEffectToTarget(OtherActor, FakeHit);
 }
 
+void ASpellProjectile::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer = GameplayTags;
+}
+
 void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult)
 {
 	if (!HasAuthority())
