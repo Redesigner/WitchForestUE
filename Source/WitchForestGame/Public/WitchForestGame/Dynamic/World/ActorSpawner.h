@@ -13,7 +13,7 @@ class WITCHFORESTGAME_API AActorSpawner : public AActor
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Components, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> SpawnRegion;
 
 

@@ -8,8 +8,21 @@
 #include "GameFramework/MovementComponent.h" 
 
 #include "WitchForestAbility.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
+
+UThrowItemAbility::UThrowItemAbility()
+{
+	if (HasAnyFlags(RF_ClassDefaultObject))
+	{
+		// Add the ability trigger tag as default to the CDO.
+		FAbilityTriggerData TriggerData;
+		TriggerData.TriggerTag = WitchForestGameplayTags::GameplayEvent_AbilityTrigger_Throw;
+		TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+		AbilityTriggers.Add(TriggerData);
+	}
+}
 
 void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -31,7 +44,7 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (ItemHandle->HoldingItem())
 	{
-		ThrowItem(ItemHandle->GetHeldItem(), Pawn, ItemHandle);
+		ThrowItem(ItemHandle->GetHeldItem(), Pawn, ItemHandle, TriggerEventData->EventMagnitude);
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
 	else
@@ -116,27 +129,21 @@ void UThrowItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle 
 }
 
 
-void UThrowItemAbility::ThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle)
+void UThrowItemAbility::ThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle, float Strength)
 {
 	if (IsPredictingClient())
 	{
-		SimulateThrowItem(Item, Pawn, ItemHandle);
+		SimulateThrowItem(Item, Pawn, ItemHandle, Strength);
 	}
 	else
 	{
-		ServerThrowItem(Item, Pawn, ItemHandle);
+		ServerThrowItem(Item, Pawn, ItemHandle, Strength);
 	}
 }
 
 
-void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle)
+void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle, float Strength)
 {
-	FVector CurrentPawnVelocity;
-	if (UMovementComponent* MovementComponent = Pawn->GetComponentByClass<UMovementComponent>())
-	{
-		CurrentPawnVelocity = MovementComponent->Velocity;
-	}
-
 	APickup* FakePickup = GetWorld()->SpawnActorDeferred<APickup>(Item->GetClass(), Item->GetTransform());
 	if (!FakePickup)
 	{
@@ -144,14 +151,15 @@ void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandl
 		return;
 	}
 
+	const float ThrowSpeed = MaxThrowSpeed * Strength;
 	FakePickup->DisableReplication();
 	FakePickup->bHeld = false;
 	FakePickup->SetActorLocation(ItemHandle->GetComponentLocation());
 	FakePickup->FinishSpawning(Item->GetActorTransform());
-	FakePickup->SetVelocity(CurrentPawnVelocity * 1.5f);
+	FakePickup->SetVelocity(Pawn->GetActorForwardVector() * ThrowSpeed);
 	FakePickup->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
 
-	if (CurrentPawnVelocity.SquaredLength() >= 200.0f)
+	if (ThrowSpeed >= MaxThrowSpeed / 2.0f)
 	{
 		FakePickup->SetThrown(true);
 	}
@@ -161,20 +169,17 @@ void UThrowItemAbility::SimulateThrowItem(APickup* Item, APawn* Pawn, UItemHandl
 }
 
 
-void UThrowItemAbility::ServerThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle)
+void UThrowItemAbility::ServerThrowItem(APickup* Item, APawn* Pawn, UItemHandleComponent* ItemHandle, float Strength)
 {
-	FVector CurrentPawnVelocity;
-	if (UMovementComponent* MovementComponent = Pawn->GetComponentByClass<UMovementComponent>())
-	{
-		CurrentPawnVelocity = MovementComponent->Velocity;
-	}
-
 	if (APickup* HeldItem = ItemHandle->ConsumeItem())
 	{
-		HeldItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
-		HeldItem->SetVelocity(CurrentPawnVelocity * 1.5f);
+		const float ThrowSpeed = MaxThrowSpeed * Strength;
 
-		if (CurrentPawnVelocity.SquaredLength() >= 100000.0f)
+		HeldItem->SetLastHeldASC(GetAbilitySystemComponentFromActorInfo());
+		HeldItem->SetVelocity(Pawn->GetActorForwardVector() * ThrowSpeed);
+
+
+		if (ThrowSpeed >= MaxThrowSpeed / 2.0f)
 		{
 			HeldItem->SetThrown(true);
 		}

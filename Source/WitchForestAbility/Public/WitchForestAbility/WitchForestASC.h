@@ -43,6 +43,5 @@ protected:
 	TArray<TArray<FGameplayAbilitySpec>> InputPressedSpecs;
 
 	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
-
-	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
+	TArray<FGameplayTag> InputHeldTags;
 };

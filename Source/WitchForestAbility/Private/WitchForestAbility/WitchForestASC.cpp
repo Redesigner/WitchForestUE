@@ -17,21 +17,20 @@ void UWitchForestASC::AbilityInputTagPressed(const FGameplayTag& InputTag)
 	{
 		return;
 	}
+
+	if (InputHeldTags.Contains(InputTag))
+	{
+		return;
+	}
+
+	InputHeldTags.Add(InputTag);
 	
 	TArray<FGameplayAbilitySpec> TagHandles;
 	for (FGameplayAbilitySpec AbilitySpec : ActivatableAbilities.Items)
 	{
 		if (InputTag.MatchesAnyExact(AbilitySpec.Ability->AbilityTags))
 		{
-			if (AbilitySpec.IsActive())
-			{
-				AbilitySpecInputPressed(AbilitySpec);
-			}
-			else
-			{
-				InsertSortPriority(TagHandles, AbilitySpec);
-				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
-			}
+			InsertSortPriority(TagHandles, AbilitySpec);
 		}
 	}
 
@@ -49,6 +48,7 @@ void UWitchForestASC::AbilityInputTagReleased(const FGameplayTag& InputTag)
 	{
 		return;
 	}
+
 	for (FGameplayAbilitySpec AbilitySpec : ActivatableAbilities.Items)
 	{
 		if (InputTag.MatchesAnyExact(AbilitySpec.Ability->AbilityTags))
@@ -56,10 +56,11 @@ void UWitchForestASC::AbilityInputTagReleased(const FGameplayTag& InputTag)
 			if (AbilitySpec.IsActive())
 			{
 				InputReleasedSpecHandles.AddUnique(AbilitySpec.Handle);
-				InputHeldSpecHandles.Remove(AbilitySpec.Handle);
 			}
 		}
 	}
+
+	InputHeldTags.Remove(InputTag);
 }
 
 void UWitchForestASC::AbilitySpecInputReleased(FGameplayAbilitySpec& Spec)
@@ -75,35 +76,9 @@ void UWitchForestASC::AbilitySpecInputReleased(FGameplayAbilitySpec& Spec)
 
 void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 {
-	/* if (HasMatchingGameplayTag(TAG_Gameplay_AbilityInputBlocked))
-	{
-		ClearAbilityInput();
-		return;
-	} */
-
-	static TArray<FGameplayAbilitySpecHandle> AbilitiesToActivate;
 	static TArray <TArray<FGameplayAbilitySpec*>> AbilityBucketsToActivate;
-	AbilitiesToActivate.Reset();
 	AbilityBucketsToActivate.Reset();
 
-
-	// Process all abilities that activate when the input is held.
-	//
-	for (const FGameplayAbilitySpecHandle& SpecHandle : InputHeldSpecHandles)
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(SpecHandle))
-		{
-			if (AbilitySpec->Ability && !AbilitySpec->IsActive())
-			{
-				const UWitchForestGameplayAbility* AbilityCDO = CastChecked<UWitchForestGameplayAbility>(AbilitySpec->Ability);
-
-				if (AbilityCDO->GetActivationPolicy() == EAbilityActivationPolicy::Repeated)
-				{
-					AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
-				}
-			}
-		}
-	}
 
 	// Process all ability groups that had their input pressed this frame.
 	// i.e. abilities grouped by InputTag
@@ -117,11 +92,11 @@ void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 			{
 				continue;
 			}
-			AbilitySpec.InputPressed = true;
 
 			if (AbilitySpec.IsActive())
 			{
 				// Ability is active so pass along the input event.
+				AbilitySpec.InputPressed = true;
 				AbilitySpecInputPressed(AbilitySpec);
 			}
 			else
@@ -137,15 +112,6 @@ void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 		AbilityBucketsToActivate.Add(NewSpecBucket);
 	}
 
-	//
-	// Try to activate all the abilities that are from presses and holds.
-	// We do it all at once so that held inputs don't activate the ability
-	// and then also send a input event to the ability because of the press.
-	//
-	for (const FGameplayAbilitySpecHandle& AbilitySpecHandle : AbilitiesToActivate)
-	{
-		TryActivateAbility(AbilitySpecHandle);
-	}
 
 	//
 	// Do the same for our buckets. If one of the abilities in the buckets succeeds,
@@ -157,6 +123,11 @@ void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 		{
 			// Grab the ability before activating, in case the spec is removed
 			UWitchForestGameplayAbility* WitchForestAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability);
+			if (WitchForestAbility && AbilitySpec->InputPressed && WitchForestAbility->ConsumesInput())
+			{
+				UE_LOGFMT(LogWitchForestAbility, Verbose, "WitchForestASC: Ability {AbilityName}, currently being held, consumed input.", WitchForestAbility->GetName());
+				break;
+			}
 			if (TryActivateAbility(AbilitySpec->Handle))
 			{
 				if (WitchForestAbility && WitchForestAbility->ConsumesInput())
