@@ -21,17 +21,17 @@ AEnemyAIController::AEnemyAIController()
 {
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
 
-	AIPerception->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::TargetPerceptionUpdated);
+	AIPerception->OnTargetPerceptionInfoUpdated.AddUniqueDynamic(this, &ThisClass::TargetPerceptionInfoUpdated);
 }
 
-void AEnemyAIController::TargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
-	if (!Stimulus.IsActive() || !Actor)
+	if (!UpdateInfo.Stimulus.IsActive() || !UpdateInfo.Target.IsValid())
 	{
 		return;
 	}
 
-	SetTarget(Actor);
+	SetTarget(UpdateInfo.Target.Get());
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -102,11 +102,13 @@ ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Oth
 			if (OtherTeamAgent->GetWitchForestTeam() == GetWitchForestTeam())
 			{
 				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
+				UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}' ''.", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
 				return ETeamAttitude::Friendly;
 			}
 			else
 			{
-				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
+				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is hostile.", GetName(), Other.GetName());
+				UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}'. ''", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
 				return ETeamAttitude::Hostile;
 			}
 		}
@@ -117,19 +119,34 @@ ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Oth
 
 void AEnemyAIController::OverrideTeam(EWitchForestTeam NewTeam)
 {
+	UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
+	if (!PerceptionSystem)
+	{
+		return;
+	}
+
 	if (NewTeam != GetWitchForestTeam())
 	{
 		SetTarget(nullptr);
 	}
 
+	PerceptionSystem->UnregisterSource(*this);
+	PerceptionSystem->UnregisterListener(*PerceptionComponent.Get());
+
 	if (NewTeam == EWitchForestTeam::Unaffiliated)
 	{
 		bOverridingTeam = false;
-		return;
+	}
+	else
+	{
+		bOverridingTeam = true;
+		OverridenTeam = NewTeam;
 	}
 
-	bOverridingTeam = true;
-	OverridenTeam = NewTeam;
+	PerceptionSystem->RegisterSource(*this);
+	PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
+
+	BrainComponent->RestartLogic();
 }
 
 void AEnemyAIController::SetWitchForestTeam(EWitchForestTeam InTeam)

@@ -45,7 +45,7 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	AEnemyAIController();
 
 	UFUNCTION()
-	void TargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+	void TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
 
 	void OnPossess(APawn* InPawn) override;
 
