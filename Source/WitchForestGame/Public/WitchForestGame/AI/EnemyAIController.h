@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
+
 #include "BehaviorTree/BehaviorTreeTypes.h" 
 #include "Perception/AIPerceptionTypes.h"
 
@@ -14,7 +16,7 @@ class UBehaviorTree;
 class UAIPerceptionComponent;
 
 UCLASS()
-class WITCHFORESTGAME_API AEnemyAIController : public AAIController
+class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWitchForestTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -31,8 +33,9 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 	float MinimumRange = 500.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
-	FGenericTeamId TeamId;
-
+	TEnumAsByte<EWitchForestTeam> Team = EWitchForestTeam::Unaffiliated;
+	TEnumAsByte<EWitchForestTeam> OverridenTeam = EWitchForestTeam::Unaffiliated;
+	bool bOverridingTeam = false;
 
 	TWeakObjectPtr<AEnemy> EnemyPawn;
 
@@ -54,7 +57,12 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController
 
 
 	// IGenericTeamAgentInterface
-	FGenericTeamId GetGenericTeamId() const override;
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	// End IGenericTeamAgentInterface
+
+	// Begin IWitchForestTeamAgentInterface
+	void OverrideTeam(EWitchForestTeam NewTeam) override;
+	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
+	EWitchForestTeam GetWitchForestTeam() const override;
+	// End IWitchForestTeamAgentInterface
 };

@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
-#include "GenericTeamAgentInterface.h"
+#include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
+
 #include "GameplayEffect.h" 
 
 #include "WitchPlayerState.generated.h"
@@ -16,7 +17,7 @@ class UInventoryComponent;
 class UBaseAttributeSet;
 
 UCLASS()
-class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface, public IGenericTeamAgentInterface
+class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbilitySystemInterface, public IWitchForestTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -34,9 +35,8 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
 
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
-	FGenericTeamId TeamId;
+	TEnumAsByte<EWitchForestTeam> TeamId;
 
 
 	bool bAlive = false;
@@ -50,8 +50,11 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	FGenericTeamId GetGenericTeamId() const override;
-
+	// Begin IWitchForestTeamAgentInterface
+	void OverrideTeam(EWitchForestTeam NewTeam) override;
+	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
+	EWitchForestTeam GetWitchForestTeam() const override;
+	// End IWitchForestTeamAgentInterface
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")

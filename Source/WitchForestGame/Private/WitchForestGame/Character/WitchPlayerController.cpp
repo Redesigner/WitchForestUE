@@ -79,12 +79,28 @@ void AWitchPlayerController::PostProcessInput(const float DeltaTime, const bool 
     WitchForestASC->ProcessAbilityInput(DeltaTime, bGamePaused);
 }
 
-FGenericTeamId AWitchPlayerController::GetGenericTeamId() const
+void AWitchPlayerController::OverrideTeam(EWitchForestTeam NewTeam)
 {
-    if (IGenericTeamAgentInterface* PlayerStateTeamAgent = Cast<IGenericTeamAgentInterface>(GetPlayerState<APlayerState>()))
+    if (IWitchForestTeamAgentInterface* WitchTeamInterface = GetPlayerState<AWitchPlayerState>())
     {
-        return PlayerStateTeamAgent->GetGenericTeamId();
+        WitchTeamInterface->OverrideTeam(NewTeam);
+    }
+}
+
+void AWitchPlayerController::SetWitchForestTeam(EWitchForestTeam InTeam)
+{
+    if (IWitchForestTeamAgentInterface* WitchTeamInterface = GetPlayerState<AWitchPlayerState>())
+    {
+        WitchTeamInterface->SetWitchForestTeam(InTeam);
+    }
+}
+
+EWitchForestTeam AWitchPlayerController::GetWitchForestTeam() const
+{
+    if (IWitchForestTeamAgentInterface* WitchTeamInterface = GetPlayerState<AWitchPlayerState>())
+    {
+        return WitchTeamInterface->GetWitchForestTeam();
     }
 
-    return FGenericTeamId::NoTeam;
+    return EWitchForestTeam::Unaffiliated;
 }

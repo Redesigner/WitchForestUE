@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "GenericTeamAgentInterface.h"
+#include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
 
 #include "WitchPlayerController.generated.h"
 
@@ -13,7 +13,7 @@ class UWitchForestASC;
 class UHealthViewModel;
 
 UCLASS()
-class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, public IGenericTeamAgentInterface
+class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, public IWitchForestTeamAgentInterface
 {
 	GENERATED_BODY()
 	
@@ -31,10 +31,11 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
-
-	// IGenericTeamAgentInterface
-	FGenericTeamId GetGenericTeamId() const override;
-	// End IGenericTeamAgentInterface
+	// Begin IWitchForestTeamAgentInterface
+	void OverrideTeam(EWitchForestTeam NewTeam) override;
+	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
+	EWitchForestTeam GetWitchForestTeam() const override;
+	// End IWitchForestTeamAgentInterface
 
 public:
 	UFUNCTION(BlueprintCallable)

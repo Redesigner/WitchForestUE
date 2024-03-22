@@ -82,32 +82,62 @@ void AEnemyAIController::OnDeath()
 
 void AEnemyAIController::SetTarget(AActor* Target)
 {
+	if (Target == TargetActor)
+	{
+		return;
+	}
+
+	UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' set target to '{TargetName}'.", GetName(), Target ? Target->GetName() : "Null");
 	TargetActor = Target;
 	// Blackboard->SetValueAsObject(TargetKey.SelectedKeyName, Target);
 	Blackboard->SetValueAsObject("TargetActor", Target);
-}
-
-FGenericTeamId AEnemyAIController::GetGenericTeamId() const
-{
-	return TeamId;
 }
 
 ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Other) const
 {
 	if (const APawn* OtherPawn = Cast<APawn>(&Other))
 	{
-		if (const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
+		if (const IWitchForestTeamAgentInterface* OtherTeamAgent = Cast<IWitchForestTeamAgentInterface>(OtherPawn->GetController()))
 		{
-			if (OtherTeamAgent->GetGenericTeamId() == GetGenericTeamId())
+			if (OtherTeamAgent->GetWitchForestTeam() == GetWitchForestTeam())
 			{
+				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
 				return ETeamAttitude::Friendly;
 			}
 			else
 			{
+				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
 				return ETeamAttitude::Hostile;
 			}
 		}
 	}
 
 	return ETeamAttitude::Neutral;
+}
+
+void AEnemyAIController::OverrideTeam(EWitchForestTeam NewTeam)
+{
+	if (NewTeam != GetWitchForestTeam())
+	{
+		SetTarget(nullptr);
+	}
+
+	if (NewTeam == EWitchForestTeam::Unaffiliated)
+	{
+		bOverridingTeam = false;
+		return;
+	}
+
+	bOverridingTeam = true;
+	OverridenTeam = NewTeam;
+}
+
+void AEnemyAIController::SetWitchForestTeam(EWitchForestTeam InTeam)
+{
+	Team = InTeam;
+}
+
+EWitchForestTeam AEnemyAIController::GetWitchForestTeam() const
+{
+	return bOverridingTeam ? OverridenTeam : Team;
 }

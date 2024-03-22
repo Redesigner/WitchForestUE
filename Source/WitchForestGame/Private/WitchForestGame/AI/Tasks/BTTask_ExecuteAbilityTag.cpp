@@ -50,7 +50,7 @@ EBTNodeResult::Type UBTTask_ExecuteAbilityTag::ExecuteTask(UBehaviorTreeComponen
 	// Don't even try to reactivate the ability if it's active, just in case
 	if (!bAllowAbilityReactivation && AbilitySpec && AbilitySpec->IsActive())
 	{
-		UE_LOGFMT(LogWitchForestAI, Display, "UBTTask_ExecuteAbilityTag '{Node}' cancelled by self. Ability '{AbilityName}' is already active, and `bAllowAbilityReactivation` is set to false.", GetName(), AbilitySpec->Ability->GetName());
+		UE_LOGFMT(LogWitchForestAI, Verbose, "UBTTask_ExecuteAbilityTag '{Node}' cancelled by self. Ability '{AbilityName}' is already active, and `bAllowAbilityReactivation` is set to false.", GetName(), AbilitySpec->Ability->GetName());
 		return EBTNodeResult::Failed;
 	}
 	if (ASC->TryActivateAbility(ActivatedAbility))

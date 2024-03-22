@@ -27,10 +27,21 @@ UAbilitySystemComponent* AWitchPlayerState::GetAbilitySystemComponent() const
     return AbilitySystem;
 }
 
-FGenericTeamId AWitchPlayerState::GetGenericTeamId() const
+void AWitchPlayerState::OverrideTeam(EWitchForestTeam NewTeam)
 {
-    return FGenericTeamId();
+    // Can't override the player's team for now
 }
+
+void AWitchPlayerState::SetWitchForestTeam(EWitchForestTeam InTeam)
+{
+    TeamId = InTeam;
+}
+
+EWitchForestTeam AWitchPlayerState::GetWitchForestTeam() const
+{
+    return TeamId;
+}
+
 
 UBaseAttributeSet* AWitchPlayerState::GetAttributeSet() const
 {

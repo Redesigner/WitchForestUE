@@ -130,12 +130,28 @@ USkeletalMeshComponent* AEnemy::GetSkeletalMesh() const
 	return Mesh;
 }
 
-FGenericTeamId AEnemy::GetGenericTeamId() const
+void AEnemy::OverrideTeam(EWitchForestTeam NewTeam)
 {
-	if (IGenericTeamAgentInterface* ControllerGenericTeamAgent = Cast<IGenericTeamAgentInterface>(GetController()))
+	if (IWitchForestTeamAgentInterface* TeamAgent = Cast<IWitchForestTeamAgentInterface>(GetController()))
 	{
-		return ControllerGenericTeamAgent->GetGenericTeamId();
+		TeamAgent->OverrideTeam(NewTeam);
+	}
+}
+
+void AEnemy::SetWitchForestTeam(EWitchForestTeam InTeam)
+{
+	if (IWitchForestTeamAgentInterface* TeamAgent = Cast<IWitchForestTeamAgentInterface>(GetController()))
+	{
+		TeamAgent->SetWitchForestTeam(InTeam);
+	}
+}
+
+EWitchForestTeam AEnemy::GetWitchForestTeam() const
+{
+	if (IWitchForestTeamAgentInterface* TeamAgent = Cast<IWitchForestTeamAgentInterface>(GetController()))
+	{
+		return TeamAgent->GetWitchForestTeam();
 	}
 
-	return FGenericTeamId::NoTeam;
+	return EWitchForestTeam::Unaffiliated;
 }
