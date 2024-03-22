@@ -3,11 +3,6 @@
 
 #include "WitchForestGame/Dynamic/Pickup/PickupMovementComponent.h"
 
-// Copyright (c) 2024 Stephen Melnick
-
-
-#include "WitchForestGame/Dynamic/Pickup/PickupMovementComponent.h"
-
 #include "Net/UnrealNetwork.h"
 
 

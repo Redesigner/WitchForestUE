@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "Logging/StructuredLog.h"
+#include "Net/UnrealNetwork.h"
 
 #include "WitchForestAbility.h"
 
@@ -60,6 +61,13 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 void ASpellProjectile::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	TagContainer = GameplayTags;
+}
+
+void ASpellProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, Velocity);
 }
 
 void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult)

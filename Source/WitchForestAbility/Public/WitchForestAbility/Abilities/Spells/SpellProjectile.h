@@ -15,7 +15,7 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	FVector Velocity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
@@ -35,6 +35,7 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	ASpellProjectile();
