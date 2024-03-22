@@ -339,3 +339,8 @@ void UEnemyMovementComponent::SetOrientRotationToMovement(bool bValue)
 {
 	bOrientRotationToMovement = bValue;
 }
+
+void UEnemyMovementComponent::SetMaxSpeed(float NewMaxSpeed)
+{
+	MaxSpeed = NewMaxSpeed;
+}

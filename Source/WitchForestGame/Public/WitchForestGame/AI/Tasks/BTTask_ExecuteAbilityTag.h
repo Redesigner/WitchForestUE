@@ -23,6 +23,7 @@ class WITCHFORESTGAME_API UBTTask_ExecuteAbilityTag : public UBTTaskNode
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ability, meta = (AllowPrivateAccess = true))
 	bool bAllowAbilityReactivation = false;
 
+
 	TWeakObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 
 	FGameplayAbilitySpecHandle ActivatedAbility;
@@ -33,7 +34,6 @@ class WITCHFORESTGAME_API UBTTask_ExecuteAbilityTag : public UBTTaskNode
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
 
-public:
 	UBTTask_ExecuteAbilityTag();
 
 	void OnAbilityEnded(const FAbilityEndedData& AbilityEndedData);

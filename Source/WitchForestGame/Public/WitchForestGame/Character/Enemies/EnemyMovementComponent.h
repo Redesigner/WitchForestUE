@@ -55,10 +55,12 @@ class WITCHFORESTGAME_API UEnemyMovementComponent : public UPawnMovementComponen
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Rotation", meta = (AllowPrivateAccess = true))
 	bool bOrientRotationToMovement = true;
 
+
 	FVector RequestedVelocity;
 
 	FVector PendingImpulses;
 	
+
 public:
 	UEnemyMovementComponent();
 
@@ -70,6 +72,8 @@ public:
 	void SetMovementMode(EEnemyMovementMode Mode);
 
 	void SetOrientRotationToMovement(bool bValue);
+
+	void SetMaxSpeed(float NewMaxSpeed);
 
 
 protected:
