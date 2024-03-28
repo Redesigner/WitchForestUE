@@ -32,7 +32,8 @@ class WITCHFORESTABILITY_API USpellReticleAbility : public UWitchForestGameplayA
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
 
-	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag);
+	UFUNCTION()
+	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData);
 
 	void SpawnProjectile(FVector Location);
 };

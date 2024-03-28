@@ -15,7 +15,7 @@ class WITCHFORESTABILITY_API ATargetActor_SpellTrace : public AGameplayAbilityTa
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Targeting, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
-	float InitialTargetingDistance = 100.0f;
+	float InitialTargetingDistance = 400.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Targeting, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float TraceDistance = 1000.0f;

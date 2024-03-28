@@ -9,6 +9,7 @@ ATargetActor_SpellTrace::ATargetActor_SpellTrace()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	StartLocation.LocationType = EGameplayAbilityTargetingLocationType::LiteralTransform;
+	ShouldProduceTargetDataOnServer = false;
 }
 
 void ATargetActor_SpellTrace::Tick(float DeltaSeconds)
