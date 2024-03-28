@@ -34,9 +34,9 @@ void ASpellProjectile::Tick(float DeltaTime)
 	}
 }
 
-void ASpellProjectile::SetEffectHandle(FGameplayEffectSpecHandle InHandle)
+void ASpellProjectile::SetEffectHandles(TArray<FGameplayEffectSpecHandle> InHandles)
 {
-	EffectHandle = InHandle;
+	EffectHandles = InHandles;
 }
 
 void ASpellProjectile::SetOwningActor(AActor* Actor)
@@ -61,7 +61,7 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	// We don't necessarily have a PrimitiveComponent, so this will be null
 	FVector WorldVelocity = Velocity;
 	FHitResult FakeHit = FHitResult(OtherActor, nullptr, GetActorLocation(), -WorldVelocity.GetSafeNormal());
-	ApplyGameplayEffectToTarget(OtherActor, FakeHit);
+	ApplyGameplayEffectsToTarget(OtherActor, FakeHit);
 }
 
 void ASpellProjectile::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -76,16 +76,16 @@ void ASpellProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ThisClass, Velocity);
 }
 
-void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult)
+void ASpellProjectile::ApplyGameplayEffectsToTarget(AActor* Target, FHitResult HitResult)
 {
 	if (!HasAuthority())
 	{
 		return;
 	}
 
-	if (!EffectHandle.IsValid())
+	if (EffectHandles.Num() == 0)
 	{
-		UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The GameplayEffectHandle was invalid. Make sure to call SetEffectHandle after spawning the projectile.", GetName(), Target->GetName());
+		UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. No GameplayEffectHandles were set. Make sure to call SetEffectHandles after spawning the projectile.", GetName(), Target->GetName());
 		return;
 	}
 
@@ -96,27 +96,30 @@ void ASpellProjectile::ApplyGameplayEffectToTarget(AActor* Target, FHitResult Hi
 
 	if (IAbilitySystemInterface* ActorAbility = Cast<IAbilitySystemInterface>(Target))
 	{
-		FGameplayEffectContextHandle EffectContext = EffectHandle.Data->GetContext();
-		// We have to reset the effectcontext's hit results, otherwise we may be
-		// trying to apply effects with hit results that have fallen out of scope,
-		// since internally they are stored as sharedptrs
-		EffectContext.AddHitResult(HitResult, true);
-
-		ActorsHit.Add(Target);
-		
 		if (!ActorAbility->GetAbilitySystemComponent())
 		{
 			UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The owning ASC of this projectile was invalid.", GetName(), Target->GetName());
 			return;
 		}
 
-		FGameplayEffectSpec* Spec = EffectHandle.Data.Get();
-		if (!Spec)
+		for (FGameplayEffectSpecHandle EffectHandle : EffectHandles)
 		{
-			return;
-		}
+			FGameplayEffectContextHandle EffectContext = EffectHandle.Data->GetContext();
+			// We have to reset the effectcontext's hit results, otherwise we may be
+			// trying to apply effects with hit results that have fallen out of scope,
+			// since internally they are stored as sharedptrs
+			EffectContext.AddHitResult(HitResult, true);
 
-		ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
+			ActorsHit.Add(Target);
+
+			FGameplayEffectSpec* Spec = EffectHandle.Data.Get();
+			if (!Spec)
+			{
+				continue;
+			}
+
+			ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
+		}
 	}
 }
 

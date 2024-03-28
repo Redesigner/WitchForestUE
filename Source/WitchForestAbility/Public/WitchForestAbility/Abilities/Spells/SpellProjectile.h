@@ -28,7 +28,7 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 	FGameplayTagContainer GameplayTags;
 
 
-	FGameplayEffectSpecHandle EffectHandle;
+	TArray<FGameplayEffectSpecHandle> EffectHandles;
 
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
@@ -47,12 +47,12 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 public:	
 	ASpellProjectile();
 
-	void SetEffectHandle(FGameplayEffectSpecHandle InHandle);
+	void SetEffectHandles(TArray<FGameplayEffectSpecHandle> InHandles);
 
 	void SetOwningActor(AActor* Actor);
 
 	void SetVelocity(FVector NewVelocity);
 
 protected:
-	void ApplyGameplayEffectToTarget(AActor* Target, FHitResult HitResult);
+	void ApplyGameplayEffectsToTarget(AActor* Target, FHitResult HitResult);
 };

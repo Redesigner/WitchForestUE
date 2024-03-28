@@ -22,7 +22,7 @@ class WITCHFORESTABILITY_API USpellReticleAbility : public UWitchForestGameplayA
 	TSubclassOf<ASpellProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UGameplayEffect> SpellEffect;
+	TArray<TSubclassOf<UGameplayEffect>> SpellEffects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
 	float DamageAmount = 0.0f;

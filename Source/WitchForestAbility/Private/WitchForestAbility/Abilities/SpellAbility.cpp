@@ -42,28 +42,7 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	// Only spawn the projectile on the server, and replicate out from there
 	if (ActorInfo->IsNetAuthority())
 	{
-		FTransform ProjectileTransform = ActorInfo->AvatarActor->GetActorTransform();
-		ASpellProjectile* Projectile = World->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
-		// Projectile->SetReplicates(true);
-		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
-		if (!NewEffectSpec.IsValid())
-		{
-			UE_LOGFMT(LogWitchForestAbility, Warning, "SpellAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
-		}
-		else
-		{
-			FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
-			if (Spec)
-			{
-				Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
-			}
-
-			Projectile->SetEffectHandle(NewEffectSpec);
-			Projectile->SetOwningActor(ActorInfo->AvatarActor.Get());
-			Projectile->FinishSpawning(ProjectileTransform);
-			FVector ProjectileVelocity = ActorInfo->AvatarActor->GetActorForwardVector() * 800.0f;
-			Projectile->SetVelocity(ProjectileVelocity);
-		}
+		SpawnProjectile(ActorInfo->AvatarActor->GetActorLocation());
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
@@ -75,4 +54,50 @@ void USpellAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
+}
+
+
+void USpellAbility::SpawnProjectile(FVector Location)
+{
+	if (!ProjectileClass)
+	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "SpellAbility '{AbilityName}' failed to spawn projectile. The projectile class was invalid.", GetName());
+		return;
+	}
+
+	FQuat SpawnRotation;
+	if (CurrentActorInfo->AvatarActor.IsValid())
+	{
+		SpawnRotation = CurrentActorInfo->AvatarActor->GetActorQuat();
+	}
+
+	FTransform ProjectileTransform;
+	ProjectileTransform.SetLocation(Location);
+	ProjectileTransform.SetRotation(SpawnRotation);
+	ASpellProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
+	TArray<FGameplayEffectSpecHandle> NewEffectSpecs;
+
+
+	for (TSubclassOf<UGameplayEffect> SpellEffect : SpellEffects)
+	{
+		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
+		if (!NewEffectSpec.IsValid())
+		{
+			UE_LOGFMT(LogWitchForestAbility, Error, "SpellAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
+			return;
+		}
+
+		FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
+		if (Spec)
+		{
+			Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
+		}
+
+		NewEffectSpecs.Add(NewEffectSpec);
+	}
+
+	Projectile->SetEffectHandles(NewEffectSpecs);
+	Projectile->SetOwningActor(CurrentActorInfo->AvatarActor.Get());
+	Projectile->FinishSpawning(ProjectileTransform);
+	Projectile->SetVelocity(CurrentActorInfo->AvatarActor->GetActorForwardVector() * ProjectileSpeed);
 }

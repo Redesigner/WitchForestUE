@@ -4,8 +4,11 @@
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 
 #include "WitchForestGame/Character/Enemies/Enemy.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
+#include "WitchForestAbility/WitchForestASC.h"
 
 #include "Components/CapsuleComponent.h"
+#include "AbilitySystemInterface.h"
 
 
 UEnemyMovementComponent::UEnemyMovementComponent()
@@ -28,6 +31,14 @@ void UEnemyMovementComponent::SetUpdatedComponent(USceneComponent* Component)
 	Super::SetUpdatedComponent(Component);
 
 	EnemyOwner = Cast<AEnemy>(PawnOwner);
+	
+	if (IAbilitySystemInterface* AbilityInterface = Cast<IAbilitySystemInterface>(PawnOwner))
+	{
+		if (UWitchForestASC* ASC = Cast<UWitchForestASC>(AbilityInterface->GetAbilitySystemComponent()))
+		{
+			AbilitySystemComponent = ASC;
+		}
+	}
 }
 
 
@@ -86,6 +97,11 @@ void UEnemyMovementComponent::HandleBlockingImpact(FHitResult ImpactHitResult)
 
 void UEnemyMovementComponent::PhysMovement(float DeltaTime)
 {
+	if (AbilitySystemComponent.IsValid() && AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+	{
+		return;
+	}
+
 	switch (MovementMode)
 	{
 	case(EEnemyMovementMode::MOVE_None):
@@ -121,7 +137,7 @@ void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 	const FVector Normal2D = Velocity.GetSafeNormal2D();
 	const FVector PlanarVelocity = FVector(Velocity.X, Velocity.Y, 0.0f);
 	FVector FrictionDelta = Normal2D * Friction;
-	float EffectiveMaxSpeed = MaxSpeed;
+	float EffectiveMaxSpeed = GetMaxSpeed();
 
 	/*
 	// If we aren't orienting our rotation to movement, then for now, assume we are strafing and limit the speed
@@ -308,6 +324,16 @@ bool UEnemyMovementComponent::CanStopPathFollowing() const
 void UEnemyMovementComponent::StopActiveMovement()
 {
 	RequestedVelocity = FVector::Zero();
+}
+
+float UEnemyMovementComponent::GetMaxSpeed() const
+{
+	if (AbilitySystemComponent.IsValid() && AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Stun))
+	{
+		return 0.0f;
+	}
+
+	return MaxSpeed;
 }
 
 

@@ -8,6 +8,7 @@
 #include "EnemyMovementComponent.generated.h"
 
 class AEnemy;
+class UWitchForestASC;
 
 UENUM(BlueprintType)
 enum class EEnemyMovementMode : uint8
@@ -59,13 +60,33 @@ class WITCHFORESTGAME_API UEnemyMovementComponent : public UPawnMovementComponen
 	FVector RequestedVelocity;
 
 	FVector PendingImpulses;
+
+	TWeakObjectPtr<UWitchForestASC> AbilitySystemComponent;
 	
 
-public:
 	UEnemyMovementComponent();
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void BeginPlay() override;
+
+	void SetUpdatedComponent(USceneComponent* Component) override;
+
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
+	//  BEGIN INTERFACE Navigation Movement component
+	void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
+	void RequestPathMove(const FVector& MoveInput) override;
+	bool CanStartPathFollowing() const override;
+	bool CanStopPathFollowing() const override;
+	void StopActiveMovement() override;
+	// END INTERFACE
+
+	virtual float GetMaxSpeed() const;
+
+public:
 	UFUNCTION(BlueprintCallable)
 	void AddImpulse(FVector Impulse);
 
@@ -77,15 +98,6 @@ public:
 
 
 protected:
-	void BeginPlay() override;
-
-	void SetUpdatedComponent(USceneComponent* Component) override;
-
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
-
-
 	virtual void HandleBlockingImpact(FHitResult ImpactHitResult);
 
 	virtual void PhysMovement(float DeltaTime);
@@ -107,17 +119,4 @@ protected:
 	bool IsFalling() const;
 
 	void ApplyRootMotionToVelocity(float DeltaTime);
-
-
-	//  BEGIN INTERFACE Navigation Movement component
-	void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
-
-	void RequestPathMove(const FVector& MoveInput) override;
-
-	bool CanStartPathFollowing() const override;
-
-	bool CanStopPathFollowing() const override;
-
-	void StopActiveMovement() override;
-	// END INTERFACE
 };

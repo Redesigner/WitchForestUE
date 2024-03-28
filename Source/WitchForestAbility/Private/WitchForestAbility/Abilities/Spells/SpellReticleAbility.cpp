@@ -93,12 +93,6 @@ void USpellReticleAbility::SpawnProjectile(FVector Location)
 		return;
 	}
 
-	if (!SpellEffect)
-	{
-		UE_LOGFMT(LogWitchForestAbility, Error, "SpellReticleAbility '{AbilityName}' failed to spawn projectile. The GameplayEffect was invalid.", GetName());
-		return;
-	}
-
 	FQuat SpawnRotation;
 	if (CurrentActorInfo->AvatarActor.IsValid())
 	{
@@ -109,21 +103,28 @@ void USpellReticleAbility::SpawnProjectile(FVector Location)
 	ProjectileTransform.SetLocation(Location);
 	ProjectileTransform.SetRotation(SpawnRotation);
 	ASpellProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
-	FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
+	TArray<FGameplayEffectSpecHandle> NewEffectSpecs;
 
-	if (!NewEffectSpec.IsValid())
+
+	for (TSubclassOf<UGameplayEffect> SpellEffect : SpellEffects)
 	{
-		UE_LOGFMT(LogWitchForestAbility, Warning, "SpellReticleAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
-		return;
+		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
+		if (!NewEffectSpec.IsValid())
+		{
+			UE_LOGFMT(LogWitchForestAbility, Error, "SpellReticleAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
+			return;
+		}
+
+		FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
+		if (Spec)
+		{
+			Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
+		}
+		
+		NewEffectSpecs.Add(NewEffectSpec);
 	}
 
-	FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
-	if (Spec)
-	{
-		Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
-	}
-
-	Projectile->SetEffectHandle(NewEffectSpec);
+	Projectile->SetEffectHandles(NewEffectSpecs);
 	Projectile->SetOwningActor(CurrentActorInfo->AvatarActor.Get());
 	Projectile->FinishSpawning(ProjectileTransform);
 }
