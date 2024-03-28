@@ -20,11 +20,17 @@ void ASpellProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bAffectedByGravity)
+	{
+		Velocity.Z += GetWorld()->GetGravityZ() * DeltaTime;
+	}
+
 	FHitResult HitResult;
 	AddActorWorldOffset(Velocity * DeltaTime, true, &HitResult);
-	if (HitResult.IsValidBlockingHit())
+	
+	if (HitResult.bBlockingHit && bDestroyOnBlockingHit)
 	{
-		ApplyGameplayEffectToTarget(HitResult.GetActor(), HitResult);
+		Destroy();
 	}
 }
 

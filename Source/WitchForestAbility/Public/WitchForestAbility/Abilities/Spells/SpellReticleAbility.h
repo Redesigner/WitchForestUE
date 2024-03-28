@@ -21,6 +21,12 @@ class WITCHFORESTABILITY_API USpellReticleAbility : public UWitchForestGameplayA
 	UPROPERTY(EditDefaultsOnly, Category = Projectile, meta = (AllowPrivateAccess = true))
 	TSubclassOf<ASpellProjectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UGameplayEffect> SpellEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
+	float DamageAmount = 0.0f;
+
 	UPROPERTY(EditDefaultsOnly, Category = Projectile, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float ProjectileSpawnHeight = 500.0f;
 

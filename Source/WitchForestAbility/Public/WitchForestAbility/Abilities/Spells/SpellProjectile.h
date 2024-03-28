@@ -18,8 +18,15 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	FVector Velocity;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
+	bool bAffectedByGravity = false;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
+	bool bDestroyOnBlockingHit = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GameplayTags;
+
 
 	FGameplayEffectSpecHandle EffectHandle;
 

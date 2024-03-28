@@ -10,6 +10,7 @@
 #include "WitchForestAbility.h"
 #include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
 #include "WitchForestAbility/Abilities/Tasks/WitchAbilityTask_WaitTargetData.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 void USpellReticleAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -92,11 +93,37 @@ void USpellReticleAbility::SpawnProjectile(FVector Location)
 		return;
 	}
 
-	FRotator SpawnRotation;
-	if (CurrentActorInfo->AvatarActor.IsValid())
+	if (!SpellEffect)
 	{
-		SpawnRotation = CurrentActorInfo->AvatarActor->GetActorRotation();
+		UE_LOGFMT(LogWitchForestAbility, Error, "SpellReticleAbility '{AbilityName}' failed to spawn projectile. The GameplayEffect was invalid.", GetName());
+		return;
 	}
 
-	GetWorld()->SpawnActor<ASpellProjectile>(ProjectileClass, Location, SpawnRotation);
+	FQuat SpawnRotation;
+	if (CurrentActorInfo->AvatarActor.IsValid())
+	{
+		SpawnRotation = CurrentActorInfo->AvatarActor->GetActorQuat();
+	}
+
+	FTransform ProjectileTransform;
+	ProjectileTransform.SetLocation(Location);
+	ProjectileTransform.SetRotation(SpawnRotation);
+	ASpellProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
+	FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
+
+	if (!NewEffectSpec.IsValid())
+	{
+		UE_LOGFMT(LogWitchForestAbility, Warning, "SpellReticleAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
+		return;
+	}
+
+	FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
+	if (Spec)
+	{
+		Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
+	}
+
+	Projectile->SetEffectHandle(NewEffectSpec);
+	Projectile->SetOwningActor(CurrentActorInfo->AvatarActor.Get());
+	Projectile->FinishSpawning(ProjectileTransform);
 }
