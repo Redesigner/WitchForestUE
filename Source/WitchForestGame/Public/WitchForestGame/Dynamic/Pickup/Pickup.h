@@ -86,4 +86,6 @@ public:
 	virtual void OnConsume();
 
 	virtual bool CanBeStored() const;
+
+	APickup* GetFakeOwner() const;
 };

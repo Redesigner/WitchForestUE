@@ -8,6 +8,9 @@
 AActorSpawner::AActorSpawner()
 {
 	SpawnRegion = CreateDefaultSubobject<UBoxComponent>("SpawnRegion");
+
+	// The client doesn't need to use this actor, since it will always replicate spawns
+	bNetLoadOnClient = false;
 }
 
 void AActorSpawner::BeginPlay()

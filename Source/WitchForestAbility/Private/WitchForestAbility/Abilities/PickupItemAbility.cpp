@@ -178,8 +178,18 @@ void UPickupItemAbility::SimulatePickupItem(APickup* Item, UItemHandleComponent*
 	FakePickup->AttachToComponent(ItemHandle, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	ItemHandle->SetFakePickup(FakePickup);
 
-	Item->bHeld = true;
-	Item->SetActorHiddenInGame(true);
+	if (Item->IsFake())
+	{
+		APickup* FakeItem = Item;
+		Item = FakeItem->GetFakeOwner();
+		FakeItem->Destroy();
+	}
+
+	if (Item)
+	{
+		Item->bHeld = true;
+		Item->SetActorHiddenInGame(true);
+	}
 
 	if (ItemHandle->RequestedPickup.IsValid())
 	{

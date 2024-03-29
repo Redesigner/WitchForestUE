@@ -59,20 +59,28 @@ void UStoreItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	TSubclassOf<APickup> PickupClass = ItemToStore->GetClass();
-	ItemToStore->Destroy();
-	
+	TSubclassOf<APickup> PickupClass = ItemToStore->GetClass();	
 	uint8 SelectedIndex = Inventory->GetSelectedIndex();
 	FGameplayTag ItemTag;
-	if (ItemSet->FindItemTagFromClass(PickupClass, ItemTag))
+	bool bFoundItem = ItemSet->FindItemTagFromClass(PickupClass, ItemTag);
+
+	if (!bFoundItem)
 	{
-		Inventory->SetItemBySlot(SelectedIndex, ItemTag);
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Could not find an ItemTag matching class '{ClassName}'.", PickupClass->GetName());
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
-	UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Could not find an ItemTag matching class '{ClassName}'.", PickupClass->GetName());
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+	if (IsPredictingClient())
+	{
+		ItemToStore->SetActorHiddenInGame(true);
+	}
+	else
+	{
+		ItemToStore->Destroy();
+		Inventory->SetItemBySlot(SelectedIndex, ItemTag);
+	}
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	return;
 }
 
@@ -107,5 +115,69 @@ bool UStoreItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		return false;
 	}
+
 	return true;
+}
+
+void UStoreItemAbility::ActivateAbilityFailed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, int16 PredictionKey)
+{
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
+	if (!Pawn)
+	{
+		return;
+	}
+
+	UItemHandleComponent* ItemHandle = Pawn->GetComponentByClass<UItemHandleComponent>();
+	if (!ItemHandle)
+	{
+		return;
+	}
+
+	ItemHandle->SetHeldItemHidden(false);
+}
+
+void UStoreItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FPredictionKey& PredictionKey)
+{
+	AActor* Owner = ActorInfo->OwnerActor.Get();
+	if (!Owner)
+	{
+		return;
+	}
+
+	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
+	if (!Pawn)
+	{
+		return;
+	}
+
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameState(Owner)->GameModeClass->ClassDefaultObject);
+	if (!GameMode)
+	{
+		return;
+	}
+
+	UItemSet* ItemSet = GameMode->GetItemSet();
+	if (!ItemSet)
+	{
+		return;
+	}
+
+	UItemHandleComponent* ItemHandle = Pawn->GetComponentByClass<UItemHandleComponent>();
+	UInventoryComponent* Inventory = Owner->GetComponentByClass<UInventoryComponent>();
+	if (!Inventory || !ItemHandle)
+	{
+		return;
+	}
+
+	if (APickup* ConsumedItem = ItemHandle->ConsumeItem())
+	{
+		ConsumedItem->Destroy();
+		TSubclassOf<APickup> PickupClass = ConsumedItem->GetClass();
+		uint8 SelectedIndex = Inventory->GetSelectedIndex();
+		FGameplayTag ItemTag;
+		if (ItemSet->FindItemTagFromClass(PickupClass, ItemTag))
+		{
+			Inventory->SetItemBySlot(SelectedIndex, ItemTag);
+		}
+	}
 }

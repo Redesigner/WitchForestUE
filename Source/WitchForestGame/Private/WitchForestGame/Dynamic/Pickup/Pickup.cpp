@@ -11,6 +11,7 @@ void APickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+    /*
     if (bIsFake)
     {
         DrawDebugSphere(GetWorld(), GetActorLocation(), 35.0f, 16, FColor::Red, false, DeltaSeconds * 2.0f);
@@ -19,6 +20,7 @@ void APickup::Tick(float DeltaSeconds)
     {
         DrawDebugSphere(GetWorld(), GetActorLocation(), 36.0f, 16, FColor::Blue, false, DeltaSeconds * 2.0f);
     }
+    */
 
     if (!bIsShadowingReal)
     {
@@ -27,7 +29,7 @@ void APickup::Tick(float DeltaSeconds)
 
     if (!FakeOwner.IsValid())
     {
-        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
+        // DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }
@@ -37,7 +39,7 @@ void APickup::Tick(float DeltaSeconds)
     if (SquaredLength <= 1.0f)
     {
         FakeOwner->SetActorHiddenInGame(false);
-        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
+        // DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }
@@ -51,12 +53,12 @@ void APickup::Tick(float DeltaSeconds)
     {
         // UE_LOG(LogTemp, Warning, TEXT("Pickup fake simulation was too far away from replicated position, teleporting."));
         // Move these to VLOGGER
-        DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 1.5f);
-        DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 1.5f);
-        DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
+        // DrawDebugSphere(GetWorld(), GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Red, false, 1.5f);
+        // DrawDebugSphere(GetWorld(), FakeOwner->GetActorLocation(), CollisionSphere->GetScaledSphereRadius(), 8, FColor::Blue, false, 1.5f);
+        // DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
 
         FakeOwner->SetActorHiddenInGame(false);
-        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
+        // DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }
@@ -182,4 +184,9 @@ void APickup::OnConsume()
 bool APickup::CanBeStored() const
 {
     return true;
+}
+
+APickup* APickup::GetFakeOwner() const
+{
+    return FakeOwner.Get();
 }
