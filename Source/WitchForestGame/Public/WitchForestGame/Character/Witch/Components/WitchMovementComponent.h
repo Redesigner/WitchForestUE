@@ -7,15 +7,23 @@
 
 #include "WitchMovementComponent.generated.h"
 
-/**
- * 
- */
+class UWitchForestASC;
+
 UCLASS()
 class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
+	TWeakObjectPtr<UWitchForestASC> AbilitySystemComponent;
+
+
 	UWitchMovementComponent();
 
-	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void PhysWalking(float DeltaTime, int32 Iterations) override;
+
+	FRotator GetDeltaRotation(float DeltaTime) const override;
+
+public:
+	/// Pass in the ASC so we can check it for relevant tags, etc.
+	void SetASC(UWitchForestASC* ASC);
 };

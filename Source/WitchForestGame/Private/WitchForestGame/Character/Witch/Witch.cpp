@@ -100,13 +100,18 @@ void AWitch::PossessedBy(AController* NewController)
 		return;
 	}
 
-	UAbilitySystemComponent* ASC = WitchPlayerState->GetWitchForestASC();
+	UWitchForestASC* ASC = WitchPlayerState->GetWitchForestASC();
 	if (!ASC)
 	{
 		return;
 	}
 
 	ASC->SetAvatarActor(this);
+	
+	if (UWitchMovementComponent* WitchMovementComponent = Cast<UWitchMovementComponent>(GetMovementComponent()))
+	{
+		WitchMovementComponent->SetASC(ASC);
+	}
 }
 
 void AWitch::Input_AbilityInputTagPressed(FGameplayTag InputTag)
