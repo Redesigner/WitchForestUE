@@ -11,6 +11,15 @@ void APickup::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+    if (bIsFake)
+    {
+        DrawDebugSphere(GetWorld(), GetActorLocation(), 35.0f, 16, FColor::Red, false, DeltaSeconds * 2.0f);
+    }
+    else
+    {
+        DrawDebugSphere(GetWorld(), GetActorLocation(), 36.0f, 16, FColor::Blue, false, DeltaSeconds * 2.0f);
+    }
+
     if (!bIsShadowingReal)
     {
         return;
@@ -18,6 +27,7 @@ void APickup::Tick(float DeltaSeconds)
 
     if (!FakeOwner.IsValid())
     {
+        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }
@@ -27,6 +37,7 @@ void APickup::Tick(float DeltaSeconds)
     if (SquaredLength <= 1.0f)
     {
         FakeOwner->SetActorHiddenInGame(false);
+        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }
@@ -45,6 +56,7 @@ void APickup::Tick(float DeltaSeconds)
         DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), FakeOwner->GetActorLocation(), 5.0f, FColor::Blue, false, 1.5f);
 
         FakeOwner->SetActorHiddenInGame(false);
+        DrawDebugSphere(GetWorld(), GetActorLocation(), 40.0f, 8, FColor::Purple, false, DeltaSeconds * 2.0f);
         Destroy();
         return;
     }

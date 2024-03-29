@@ -231,19 +231,19 @@ void UWitchForestASC::ClientActivateAbilityFailed_Implementation(FGameplayAbilit
 	}
 }
 
-void UWitchForestASC::ClientActivateAbilitySucceed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, FPredictionKey PredictionKey)
+void UWitchForestASC::ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData)
 {
-	Super::ClientActivateAbilitySucceed_Implementation(AbilityToActivate, PredictionKey);
+	Super::ClientActivateAbilitySucceedWithEventData_Implementation(Handle, PredictionKey, TriggerEventData);
 
-	FGameplayAbilitySpec* FailedAbilitySpec = FindAbilitySpecFromHandle(AbilityToActivate);
-	if (!FailedAbilitySpec)
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(Handle);
+	if (!AbilitySpec)
 	{
 		return;
 	}
 
-	if (UWitchForestGameplayAbility* FailedAbility = Cast<UWitchForestGameplayAbility>(FailedAbilitySpec->Ability))
+	if (UWitchForestGameplayAbility* FailedAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability))
 	{
 		const FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
-		FailedAbility->ActivateAbilitySucceed(AbilityToActivate, ActorInfo, FailedAbilitySpec->ActivationInfo, PredictionKey);
+		FailedAbility->ActivateAbilitySucceed(Handle, ActorInfo, AbilitySpec->ActivationInfo, PredictionKey);
 	}
 }

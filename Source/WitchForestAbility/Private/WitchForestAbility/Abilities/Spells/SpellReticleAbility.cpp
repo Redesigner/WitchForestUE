@@ -33,6 +33,8 @@ void USpellReticleAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 void USpellReticleAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 

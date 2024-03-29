@@ -125,6 +125,10 @@ void UThrowItemAbility::ActivateAbilitySucceed(const FGameplayAbilitySpecHandle 
 			// ItemHandleComponent->GetFakePickup()->SetLastHeldASC(nullptr);
 			ItemHandleComponent->GetFakePickup()->AttachFakeTo(HeldItem);
 		}
+		else
+		{
+			UE_LOGFMT(LogWitchForestAbility, Display, "ThrowAbility '{AbilityName}' succeeded in replication, but there was no real thrown item to attach the fake to.", GetName());
+		}
 	}
 }
 
