@@ -191,6 +191,29 @@ bool UWitchForestASC::TryActivateAbilitiesByTag(FGameplayTag& Tag, bool bAllowRe
 	return bSuccess;
 }
 
+void UWitchForestASC::GrantTemporaryAbilities(const UWitchForestAbilitySet* AbilitySet)
+{
+	if (!AbilitySet)
+	{
+		return;
+	}
+
+	FWitchForestAbilitySet_GrantedHandles GrantedHandles;
+	AbilitySet->GiveToAbilitySystem(this, &GrantedHandles);
+
+	TemporaryGrantedAbilities.Add(GrantedHandles);
+}
+
+void UWitchForestASC::ClearTemporaryAbilities()
+{
+	for (FWitchForestAbilitySet_GrantedHandles GrantedHandles : TemporaryGrantedAbilities)
+	{
+		GrantedHandles.TakeFromAbilitySystem(this);
+	}
+
+	TemporaryGrantedAbilities.Reset();
+}
+
 void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert)
 {
 	UWitchForestGameplayAbility* AbilityToInsert = Cast<UWitchForestGameplayAbility>(SpecToInsert.Ability);

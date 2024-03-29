@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
+
 #include "NativeGameplayTags.h"
 
 #include "WitchForestASC.generated.h"
@@ -16,11 +18,14 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
+	TArray<FWitchForestAbilitySet_GrantedHandles> TemporaryGrantedAbilities;
+
+
 	static void InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert);
 
 	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
 
-	void ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData);
+	void ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData) override;
 
 public:
 	UWitchForestASC();
@@ -37,6 +42,11 @@ public:
 	void ClearAbilityInput();
 
 	bool TryActivateAbilitiesByTag(FGameplayTag& Tag, bool bAllowRemoteActivation = true);
+
+	// @TODO: Should this be structured differently? It breaks the dependency structure of AbilitySets as they are implemented now
+	void GrantTemporaryAbilities(const UWitchForestAbilitySet* AbilitySet);
+
+	void ClearTemporaryAbilities();
 
 protected:
 	// Abilities grouped together by InputTags

@@ -51,7 +51,6 @@ UBaseAttributeSet* AWitchPlayerState::GetAttributeSet() const
 
 void AWitchPlayerState::BeginPlay()
 {
-    GrantAbilities();
 }
 
 

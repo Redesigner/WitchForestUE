@@ -20,6 +20,7 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
 
     if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
     {
+        WitchPlayerState->GrantAbilities();
         WitchPlayerState->InitializeAttributes();
     }
 }

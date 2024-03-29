@@ -43,8 +43,6 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 
 
 	AWitchPlayerState();
-
-	void GrantAbilities();
 	
 	void BeginPlay() override;
 
@@ -62,6 +60,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
 	UBaseAttributeSet* GetAttributeSet() const;
+
+	void GrantAbilities();
 
 	/// Set our attributes to their default values;
 	void InitializeAttributes();
