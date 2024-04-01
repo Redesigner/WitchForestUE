@@ -78,7 +78,7 @@ void ASpellProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void ASpellProjectile::ApplyGameplayEffectsToTarget(AActor* Target, FHitResult HitResult)
 {
-	if (!HasAuthority())
+	if (!HasAuthority() || !Target)
 	{
 		return;
 	}

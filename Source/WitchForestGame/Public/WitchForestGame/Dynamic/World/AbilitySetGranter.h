@@ -17,6 +17,11 @@ class WITCHFORESTGAME_API AAbilitySetGranter : public AActor
 	UPROPERTY(EditAnywhere, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
+	UPROPERTY(EditAnywhere, Category = Application, meta = (AllowPrivateAccess = true))
+	bool bSetWitchColor = true;
+
+	UPROPERTY(EditAnywhere, Category = Application, meta = (EditCondition = bSetWitchColor, AllowPrivateAccess = true))
+	FColor WitchColor;
 
 	AAbilitySetGranter();
 

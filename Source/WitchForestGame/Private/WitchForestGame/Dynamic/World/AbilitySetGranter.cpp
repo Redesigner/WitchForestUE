@@ -7,12 +7,11 @@
 
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
+#include "WitchForestGame/Character/Witch/Witch.h"
 
 AAbilitySetGranter::AAbilitySetGranter()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-
 }
 
 void AAbilitySetGranter::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -40,5 +39,13 @@ void AAbilitySetGranter::GrantAbilitiesTo(UWitchForestASC* ASC)
 		}
 
 		ASC->GrantTemporaryAbilities(AbilitySet);
+	}
+
+	if (AWitch* Witch = Cast<AWitch>(ASC->GetAvatarActor()))
+	{
+		if (bSetWitchColor)
+		{
+			Witch->SetPlayerColor(WitchColor);
+		}
 	}
 }

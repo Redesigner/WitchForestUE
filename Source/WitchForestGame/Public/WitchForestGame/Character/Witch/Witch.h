@@ -72,6 +72,10 @@ public:
 	// Consider making Interaction Volume a seprate component so we can use GetComponentByClass instead
 	USphereComponent* GetInteractionVolume() const;
 
+	/// Set the player's color. Must be implemented in blueprint, since mesh refs are difficult
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetPlayerColor(FColor Color);
+
 private:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UFUNCTION(BlueprintCallable)
