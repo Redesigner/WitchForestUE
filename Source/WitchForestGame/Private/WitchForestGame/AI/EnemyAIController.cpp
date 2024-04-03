@@ -20,18 +20,42 @@
 AEnemyAIController::AEnemyAIController()
 {
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-
 	AIPerception->OnTargetPerceptionInfoUpdated.AddUniqueDynamic(this, &ThisClass::TargetPerceptionInfoUpdated);
+	AIPerception->OnTargetPerceptionForgotten.AddUniqueDynamic(this, &ThisClass::TargetPerceptionForgotten);
 }
 
 void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
-	if (!UpdateInfo.Stimulus.IsActive() || !UpdateInfo.Target.IsValid())
+	UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' received perception update: Sensed target '{TargetName}' with '{UpdateType}' '{IsActive}', '{IsExpired}'.", GetName(),
+		UpdateInfo.Target.IsValid() ? UpdateInfo.Target->GetName(): "Null",
+		UpdateInfo.Stimulus.Type.Name,
+		UpdateInfo.Stimulus.IsActive() ? "Active" : "Inactive",
+		UpdateInfo.Stimulus.IsExpired() ? "Expired" : "Not Expired");
+
+	if (!UpdateInfo.Target.IsValid())
 	{
+		UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' recieved perception update, but the perceived target was invalid.", GetName());
 		return;
 	}
 
-	SetTarget(UpdateInfo.Target.Get());
+	if (UpdateInfo.Stimulus.IsActive())
+	{
+		SetTarget(UpdateInfo.Target.Get());
+	}
+	else if (!AIPerception->HasAnyActiveStimulus(*UpdateInfo.Target.Get()) )
+	{
+		UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' did not have any other stimulus for '{TargetName}', clearing target.", GetName(), UpdateInfo.Target->GetName());
+		ClearTarget();
+	}
+}
+
+void AEnemyAIController::TargetPerceptionForgotten(AActor* Actor)
+{
+	UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' forgot target '{TargetName}'.", GetName(), Actor ? Actor->GetName() : "Null");
+	if (TargetActor == Actor)
+	{
+		ClearTarget();
+	}
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -87,10 +111,20 @@ void AEnemyAIController::SetTarget(AActor* Target)
 		return;
 	}
 
-	UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' set target to '{TargetName}'.", GetName(), Target ? Target->GetName() : "Null");
+	if (!Target)
+	{
+		// If you're trying to set the target to nullptr intentionally, use ClearTarget() instead.
+		return;
+	}
+
 	TargetActor = Target;
-	// Blackboard->SetValueAsObject(TargetKey.SelectedKeyName, Target);
 	Blackboard->SetValueAsObject("TargetActor", Target);
+}
+
+void AEnemyAIController::ClearTarget()
+{
+	TargetActor = nullptr;
+	Blackboard->ClearValue("TargetActor");
 }
 
 ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Other) const
@@ -101,14 +135,14 @@ ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Oth
 		{
 			if (OtherTeamAgent->GetWitchForestTeam() == GetWitchForestTeam())
 			{
-				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
-				UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}' ''.", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
+				// UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
+				// UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}' ''.", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
 				return ETeamAttitude::Friendly;
 			}
 			else
 			{
-				UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is hostile.", GetName(), Other.GetName());
-				UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}'. ''", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
+				// UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is hostile.", GetName(), Other.GetName());
+				// UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}'. ''", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
 				return ETeamAttitude::Hostile;
 			}
 		}
@@ -127,7 +161,7 @@ void AEnemyAIController::OverrideTeam(EWitchForestTeam NewTeam)
 
 	if (NewTeam != GetWitchForestTeam())
 	{
-		SetTarget(nullptr);
+		ClearTarget();
 	}
 
 	PerceptionSystem->UnregisterSource(*this);

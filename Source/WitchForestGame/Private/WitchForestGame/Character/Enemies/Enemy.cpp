@@ -48,25 +48,40 @@ void AEnemy::BeginPlay()
 	AbilitySystem->SetAvatarActor(this);
 }
 
+
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 
 void AEnemy::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 }
 
+
+void AEnemy::Die()
+{
+	bAlive = false;
+	DropTableComponent->DropItems();
+	AbilitySystem->CancelAllAbilities();
+	SetLifeSpan(2.0f);
+	OnDeath.Broadcast();
+}
+
+
 void AEnemy::MoveForward()
 {
 	AddMovementInput(GetActorForwardVector());
 }
 
+
 UCapsuleComponent* AEnemy::GetCapsule() const
 {
 	return Capsule;
 }
+
 
 void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
@@ -81,6 +96,7 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 		{
 			return;
 		}
+
 		if (ModifiedAttribute.Attribute == AttributeSet->GetHealthAttribute())
 		{
 			AActor* Damager = GameplayEffectSpec.GetContext().GetInstigator();
@@ -97,24 +113,24 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 			float NewHealth = ModifiedAttribute.Attribute.GetNumericValue(AttributeSet);
 			if (NewHealth <= 0.0f)
 			{
-				bAlive = false;
-				DropTableComponent->DropItems();
-				SetLifeSpan(2.0f);
-				OnDeath.Broadcast();
+				Die();
 			}
 		}
 	}
 }
+
 
 UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
 {
 	return AbilitySystem;
 }
 
+
 UEnemyMovementComponent* AEnemy::GetEnemyMovementComponent() const
 {
 	return MovementComponent;
 }
+
 
 bool AEnemy::IsPlayingRootMotion() const
 {
@@ -125,10 +141,12 @@ bool AEnemy::IsPlayingRootMotion() const
 	return false;
 }
 
+
 USkeletalMeshComponent* AEnemy::GetSkeletalMesh() const
 {
 	return Mesh;
 }
+
 
 void AEnemy::OverrideTeam(EWitchForestTeam NewTeam)
 {
@@ -138,6 +156,7 @@ void AEnemy::OverrideTeam(EWitchForestTeam NewTeam)
 	}
 }
 
+
 void AEnemy::SetWitchForestTeam(EWitchForestTeam InTeam)
 {
 	if (IWitchForestTeamAgentInterface* TeamAgent = Cast<IWitchForestTeamAgentInterface>(GetController()))
@@ -145,6 +164,7 @@ void AEnemy::SetWitchForestTeam(EWitchForestTeam InTeam)
 		TeamAgent->SetWitchForestTeam(InTeam);
 	}
 }
+
 
 EWitchForestTeam AEnemy::GetWitchForestTeam() const
 {

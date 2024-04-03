@@ -41,8 +41,6 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDropTableComponent> DropTableComponent;
 
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
@@ -53,14 +51,17 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 	bool bAlive = true;
 
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTakeDamage, AActor*, Source, FHitResult, Hit);
+
+	DECLARE_MULTICAST_DELEGATE(FOnDeath)
+
+
 	// Begin IWitchForestTeamAgentInterface
 	void OverrideTeam(EWitchForestTeam NewTeam) override;
 	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
 	EWitchForestTeam GetWitchForestTeam() const override;
 	// End IWitchForestTeamAgentInterface
 
-
-public:
 	AEnemy(const FObjectInitializer& ObjectInitializer);
 
 	void BeginPlay() override;
@@ -69,6 +70,10 @@ public:
 
 	void PossessedBy(AController* NewController) override;
 
+	void Die();
+
+
+public:
 	UFUNCTION(BlueprintCallable)
 	void MoveForward();
 
@@ -84,12 +89,8 @@ public:
 
 	USkeletalMeshComponent* GetSkeletalMesh() const;
 
-
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTakeDamage, AActor*, Source, FHitResult, Hit);
 	UPROPERTY(BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;
 
-	DECLARE_MULTICAST_DELEGATE(FOnDeath)
 	FOnDeath OnDeath;
 };

@@ -37,6 +37,7 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	TEnumAsByte<EWitchForestTeam> OverridenTeam = EWitchForestTeam::Unaffiliated;
 	bool bOverridingTeam = false;
 
+
 	TWeakObjectPtr<AEnemy> EnemyPawn;
 
 	TWeakObjectPtr<AActor> TargetActor;
@@ -47,6 +48,9 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	UFUNCTION()
 	void TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
 
+	UFUNCTION()
+	void TargetPerceptionForgotten(AActor* Actor);
+
 	void OnPossess(APawn* InPawn) override;
 
 	void Tick(float DeltaTime) override;
@@ -54,6 +58,8 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	void OnDeath();
 
 	void SetTarget(AActor* Target);
+
+	void ClearTarget();
 
 
 	// IGenericTeamAgentInterface
