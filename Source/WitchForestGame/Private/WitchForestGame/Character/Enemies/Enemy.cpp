@@ -67,6 +67,7 @@ void AEnemy::Die()
 	DropTableComponent->DropItems();
 	AbilitySystem->CancelAllAbilities();
 	SetLifeSpan(2.0f);
+	MovementComponent->SetMovementMode(EEnemyMovementMode::MOVE_None);
 	OnDeath.Broadcast();
 }
 
