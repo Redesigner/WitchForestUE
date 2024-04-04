@@ -96,6 +96,9 @@ public:
 
 	void SetMaxSpeed(float NewMaxSpeed);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsWalking() const;
+
 
 protected:
 	virtual void HandleBlockingImpact(FHitResult ImpactHitResult);

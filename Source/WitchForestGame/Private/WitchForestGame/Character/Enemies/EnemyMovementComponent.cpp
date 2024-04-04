@@ -355,7 +355,7 @@ void UEnemyMovementComponent::ApplyRootMotionToVelocity(float DeltaTime)
 	if (Mesh->IsPlayingRootMotion() && RootMotionParams.bHasRootMotion && DeltaTime > 0.f)
 	{
 		FTransform DeltaTransformFromRootMotion = Mesh->ConvertLocalRootMotionToWorld(RootMotionParams.GetRootMotionTransform());
-		Velocity += DeltaTransformFromRootMotion.GetLocation() / DeltaTime;
+		Velocity = DeltaTransformFromRootMotion.GetLocation() / DeltaTime;
 		return;
 	}
 }
@@ -369,4 +369,9 @@ void UEnemyMovementComponent::SetOrientRotationToMovement(bool bValue)
 void UEnemyMovementComponent::SetMaxSpeed(float NewMaxSpeed)
 {
 	MaxSpeed = NewMaxSpeed;
+}
+
+bool UEnemyMovementComponent::IsWalking() const
+{
+	return MovementMode == EEnemyMovementMode::MOVE_Walking && !Velocity.IsNearlyZero();
 }

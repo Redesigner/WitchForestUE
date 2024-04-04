@@ -45,7 +45,7 @@ EBTNodeResult::Type UBTTask_ExecuteAbilityTag::ExecuteTask(UBehaviorTreeComponen
 	ASC->FindAllAbilitiesWithTags(FoundSpecHandles, AbilityTag);
 	if (FoundSpecHandles.Num() <= 0)
 	{
-		UE_LOGFMT(LogWitchForestAI, Error, "UBTTask_ExecuteAbilityTag '{Node}' failed. Could not find an ability matching AbilityTag.", GetName());
+		UE_LOGFMT(LogWitchForestAI, Error, "UBTTask_ExecuteAbilityTag '{Node}' failed. Could not find an ability matching AbilityTag '{AbilityTag}'.", GetName(), AbilityTag.ToStringSimple());
 		return EBTNodeResult::Failed;
 	}
 
