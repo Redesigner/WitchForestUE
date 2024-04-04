@@ -20,15 +20,14 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
 
+	DECLARE_MULTICAST_DELEGATE(FOnPotentialAbilityActivationChanged);
+
 
 	AWitchPlayerController();
 
 	void BeginPlay() override;
-
 	void OnPossess(APawn* InPawn) override;
-
 	void BeginPlayingState() override;
-
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
 	// Begin IWitchForestTeamAgentInterface
@@ -37,9 +36,13 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	EWitchForestTeam GetWitchForestTeam() const override;
 	// End IWitchForestTeamAgentInterface
 
+	void PotentialInteractionsChanged();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
+
+	FOnPotentialAbilityActivationChanged OnPotentialAbilityActivationChanged;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

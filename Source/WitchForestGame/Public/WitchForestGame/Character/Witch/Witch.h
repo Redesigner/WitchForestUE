@@ -46,22 +46,24 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	TObjectPtr<USphereComponent> InteractionVolume;
 
 
-	void Tick(float DeltaSeconds) override;
+	DECLARE_MULTICAST_DELEGATE(FOnPotentialInteractionsChanged);
 
-public:
+
 	AWitch(const FObjectInitializer& ObjectInitializer);
-
-	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void BindActions(UInputComponent* PlayerInputComponent);
 
-	void PossessedBy(AController* NewController) override;
+	void Tick(float DeltaSeconds) override;
 
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	void PossessedBy(AController* NewController) override;
 
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
-
 
 	// Native Actions
 	void Move(const FInputActionInstance& Instance);
@@ -69,6 +71,19 @@ public:
 	void ShiftSlot(const FInputActionInstance& Instance);
 
 
+	UFUNCTION(BlueprintCallable)
+	UWitchForestASC* GetWitchForestASC() const;
+
+	void TeleportToStart();
+
+	UFUNCTION()
+	void InteractVolumeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void InteractVolumeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+public:
 	// Consider making Interaction Volume a seprate component so we can use GetComponentByClass instead
 	USphereComponent* GetInteractionVolume() const;
 
@@ -76,10 +91,5 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetPlayerColor(FColor Color);
 
-private:
-	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UFUNCTION(BlueprintCallable)
-	UWitchForestASC* GetWitchForestASC() const;
-
-	void TeleportToStart();
+	FOnPotentialInteractionsChanged OnPotentialInteractionsChanged;
 };

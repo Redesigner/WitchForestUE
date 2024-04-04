@@ -24,18 +24,14 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 	static void InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert);
 
 	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
-
 	void ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData) override;
 
 public:
 	UWitchForestASC();
 
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
-
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
-
 	void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
-
 
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 
@@ -47,6 +43,8 @@ public:
 	void GrantTemporaryAbilities(const UWitchForestAbilitySet* AbilitySet);
 
 	void ClearTemporaryAbilities();
+
+	bool GetFirstAbilityForInputTag(const FGameplayTag& InputTag, FGameplayAbilitySpec& AbilitySpecOut) const;
 
 protected:
 	// Abilities grouped together by InputTags

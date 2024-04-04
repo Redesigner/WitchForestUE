@@ -4,6 +4,7 @@
 #include "WitchForestGame/Character/WitchPlayerController.h"
 
 #include "WitchForestGame/Character/WitchPlayerState.h"
+#include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
 #include "EnhancedInputSubsystems.h"
@@ -22,6 +23,11 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
     {
         WitchPlayerState->GrantAbilities();
         WitchPlayerState->InitializeAttributes();
+    }
+
+    if (AWitch* Witch = Cast<AWitch>(InPawn))
+    {
+        Witch->OnPotentialInteractionsChanged.AddUObject(this, &ThisClass::PotentialInteractionsChanged);
     }
 }
 
@@ -104,4 +110,9 @@ EWitchForestTeam AWitchPlayerController::GetWitchForestTeam() const
     }
 
     return EWitchForestTeam::Unaffiliated;
+}
+
+void AWitchPlayerController::PotentialInteractionsChanged()
+{
+    OnPotentialAbilityActivationChanged.Broadcast();
 }

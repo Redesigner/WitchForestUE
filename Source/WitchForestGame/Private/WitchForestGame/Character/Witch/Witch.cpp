@@ -16,6 +16,8 @@
 #include "WitchForestGame/Character/WitchForestInputComponent.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
+#include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 #include "WitchForestGame/Game/WitchForestGameplayTags.h"
 
@@ -48,6 +50,8 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionVolume"));
 	InteractionVolume->SetupAttachment(RootComponent);
+	InteractionVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::InteractVolumeBeginOverlap);
+	InteractionVolume->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::InteractVolumeEndOverlap);
 }
 
 void AWitch::Tick(float DeltaSeconds)
@@ -57,6 +61,36 @@ void AWitch::Tick(float DeltaSeconds)
 	if (GetActorLocation().Z <= -200.0f)
 	{
 		TeleportToStart();
+	}
+}
+
+void AWitch::InteractVolumeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OtherActor))
+	{
+		OnPotentialInteractionsChanged.Broadcast();
+		return;
+	}
+
+	if (APickup* Pickup = Cast<APickup>(OtherActor))
+	{
+		OnPotentialInteractionsChanged.Broadcast();
+		return;
+	}
+}
+
+void AWitch::InteractVolumeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OtherActor))
+	{
+		OnPotentialInteractionsChanged.Broadcast();
+		return;
+	}
+
+	if (APickup* Pickup = Cast<APickup>(OtherActor))
+	{
+		OnPotentialInteractionsChanged.Broadcast();
+		return;
 	}
 }
 
@@ -86,6 +120,7 @@ void AWitch::BindActions(UInputComponent* PlayerInputComponent)
 
 	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_Move,
 		ETriggerEvent::Triggered, this, &ThisClass::Move, /*bLogIfNotFound=*/ false);
+
 	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_ShiftSlot,
 		ETriggerEvent::Triggered, this, &ThisClass::ShiftSlot, /*bLogIfNotFound=*/ false);
 }

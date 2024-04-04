@@ -26,12 +26,17 @@ class WITCHFORESTABILITY_API UWitchForestGameplayAbility : public UGameplayAbili
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = AbilityActivation, meta = (AllowPrivateAccess = true))
 	bool bConsumeInput = false;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = AbilityActivation, meta = (AllowPrivateAccess = true))
+	FText TipName;
+
 public:
 	EAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 
 	uint8 GetPriority() const { return Priority; }
 
 	bool ConsumesInput() const { return bConsumeInput; }
+
+	FText GetTipName() const { return TipName; }
 
 	virtual void ActivateAbilityFailed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, int16 PredictionKey);
 

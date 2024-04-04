@@ -204,6 +204,7 @@ void UWitchForestASC::GrantTemporaryAbilities(const UWitchForestAbilitySet* Abil
 	TemporaryGrantedAbilities.Add(GrantedHandles);
 }
 
+
 void UWitchForestASC::ClearTemporaryAbilities()
 {
 	for (FWitchForestAbilitySet_GrantedHandles GrantedHandles : TemporaryGrantedAbilities)
@@ -213,6 +214,33 @@ void UWitchForestASC::ClearTemporaryAbilities()
 
 	TemporaryGrantedAbilities.Reset();
 }
+
+
+bool UWitchForestASC::GetFirstAbilityForInputTag(const FGameplayTag& InputTag, FGameplayAbilitySpec& AbilitySpecOut) const
+{
+	TArray<FGameplayAbilitySpec> Specs;
+	for (FGameplayAbilitySpec AbilitySpec : ActivatableAbilities.Items)
+	{
+		if (InputTag.MatchesAnyExact(AbilitySpec.Ability->AbilityTags))
+		{
+			InsertSortPriority(Specs, AbilitySpec);
+		}
+	}
+
+	for (FGameplayAbilitySpec AbilitySpec : Specs)
+	{
+		if (UGameplayAbility* Ability = AbilitySpec.Ability)
+		{
+			if (Ability->CanActivateAbility(AbilitySpec.Handle, AbilityActorInfo.Get()))
+			{
+				AbilitySpecOut = AbilitySpec;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 
 void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert)
 {
