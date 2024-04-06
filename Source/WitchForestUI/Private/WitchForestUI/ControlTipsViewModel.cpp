@@ -5,6 +5,7 @@
 
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"
+#include "WitchForestAbility/Input/WitchForestInputHints.h"
 #include "WitchForestGame/Character/WitchPlayerController.h"
 
 
@@ -15,7 +16,12 @@ void UControlTipsViewModel::PotentialAbilityActivationChanged()
 		return;
 	}
 
-	FString ControllerHints;
+	if (!InputHints)
+	{
+		return;
+	}
+
+	TArray<TObjectPtr<UControlTipUiSet>> ControlTipsTemp;
 
 	for (FGameplayTag& InputTag : WatchedInputTags)
 	{
@@ -31,12 +37,21 @@ void UControlTipsViewModel::PotentialAbilityActivationChanged()
 			continue;
 		}
 
-		const FString TipFormatString = TEXT("Press '{0}' to '{1}'\n");
-		FString ControllerTip = FString::Format(*TipFormatString, { InputTag.GetTagName().ToString(), Ability->GetTipName().ToString() });
-		ControllerHints.Append(ControllerTip);
+		UControlTipUiSet* ControlTip = NewObject<UControlTipUiSet>();
+		ControlTip->ControlTipText = Ability->GetTipName();
+		ControlTip->DisplayIcon = InputHints->FindGamepadButtonIconForInputTag(InputTag);
+
+		ControlTipsTemp.Add(ControlTip);
 	}
 
-	UE_MVVM_SET_PROPERTY_VALUE(ControlHints, FText::FromString(ControllerHints));
+	ControlHints = ControlTipsTemp;
+	BroadcastFieldValueChanged(ThisClass::FFieldNotificationClassDescriptor::ControlHints);
+	// UE_MVVM_SET_PROPERTY_VALUE(ControlHints, ControlTipsTemp);
+}
+
+void UControlTipsViewModel::InventoryChanged(FGameplayTag Item, uint8 SlotIndex)
+{
+	PotentialAbilityActivationChanged();
 }
 
 void UControlTipsViewModel::BindAbilitySystem(UWitchForestASC* AbilitySystem, AWitchPlayerController* PlayerController, TArray<FGameplayTag> WatchedTags)
@@ -45,4 +60,11 @@ void UControlTipsViewModel::BindAbilitySystem(UWitchForestASC* AbilitySystem, AW
 
 	OwningASC = AbilitySystem;
 	WatchedInputTags = WatchedTags;
+
+	PotentialAbilityActivationChanged();
+}
+
+void UControlTipsViewModel::SetInputHints(UWitchForestInputHints* InputHintsIn)
+{
+	InputHints = InputHintsIn;
 }

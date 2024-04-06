@@ -212,6 +212,8 @@ void AWitch::ShiftSlot(const FInputActionInstance& Instance)
 	{
 		InventoryComponent->ShiftDown();
 	}
+
+	OnPotentialInteractionsChanged.Broadcast();
 }
 
 USphereComponent* AWitch::GetInteractionVolume() const

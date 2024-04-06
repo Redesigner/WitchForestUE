@@ -16,6 +16,7 @@ USTRUCT(BlueprintType)
 struct FWitchForestInputAction
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 	const UInputAction* InputAction = nullptr;

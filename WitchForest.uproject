@@ -30,7 +30,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"ModelViewViewModelBlueprint",
-				"ModelViewViewModel"
+				"ModelViewViewModel",
+				"CoreUObject"
 			]
 		}
 	],
