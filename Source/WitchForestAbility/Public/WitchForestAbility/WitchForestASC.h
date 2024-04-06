@@ -18,6 +18,9 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_MULTICAST_DELEGATE(FOnAbilitiesChanged);
+
+
 	TArray<FWitchForestAbilitySet_GrantedHandles> TemporaryGrantedAbilities;
 
 
@@ -25,6 +28,7 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 
 	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
 	void ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData) override;
+	void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
 public:
 	UWitchForestASC();
@@ -45,6 +49,9 @@ public:
 	void ClearTemporaryAbilities();
 
 	bool GetFirstAbilityForInputTag(const FGameplayTag& InputTag, FGameplayAbilitySpec& AbilitySpecOut) const;
+
+
+	FOnAbilitiesChanged OnAbilitiesChanged;
 
 protected:
 	// Abilities grouped together by InputTags

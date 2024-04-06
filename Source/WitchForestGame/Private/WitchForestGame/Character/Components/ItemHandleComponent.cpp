@@ -128,6 +128,7 @@ APickup* UItemHandleComponent::ConsumeItem()
 	}
 
 	Item->EnableMovement();
+	OnHeldItemChanged.Broadcast();
 	return Item;
 }
 
@@ -156,6 +157,8 @@ void UItemHandleComponent::PickupItem(APickup* Item)
 		}
 		Item->GetGrantedAbilitySet()->GiveToAbilitySystem(PlayerState->GetWitchForestASC(), &GrantedHandles);
 	}
+
+	OnHeldItemChanged.Broadcast();
 }
 
 bool UItemHandleComponent::HoldingItem() const

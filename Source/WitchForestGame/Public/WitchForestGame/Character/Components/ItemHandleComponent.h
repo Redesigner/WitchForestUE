@@ -16,8 +16,12 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
+	DECLARE_MULTICAST_DELEGATE(FOnHeldItemChanged);
+
+
 	UPROPERTY(ReplicatedUsing = OnRep_HeldItem, VisibleAnywhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = true))
 	TObjectPtr<APickup> HeldItem;
+
 
 	TWeakObjectPtr<APickup> FakePickup;
 
@@ -33,6 +37,8 @@ class WITCHFORESTGAME_API UItemHandleComponent : public USceneComponent
 
 public:
 	TWeakObjectPtr<APickup> RequestedPickup;
+
+	FOnHeldItemChanged OnHeldItemChanged;
 
 
 	UItemHandleComponent();

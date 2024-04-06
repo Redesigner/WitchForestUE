@@ -61,6 +61,11 @@ void UControlTipsViewModel::BindAbilitySystem(UWitchForestASC* AbilitySystem, AW
 	OwningASC = AbilitySystem;
 	WatchedInputTags = WatchedTags;
 
+	if (OwningASC.IsValid())
+	{
+		OwningASC->OnAbilitiesChanged.AddUObject(this, &ThisClass::PotentialAbilityActivationChanged);
+	}
+
 	PotentialAbilityActivationChanged();
 }
 

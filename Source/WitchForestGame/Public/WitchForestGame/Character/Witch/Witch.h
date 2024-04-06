@@ -70,6 +70,8 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 
 	void ShiftSlot(const FInputActionInstance& Instance);
 
+	void HeldItemChanged();
+
 
 	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;

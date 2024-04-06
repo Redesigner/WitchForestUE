@@ -298,3 +298,10 @@ void UWitchForestASC::ClientActivateAbilitySucceedWithEventData_Implementation(F
 		FailedAbility->ActivateAbilitySucceed(Handle, ActorInfo, AbilitySpec->ActivationInfo, PredictionKey);
 	}
 }
+
+void UWitchForestASC::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	OnAbilitiesChanged.Broadcast();
+}

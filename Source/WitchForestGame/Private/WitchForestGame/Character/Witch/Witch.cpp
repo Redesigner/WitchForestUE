@@ -47,6 +47,7 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 
 	ItemHandle = CreateDefaultSubobject<UItemHandleComponent>(TEXT("ItemHandle"));
 	ItemHandle->SetupAttachment(RootComponent);
+	ItemHandle->OnHeldItemChanged.AddUObject(this, &ThisClass::HeldItemChanged);
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionVolume"));
 	InteractionVolume->SetupAttachment(RootComponent);
@@ -213,6 +214,11 @@ void AWitch::ShiftSlot(const FInputActionInstance& Instance)
 		InventoryComponent->ShiftDown();
 	}
 
+	OnPotentialInteractionsChanged.Broadcast();
+}
+
+void AWitch::HeldItemChanged()
+{
 	OnPotentialInteractionsChanged.Broadcast();
 }
 
