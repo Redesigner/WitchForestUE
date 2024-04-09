@@ -26,7 +26,7 @@ AEnemyAIController::AEnemyAIController()
 
 void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
-	UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' received perception update: Sensed target '{TargetName}' with '{UpdateType}' '{IsActive}', '{IsExpired}'.", GetName(),
+	UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' received perception update: Sensed target '{TargetName}' with '{UpdateType}' '{IsActive}', '{IsExpired}'.", GetName(),
 		UpdateInfo.Target.IsValid() ? UpdateInfo.Target->GetName(): "Null",
 		UpdateInfo.Stimulus.Type.Name,
 		UpdateInfo.Stimulus.IsActive() ? "Active" : "Inactive",
@@ -34,7 +34,7 @@ void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdat
 
 	if (!UpdateInfo.Target.IsValid())
 	{
-		UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' recieved perception update, but the perceived target was invalid.", GetName());
+		UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' recieved perception update, but the perceived target was invalid.", GetName());
 		return;
 	}
 
@@ -44,14 +44,14 @@ void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdat
 	}
 	else if (!AIPerception->HasAnyActiveStimulus(*UpdateInfo.Target.Get()) )
 	{
-		UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' did not have any other stimulus for '{TargetName}', clearing target.", GetName(), UpdateInfo.Target->GetName());
+		UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' did not have any other stimulus for '{TargetName}', clearing target.", GetName(), UpdateInfo.Target->GetName());
 		ClearTarget();
 	}
 }
 
 void AEnemyAIController::TargetPerceptionForgotten(AActor* Actor)
 {
-	UE_LOGFMT(LogWitchForestAI, Display, "AI '{SelfName}' forgot target '{TargetName}'.", GetName(), Actor ? Actor->GetName() : "Null");
+	UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' forgot target '{TargetName}'.", GetName(), Actor ? Actor->GetName() : "Null");
 	if (TargetActor == Actor)
 	{
 		ClearTarget();

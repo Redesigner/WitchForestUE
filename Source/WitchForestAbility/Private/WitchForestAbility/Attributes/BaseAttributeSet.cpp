@@ -49,7 +49,7 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		}
 	}
 
-	if (Data.EvaluatedData.Magnitude < 0.0f)
+	if (Data.EvaluatedData.Magnitude < 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
 	{
 		BroadcastDamageEventPerception(Data);
 	}
