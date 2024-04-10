@@ -69,6 +69,8 @@ void AEnemy::Die()
 	SetLifeSpan(2.0f);
 	MovementComponent->SetMovementMode(EEnemyMovementMode::MOVE_None);
 	OnDeath.Broadcast();
+	// Separate Dynamic delegate?
+	Death.Broadcast();
 }
 
 

@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbilityTargetActor.h"
 #include "Logging/StructuredLog.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "WitchForestAbility.h"
 #include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
@@ -28,12 +29,28 @@ void USpellReticleAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	AGameplayAbilityTargetActor* TargetActor;
 	WaitTargetTask->BeginSpawningActor(this, TargetingClass, TargetActor);
 	WaitTargetTask->FinishSpawningActor(this, TargetActor);
+
+	if (APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor))
+	{
+		if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(Pawn->GetMovementComponent()) )
+		{
+			CharacterMovementComponent->bOrientRotationToMovement = false;
+		}
+	}
 }
 
 
 void USpellReticleAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+
+	if (APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor))
+	{
+		if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(Pawn->GetMovementComponent()))
+		{
+			CharacterMovementComponent->bOrientRotationToMovement = true;
+		}
+	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

@@ -54,6 +54,7 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTakeDamage, AActor*, Source, FHitResult, Hit);
 
 	DECLARE_MULTICAST_DELEGATE(FOnDeath)
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeath);
 
 
 	// Begin IWitchForestTeamAgentInterface
@@ -93,4 +94,7 @@ public:
 	FOnTakeDamage OnTakeDamage;
 
 	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FDeath Death;
 };

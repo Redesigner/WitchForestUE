@@ -35,3 +35,30 @@ FRotator UWitchMovementComponent::GetDeltaRotation(float DeltaTime) const
 
 	return Super::GetDeltaRotation(DeltaTime);
 }
+
+float UWitchMovementComponent::GetMaxSpeed() const
+{
+	switch (MovementMode)
+	{
+	case MOVE_Walking:
+	case MOVE_NavWalking:
+		return GetMaxWalkSpeed();
+	case MOVE_Falling:
+		return MaxWalkSpeed;
+	case MOVE_Swimming:
+		return MaxSwimSpeed;
+	case MOVE_Flying:
+		return MaxFlySpeed;
+	case MOVE_Custom:
+		return MaxCustomMovementSpeed;
+	case MOVE_None:
+	default:
+		return 0.f;
+	}
+}
+
+float UWitchMovementComponent::GetMaxWalkSpeed() const
+{
+	const float Dot = FMath::Clamp(UpdatedComponent->GetForwardVector().Dot(Velocity.GetSafeNormal2D()), 0.0f, 1.0f);
+	return FMath::Lerp(MaxWalkSpeedCrouched, MaxWalkSpeed, Dot);
+}
