@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagAssetInterface.h" 
 
 #include "Pickup.generated.h"
 
@@ -12,7 +13,7 @@ class UAbilitySystemComponent;
 class USphereComponent;
 
 UCLASS()
-class WITCHFORESTGAME_API APickup : public AActor
+class WITCHFORESTGAME_API APickup : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -28,6 +29,9 @@ class WITCHFORESTGAME_API APickup : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CustomReplication, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float InterpolationRate = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
+	FGameplayTagContainer GameplayTags;
+
 
 	float CurrentError = 0.0f;
 
@@ -41,6 +45,8 @@ class WITCHFORESTGAME_API APickup : public AActor
 	void Tick(float DeltaSeconds) override;
 
 	void OnRep_ReplicatedMovement() override;
+
+	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 protected:
 	// The ASC of whichever actor held this last. This can be used to infer that they caused any sort of damage or other side effects

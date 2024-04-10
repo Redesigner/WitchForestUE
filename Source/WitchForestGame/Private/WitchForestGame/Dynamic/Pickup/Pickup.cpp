@@ -78,6 +78,11 @@ void APickup::OnRep_ReplicatedMovement()
     Super::OnRep_ReplicatedMovement();
 }
 
+void APickup::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+    TagContainer = GameplayTags;
+}
+
 APickup::APickup()
 {
     bReplicates = true;
