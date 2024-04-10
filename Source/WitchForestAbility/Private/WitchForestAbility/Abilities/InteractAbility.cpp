@@ -15,14 +15,14 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	AWitch* Witch = Cast<AWitch>(ActorInfo->AvatarActor);
 	if (!Witch)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 		return;
 	}
 
 	USphereComponent* InteractionVolume = Witch->GetInteractionVolume();
 	if (!InteractionVolume)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 		return;
 	}
 
@@ -38,7 +38,7 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		}
 	}
 
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
 bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
@@ -65,9 +65,9 @@ bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	InteractionVolume->GetOverlappingActors(OverlappingActors);
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		if (OverlappingActor->Implements<UInteractableInterface>())
+		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
 		{
-			return true;
+			return Interactable->CanInteract(Witch);
 		}
 	}
 
