@@ -24,7 +24,7 @@ class WITCHFORESTABILITY_API UWitchForestASC : public UAbilitySystemComponent
 	TArray<FWitchForestAbilitySet_GrantedHandles> TemporaryGrantedAbilities;
 
 
-	static void InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert);
+	void InsertSortPriority(TArray<FGameplayAbilitySpecHandle>& Array, FGameplayAbilitySpecHandle SpecToInsert) const;
 
 	void ClientActivateAbilityFailed_Implementation(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey) override;
 	void ClientActivateAbilitySucceedWithEventData_Implementation(FGameplayAbilitySpecHandle Handle, FPredictionKey PredictionKey, FGameplayEventData TriggerEventData) override;
@@ -55,7 +55,7 @@ public:
 
 protected:
 	// Abilities grouped together by InputTags
-	TArray<TArray<FGameplayAbilitySpec>> InputPressedSpecs;
+	TArray<TArray<FGameplayAbilitySpecHandle>> InputPressedSpecs;
 
 	TArray<FGameplayAbilitySpecHandle> InputReleasedSpecHandles;
 	TArray<FGameplayTag> InputHeldTags;

@@ -19,7 +19,7 @@
 #include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
-#include "WitchForestGame/Game/WitchForestGameplayTags.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 #include "WitchForestAbility/Input/WitchForestInputConfig.h"
 #include "WitchForestAbility/WitchForestASC.h"
@@ -121,7 +121,8 @@ void AWitch::BindActions(UInputComponent* PlayerInputComponent)
 
 	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_Move,
 		ETriggerEvent::Triggered, this, &ThisClass::Move, /*bLogIfNotFound=*/ false);
-
+	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_Look,
+		ETriggerEvent::Triggered, this, &ThisClass::Look, /*bLogIfNotFound=*/ false);
 	WitchForestInputComponent->BindNativeAction(InputConfig, WitchForestGameplayTags::InputTag_ShiftSlot,
 		ETriggerEvent::Triggered, this, &ThisClass::ShiftSlot, /*bLogIfNotFound=*/ false);
 }
@@ -182,6 +183,22 @@ void AWitch::Move(const FInputActionInstance& Instance)
 		const FVector2D RotatedInput = Input.GetRotated(-Rotation);
 		const FVector Movement = FVector(RotatedInput.X, -RotatedInput.Y, 0.0);
 		AddMovementInput(Movement);
+	}
+}
+
+void AWitch::Look(const FInputActionInstance& Instance)
+{
+	FVector2D Input = Instance.GetValue().Get<FVector2D>();
+	if (Controller && !Input.IsNearlyZero())
+	{
+		const FVector2D InputNormalized = Input.GetSafeNormal();
+		const float InputRotation = FMath::Atan2(InputNormalized.Y, InputNormalized.X);
+		const float CameraRotation = FollowCamera->GetComponentRotation().Yaw + 90.0f;
+
+		Controller->SetControlRotation(FRotator(0.0f, FMath::RadiansToDegrees(InputRotation) + CameraRotation, 0.0f));
+
+		UE_LOG(LogTemp, Display, TEXT("Look input vector: %s"), *Input.ToString());
+		UE_LOG(LogTemp, Display, TEXT("Look yaw: %f"), InputRotation);
 	}
 }
 

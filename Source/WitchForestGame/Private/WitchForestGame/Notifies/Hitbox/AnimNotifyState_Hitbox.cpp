@@ -40,11 +40,11 @@ void UAnimNotifyState_Hitbox::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	MeleeComponent->DestroyHitbox(Hitbox.Get());
 }
 
+#if WITH_EDITOR
 void UAnimNotifyState_Hitbox::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 }
 
-#if WITH_EDITOR
 void UAnimNotifyState_Hitbox::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);

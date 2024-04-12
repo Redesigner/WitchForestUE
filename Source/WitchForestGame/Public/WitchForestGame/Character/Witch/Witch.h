@@ -54,11 +54,8 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	void BindActions(UInputComponent* PlayerInputComponent);
 
 	void Tick(float DeltaSeconds) override;
-
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
 	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 	void PossessedBy(AController* NewController) override;
 
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
@@ -67,7 +64,7 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 
 	// Native Actions
 	void Move(const FInputActionInstance& Instance);
-
+	void Look(const FInputActionInstance& Instance);
 	void ShiftSlot(const FInputActionInstance& Instance);
 
 	void HeldItemChanged();

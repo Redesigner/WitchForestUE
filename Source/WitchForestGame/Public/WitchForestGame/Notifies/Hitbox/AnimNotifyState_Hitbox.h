@@ -28,11 +28,11 @@ class WITCHFORESTGAME_API UAnimNotifyState_Hitbox : public UAnimNotifyState
 	void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
 
 	void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
-
-	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	
 #if WITH_EDITOR
-	void SpawnEditorShape(UWorld* World, USkeletalMeshComponent* MeshComp);
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
+	// void SpawnEditorShape(UWorld* World, USkeletalMeshComponent* MeshComp);
 
 	void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
 #endif

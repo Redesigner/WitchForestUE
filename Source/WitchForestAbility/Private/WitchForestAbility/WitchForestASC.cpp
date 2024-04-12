@@ -25,12 +25,12 @@ void UWitchForestASC::AbilityInputTagPressed(const FGameplayTag& InputTag)
 
 	InputHeldTags.Add(InputTag);
 	
-	TArray<FGameplayAbilitySpec> TagHandles;
+	TArray<FGameplayAbilitySpecHandle> TagHandles;
 	for (FGameplayAbilitySpec AbilitySpec : ActivatableAbilities.Items)
 	{
 		if (InputTag.MatchesAnyExact(AbilitySpec.Ability->AbilityTags))
 		{
-			InsertSortPriority(TagHandles, AbilitySpec);
+			InsertSortPriority(TagHandles, AbilitySpec.Handle);
 		}
 	}
 
@@ -76,36 +76,36 @@ void UWitchForestASC::AbilitySpecInputReleased(FGameplayAbilitySpec& Spec)
 
 void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 {
-	static TArray <TArray<FGameplayAbilitySpec*>> AbilityBucketsToActivate;
-	AbilityBucketsToActivate.Reset();
-
+	TArray<TArray<FGameplayAbilitySpecHandle>> AbilityBucketsToActivate;
 
 	// Process all ability groups that had their input pressed this frame.
 	// i.e. abilities grouped by InputTag
 	//
-	for (TArray<FGameplayAbilitySpec> SpecBucket : InputPressedSpecs)
+	for (TArray<FGameplayAbilitySpecHandle> SpecBucket : InputPressedSpecs)
 	{
-		TArray<FGameplayAbilitySpec*> NewSpecBucket;
-		for (FGameplayAbilitySpec& AbilitySpec : SpecBucket)
+		TArray<FGameplayAbilitySpecHandle> NewSpecBucket;
+		for (FGameplayAbilitySpecHandle& AbilitySpecHandle : SpecBucket)
 		{
-			if (!AbilitySpec.Ability)
+			FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
+			if (!AbilitySpec || !AbilitySpec->Ability)
 			{
 				continue;
 			}
 
-			if (AbilitySpec.IsActive())
+			if (AbilitySpec->IsActive())
 			{
 				// Ability is active so pass along the input event.
-				AbilitySpec.InputPressed = true;
-				AbilitySpecInputPressed(AbilitySpec);
+				AbilitySpec->InputPressed = true;
+				AbilitySpecInputPressed(*AbilitySpec);
 			}
 			else
 			{
-				const UWitchForestGameplayAbility* AbilityCDO = CastChecked<UWitchForestGameplayAbility>(AbilitySpec.Ability);
+				const UWitchForestGameplayAbility* AbilityCDO = CastChecked<UWitchForestGameplayAbility>(AbilitySpec->Ability);
 
 				if (AbilityCDO->GetActivationPolicy() == EAbilityActivationPolicy::OnInputPressed)
 				{
-					NewSpecBucket.AddUnique(&AbilitySpec);
+					// NewSpecBucket.AddUnique(AbilitySpec);
+					NewSpecBucket.Add(AbilitySpecHandle);
 				}
 			}
 		}
@@ -117,12 +117,25 @@ void UWitchForestASC::ProcessAbilityInput(float DeltaTime, bool bGamePaused)
 	// Do the same for our buckets. If one of the abilities in the buckets succeeds,
 	// break out of the loop and don't bother trying to activate any of the other abilities.
 	//
-	for (TArray<FGameplayAbilitySpec*> AbilitySpecBucket : AbilityBucketsToActivate)
+	for (TArray<FGameplayAbilitySpecHandle> AbilitySpecBucket : AbilityBucketsToActivate)
 	{
-		for (FGameplayAbilitySpec* AbilitySpec : AbilitySpecBucket)
+		for (FGameplayAbilitySpecHandle AbilitySpecHandle : AbilitySpecBucket)
 		{
+			FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
+			if (!AbilitySpec)
+			{
+				UE_LOGFMT(LogWitchForestAbility, Error, "WitchforestASC: AbilitySpec was invalid.");
+				continue;
+			}
+
+			if (!AbilitySpec->Ability)
+			{
+				UE_LOGFMT(LogWitchForestAbility, Error, "WitchforestASC: AbilitySpec was valid, but the referenced ability pointer was invalid.");
+				continue;
+			}
+
 			// Grab the ability before activating, in case the spec is removed
-			UWitchForestGameplayAbility* WitchForestAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability);
+			UWitchForestGameplayAbility* WitchForestAbility = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability.Get());
 			if (WitchForestAbility && AbilitySpec->InputPressed && WitchForestAbility->ConsumesInput())
 			{
 				UE_LOGFMT(LogWitchForestAbility, Verbose, "WitchForestASC: Ability {AbilityName}, currently being held, consumed input.", WitchForestAbility->GetName());
@@ -218,22 +231,29 @@ void UWitchForestASC::ClearTemporaryAbilities()
 
 bool UWitchForestASC::GetFirstAbilityForInputTag(const FGameplayTag& InputTag, FGameplayAbilitySpec& AbilitySpecOut) const
 {
-	TArray<FGameplayAbilitySpec> Specs;
+	TArray<FGameplayAbilitySpecHandle> Specs;
 	for (FGameplayAbilitySpec AbilitySpec : ActivatableAbilities.Items)
 	{
 		if (InputTag.MatchesAnyExact(AbilitySpec.Ability->AbilityTags))
 		{
-			InsertSortPriority(Specs, AbilitySpec);
+			InsertSortPriority(Specs, AbilitySpec.Handle);
 		}
 	}
 
-	for (FGameplayAbilitySpec AbilitySpec : Specs)
+	for (FGameplayAbilitySpecHandle AbilitySpecHandle : Specs)
 	{
-		if (UGameplayAbility* Ability = AbilitySpec.Ability)
+		FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
+
+		if (!AbilitySpec)
 		{
-			if (Ability->CanActivateAbility(AbilitySpec.Handle, AbilityActorInfo.Get()))
+			continue;
+		}
+
+		if (UGameplayAbility* Ability = AbilitySpec->Ability)
+		{
+			if (Ability->CanActivateAbility(AbilitySpecHandle, AbilityActorInfo.Get()))
 			{
-				AbilitySpecOut = AbilitySpec;
+				AbilitySpecOut = *AbilitySpec;
 				return true;
 			}
 		}
@@ -242,9 +262,16 @@ bool UWitchForestASC::GetFirstAbilityForInputTag(const FGameplayTag& InputTag, F
 }
 
 
-void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FGameplayAbilitySpec SpecToInsert)
+void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpecHandle>& Array, FGameplayAbilitySpecHandle SpecToInsert) const
 {
-	UWitchForestGameplayAbility* AbilityToInsert = Cast<UWitchForestGameplayAbility>(SpecToInsert.Ability);
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(SpecToInsert);
+	if (!AbilitySpec)
+	{
+		UE_LOGFMT(LogWitchForestAbility, Error, "WitchForestASC failed to sort ability by priority. AbilitySpecHandle was invalid.");
+		return;
+	}
+
+	UWitchForestGameplayAbility* AbilityToInsert = Cast<UWitchForestGameplayAbility>(AbilitySpec->Ability);
 	if (!AbilityToInsert)
 	{
 		UE_LOGFMT(LogWitchForestAbility, Error, "WitchForestASC failed to sort ability by priority. Ability was not of type 'WitchForestGameplayAbility'.");
@@ -255,8 +282,17 @@ void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpec>& Array, FG
 	int i = 0;
 	for (; i < Array.Num(); ++i)
 	{
-		UWitchForestGameplayAbility* ExisistingAbility = Cast<UWitchForestGameplayAbility>(Array[i].Ability);
-		if (InsertedAbilityPriority >= ExisistingAbility->GetPriority())
+		FGameplayAbilitySpec* ExistingSpec = FindAbilitySpecFromHandle(Array[i]);
+		if (!ExistingSpec)
+		{
+			continue;
+		}
+		UWitchForestGameplayAbility* ExistingAbility = Cast<UWitchForestGameplayAbility>(ExistingSpec->Ability);
+		if (!ExistingAbility)
+		{
+			continue;
+		}
+		if (InsertedAbilityPriority >= ExistingAbility->GetPriority())
 		{
 			break;
 		}

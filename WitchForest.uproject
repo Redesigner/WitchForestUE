@@ -29,7 +29,6 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"ModelViewViewModelBlueprint",
 				"ModelViewViewModel",
 				"CoreUObject"
 			]
@@ -283,5 +282,8 @@
 			"Name": "ModelViewViewModel",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }
