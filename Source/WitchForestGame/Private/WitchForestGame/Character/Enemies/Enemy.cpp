@@ -26,7 +26,6 @@ AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
 
 	AbilitySystem = CreateDefaultSubobject<UWitchForestASC>(TEXT("AbilitySystem"));
 	AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("Character attribute set"));
-
 	AbilitySystem->OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &AEnemy::GameplayEffectApplied);
 
 	DropTableComponent = CreateDefaultSubobject<UDropTableComponent>(TEXT("DropTableComponent"));
@@ -46,6 +45,8 @@ void AEnemy::BeginPlay()
 	}
 
 	AbilitySystem->SetAvatarActor(this);
+	AttributeSet->SetMaxHealth(StartingMaxHealth);
+	AttributeSet->SetHealth(StartingMaxHealth);
 }
 
 

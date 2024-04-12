@@ -47,6 +47,9 @@ class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface,
 	UPROPERTY(Instanced, EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBaseAttributeSet> AttributeSet;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Attributes, meta = (ClampMin = 0.0f, AllowPrivateAccess = true))
+	float StartingMaxHealth = 100.0f;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bAlive = true;
 
