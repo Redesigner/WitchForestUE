@@ -42,6 +42,11 @@ void AResourceSpawner::Interact(AActor* Source)
 	}
 }
 
+float AResourceSpawner::GetRequiredHoldTime() const
+{
+	return HarvestHoldTime;
+}
+
 void AResourceSpawner::StartCooldown()
 {
 	UWorld* World = GetWorld();

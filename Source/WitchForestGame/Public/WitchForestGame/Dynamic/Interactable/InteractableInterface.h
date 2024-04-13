@@ -22,5 +22,7 @@ class WITCHFORESTGAME_API IInteractableInterface
 public:
 	virtual void Interact(AActor* Source) = 0;
 
-	virtual bool CanInteract(AActor* Source) { return true; }
+	virtual bool CanInteract(AActor* Source) const { return true; }
+
+	virtual float GetRequiredHoldTime() const { return 0.0f; }
 };

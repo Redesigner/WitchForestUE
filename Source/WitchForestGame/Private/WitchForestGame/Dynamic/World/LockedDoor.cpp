@@ -30,7 +30,7 @@ void ALockedDoor::Interact(AActor* Source)
 	}
 }
 
-bool ALockedDoor::CanInteract(AActor* Source)
+bool ALockedDoor::CanInteract(AActor* Source) const
 {
 	return !bLocked;
 }

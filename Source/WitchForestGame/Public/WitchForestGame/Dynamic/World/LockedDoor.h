@@ -31,7 +31,7 @@ class WITCHFORESTGAME_API ALockedDoor : public AActor, public IInteractableInter
 
 	void Interact(AActor* Source) override;
 
-	bool CanInteract(AActor* Source) override;
+	bool CanInteract(AActor* Source) const override;
 
 public:
 	void Unlock();

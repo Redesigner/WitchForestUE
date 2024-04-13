@@ -31,7 +31,8 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true, EditCondition = bActivateCooldownOnSpawn))
 	float CooldownTime = 5.0f;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float HarvestHoldTime = 1.0f;
 
 
 	FTimerHandle CooldownTimerHandle;
@@ -41,8 +42,9 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 
 	void EndCooldown();
 
-public:	
 	AResourceSpawner();
 
 	void Interact(AActor* Source) override;
+
+	float GetRequiredHoldTime() const override;
 };

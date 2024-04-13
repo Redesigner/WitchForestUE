@@ -32,8 +32,22 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	{
 		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
 		{
-			Interactable->Interact(Witch);
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+			float HoldTime = Interactable->GetRequiredHoldTime();
+			if (HoldTime <= 0.0f)
+			{
+				Interactable->Interact(Witch);
+				EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+			}
+			else
+			{
+				Target = Interactable;
+				GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), HoldTime, false, -1.0f);
+				if (HeldEffectClass)
+				{
+					FGameplayEffectSpecHandle HeldEffect = MakeOutgoingGameplayEffectSpec(HeldEffectClass);
+					HeldEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, HeldEffect);
+				}
+			}
 			return;
 		}
 	}
@@ -72,4 +86,29 @@ bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	return false;
+}
+
+void UInteractAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (HeldEffectHandle.IsValid() && ActorInfo->AbilitySystemComponent.IsValid())
+	{
+		ActorInfo->AbilitySystemComponent->RemoveActiveGameplayEffect(HeldEffectHandle, 1);
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
+}
+
+void UInteractAbility::EndHoldTimer()
+{
+	if (Target.IsValid() && CurrentActorInfo->AvatarActor.IsValid())
+	{
+		Target->Interact(CurrentActorInfo->AvatarActor.Get());
+	}
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
