@@ -26,8 +26,4 @@ class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementCom
 	float GetMaxSpeed() const override;
 
 	float GetMaxWalkSpeed() const;
-
-public:
-	/// Pass in the ASC so we can check it for relevant tags, etc.
-	void SetASC(UWitchForestASC* ASC);
 };

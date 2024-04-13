@@ -34,17 +34,27 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Spawning, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float HarvestHoldTime = 1.0f;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Cooldown, VisibleAnywhere, Category = Spawning, meta = (AllowPrivateAcces = true))
+	bool bCooldown = false;
+
 
 	FTimerHandle CooldownTimerHandle;
 
+
+	AResourceSpawner();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void StartCooldown();
 
 	void EndCooldown();
 
-	AResourceSpawner();
-
 	void Interact(AActor* Source) override;
 
 	float GetRequiredHoldTime() const override;
+
+	bool CanInteract(AActor* Source) const override;
+
+	UFUNCTION()
+	void OnRep_Cooldown(bool bOldCooldown);
 };

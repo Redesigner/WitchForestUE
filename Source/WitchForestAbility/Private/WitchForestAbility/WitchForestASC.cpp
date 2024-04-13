@@ -8,7 +8,8 @@
 #include "Logging/StructuredLog.h"
 
 UWitchForestASC::UWitchForestASC()
-{   
+{
+	SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 }
 
 void UWitchForestASC::AbilityInputTagPressed(const FGameplayTag& InputTag)

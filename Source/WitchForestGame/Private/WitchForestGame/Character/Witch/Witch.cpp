@@ -144,11 +144,6 @@ void AWitch::PossessedBy(AController* NewController)
 	}
 
 	ASC->SetAvatarActor(this);
-	
-	if (UWitchMovementComponent* WitchMovementComponent = Cast<UWitchMovementComponent>(GetMovementComponent()))
-	{
-		WitchMovementComponent->SetASC(ASC);
-	}
 }
 
 void AWitch::Input_AbilityInputTagPressed(FGameplayTag InputTag)

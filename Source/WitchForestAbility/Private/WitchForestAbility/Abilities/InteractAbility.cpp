@@ -7,8 +7,10 @@
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
 #include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
 #include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestAbility.h"
 
 #include "Components/SphereComponent.h"
+#include "Logging/StructuredLog.h"
 
 void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -33,12 +35,13 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
 		{
 			float HoldTime = Interactable->GetRequiredHoldTime();
+			// UE_LOGFMT(LogWitchForestAbility, Display, "[{ClientServer}] InteractAbility triggered, required hold time '{HoldTime}s'.", IsPredictingClient() ? "Client" : "Server", HoldTime);
 			if (HoldTime <= 0.0f)
 			{
 				Interactable->Interact(Witch);
 				EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			}
-			else
+			else if (!IsPredictingClient())
 			{
 				Target = Interactable;
 				GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), HoldTime, false, -1.0f);
@@ -105,6 +108,7 @@ void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, co
 
 void UInteractAbility::EndHoldTimer()
 {
+	// UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility hold finished. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");
 	if (Target.IsValid() && CurrentActorInfo->AvatarActor.IsValid())
 	{
 		Target->Interact(CurrentActorInfo->AvatarActor.Get());

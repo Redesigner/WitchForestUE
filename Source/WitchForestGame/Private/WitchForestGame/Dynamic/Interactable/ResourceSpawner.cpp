@@ -5,9 +5,13 @@
 
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 
 AResourceSpawner::AResourceSpawner()
 {
+	bReplicates = true;
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
@@ -16,14 +20,17 @@ AResourceSpawner::AResourceSpawner()
 	DropTableComponent = CreateDefaultSubobject<UDropTableComponent>(TEXT("DropTable"));
 }
 
+void AResourceSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, bCooldown);
+}
+
 
 void AResourceSpawner::Interact(AActor* Source)
 {
-	UWorld* World = GetWorld();
-	check(World);
-	FTimerManager& TimerManager = World->GetTimerManager();
-
-	if (TimerManager.IsTimerActive(CooldownTimerHandle))
+	if (bCooldown)
 	{
 		return;
 	}
@@ -47,6 +54,21 @@ float AResourceSpawner::GetRequiredHoldTime() const
 	return HarvestHoldTime;
 }
 
+bool AResourceSpawner::CanInteract(AActor* Source) const
+{
+	return !bCooldown;
+}
+
+void AResourceSpawner::OnRep_Cooldown(bool bOldCooldown)
+{
+	if (bCooldown == bOldCooldown)
+	{
+		return;
+	}
+
+	StaticMesh->SetVisibility(!bCooldown, true);
+}
+
 void AResourceSpawner::StartCooldown()
 {
 	UWorld* World = GetWorld();
@@ -56,9 +78,11 @@ void AResourceSpawner::StartCooldown()
 	TimerManager.SetTimer(CooldownTimerHandle, FTimerDelegate::CreateUObject(this, &ThisClass::EndCooldown), CooldownTime, false);
 
 	StaticMesh->SetVisibility(false, true);
+	bCooldown = true;
 }
 
 void AResourceSpawner::EndCooldown()
 {
 	StaticMesh->SetVisibility(true, true);
+	bCooldown = false;
 }
