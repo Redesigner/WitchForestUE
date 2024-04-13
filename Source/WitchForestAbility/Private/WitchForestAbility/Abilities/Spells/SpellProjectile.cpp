@@ -96,12 +96,6 @@ void ASpellProjectile::ApplyGameplayEffectsToTarget(AActor* Target, FHitResult H
 
 	if (IAbilitySystemInterface* ActorAbility = Cast<IAbilitySystemInterface>(Target))
 	{
-		if (!ActorAbility->GetAbilitySystemComponent())
-		{
-			UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The owning ASC of this projectile was invalid.", GetName(), Target->GetName());
-			return;
-		}
-
 		for (FGameplayEffectSpecHandle EffectHandle : EffectHandles)
 		{
 			FGameplayEffectContextHandle EffectContext = EffectHandle.Data->GetContext();
@@ -116,6 +110,16 @@ void ASpellProjectile::ApplyGameplayEffectsToTarget(AActor* Target, FHitResult H
 			if (!Spec)
 			{
 				continue;
+			}
+
+
+			if (!ActorAbility->GetAbilitySystemComponent())
+			{
+				// We have to check each application that the ASC is valid.
+				// If, for instance, an applied effect kills the actor, the
+				// ASC could be deleted or otherwise invalidated
+				UE_LOGFMT(LogWitchForestAbility, Warning, "Projectile {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The owning ASC of this projectile was invalid.", GetName(), Target->GetName());
+				return;
 			}
 
 			ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);

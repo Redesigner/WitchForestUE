@@ -35,7 +35,7 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
 		{
 			float HoldTime = Interactable->GetRequiredHoldTime();
-			// UE_LOGFMT(LogWitchForestAbility, Display, "[{ClientServer}] InteractAbility triggered, required hold time '{HoldTime}s'.", IsPredictingClient() ? "Client" : "Server", HoldTime);
+			UE_LOGFMT(LogWitchForestAbility, Display, "[{ClientServer}] InteractAbility triggered, required hold time '{HoldTime}s'.", IsPredictingClient() ? "Client" : "Server", HoldTime);
 			if (HoldTime <= 0.0f)
 			{
 				Interactable->Interact(Witch);
@@ -103,16 +103,17 @@ void UInteractAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 
 void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
+	UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility cancelled by input release. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");
 	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
 void UInteractAbility::EndHoldTimer()
 {
-	// UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility hold finished. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");
 	if (Target.IsValid() && CurrentActorInfo->AvatarActor.IsValid())
 	{
 		Target->Interact(CurrentActorInfo->AvatarActor.Get());
 	}
 
+	UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility completed by timer end. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
