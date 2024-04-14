@@ -7,6 +7,7 @@
 #include "InteractAbility.generated.h"
 
 class IInteractableInterface;
+class ATimerDisplay;
 
 UCLASS()
 class WITCHFORESTABILITY_API UInteractAbility : public UWitchForestGameplayAbility
@@ -16,12 +17,18 @@ class WITCHFORESTABILITY_API UInteractAbility : public UWitchForestGameplayAbili
 	UPROPERTY(EditDefaultsOnly, Category = Holding, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UGameplayEffect> HeldEffectClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Holding, meta = (AllowPrivateAccess = true))
+	TSubclassOf<ATimerDisplay> HoldTimerDisplayClass;
+
 
 	FTimerHandle HoldTimer;
 
 	FActiveGameplayEffectHandle HeldEffectHandle;
 
 	TWeakInterfacePtr<IInteractableInterface> Target;
+
+
+	TWeakObjectPtr<ATimerDisplay> HoldTimerDisplay;
 
 	
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
@@ -31,6 +38,8 @@ class WITCHFORESTABILITY_API UInteractAbility : public UWitchForestGameplayAbili
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+
+	void StartHoldTimer(IInteractableInterface* InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
 
 	void EndHoldTimer();
 };

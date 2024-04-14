@@ -15,7 +15,7 @@ public class WitchForestAbility : ModuleRules
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-			"GameplayTags", "WitchForestGame", "AIModule"
+			"GameplayTags", "WitchForestGame", "AIModule", "UMG"
         });
 	}
 }

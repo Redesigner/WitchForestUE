@@ -5,11 +5,13 @@
 
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Character/Components/ItemHandleComponent.h"
+#include "WitchForestGame/Display/TimerDisplay.h"
 #include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Logging/StructuredLog.h"
 
 void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -41,15 +43,9 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 				Interactable->Interact(Witch);
 				EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			}
-			else if (!IsPredictingClient())
+			else
 			{
-				Target = Interactable;
-				GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), HoldTime, false, -1.0f);
-				if (HeldEffectClass)
-				{
-					FGameplayEffectSpecHandle HeldEffect = MakeOutgoingGameplayEffectSpec(HeldEffectClass);
-					HeldEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, HeldEffect);
-				}
+				StartHoldTimer(Interactable, Handle, ActorInfo, ActivationInfo);
 			}
 			return;
 		}
@@ -98,6 +94,11 @@ void UInteractAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 		ActorInfo->AbilitySystemComponent->RemoveActiveGameplayEffect(HeldEffectHandle, 1);
 	}
 
+	if (HoldTimerDisplay.IsValid())
+	{
+		HoldTimerDisplay->Destroy();
+	}
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -107,8 +108,35 @@ void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, co
 	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
+void UInteractAbility::StartHoldTimer(IInteractableInterface* InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	Target = InteractableTarget;
+	GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), InteractableTarget->GetRequiredHoldTime(), false, -1.0f);
+	
+	if (!IsPredictingClient())
+	{
+		if (HeldEffectClass)
+		{
+			FGameplayEffectSpecHandle HeldEffect = MakeOutgoingGameplayEffectSpec(HeldEffectClass);
+			HeldEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, HeldEffect);
+		}
+	}
+	if (ActorInfo->IsLocallyControlledPlayer())
+	{
+		HoldTimerDisplay = GetWorld()->SpawnActor <ATimerDisplay>(HoldTimerDisplayClass);
+		HoldTimerDisplay->SetActorLocation(Cast<AActor>(InteractableTarget)->GetActorLocation());
+		HoldTimerDisplay->SetTimerHandle(HoldTimer);
+	}
+}
+
 void UInteractAbility::EndHoldTimer()
 {
+	// The timer is set on both the client and server, but it's only use for our visual component on the client
+	if (IsPredictingClient())
+	{
+		return;
+	}
+
 	if (Target.IsValid() && CurrentActorInfo->AvatarActor.IsValid())
 	{
 		Target->Interact(CurrentActorInfo->AvatarActor.Get());
