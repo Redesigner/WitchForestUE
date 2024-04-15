@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayCueInterface.h"
 #include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
@@ -12,8 +12,6 @@
 
 #include "Enemy.generated.h"
 
-class UCapsuleComponent;
-class UEnemyMovementComponent;
 class UWitchForestASC;
 class UAbilitySystemComponent;
 class UBaseAttributeSet;
@@ -22,18 +20,9 @@ class UWitchForestAbilitySet;
 class USkeletalMeshComponent;
 
 UCLASS()
-class WITCHFORESTGAME_API AEnemy : public APawn, public IAbilitySystemInterface, public IGameplayCueInterface, public IWitchForestTeamAgentInterface
+class WITCHFORESTGAME_API AEnemy : public ACharacter, public IAbilitySystemInterface, public IGameplayCueInterface, public IWitchForestTeamAgentInterface
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCapsuleComponent> Capsule;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UEnemyMovementComponent> MovementComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
-	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestASC> AbilitySystem;
@@ -81,17 +70,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MoveForward();
 
-	UCapsuleComponent* GetCapsule() const;
-
 	void GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	UEnemyMovementComponent* GetEnemyMovementComponent() const;
-
-	bool IsPlayingRootMotion() const;
-
-	USkeletalMeshComponent* GetSkeletalMesh() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;

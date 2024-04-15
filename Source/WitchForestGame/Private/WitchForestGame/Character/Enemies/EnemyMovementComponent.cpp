@@ -183,7 +183,11 @@ void UEnemyMovementComponent::PhysWalking(float DeltaTime)
 
 	SafeMoveUpdatedComponent(RampMovement, UpdatedComponent->GetComponentRotation(), true, MoveHitResult);
 
-	UCapsuleComponent* CapsuleComponent = EnemyOwner->GetCapsule();
+	UCapsuleComponent* CapsuleComponent = EnemyOwner->GetComponentByClass<UCapsuleComponent>();
+	if (!CapsuleComponent)
+	{
+		return;
+	}
 	// If we hit a wall here, see if we can step over it, by doing a capsule cast down from our desired location
 	if (MoveHitResult.IsValidBlockingHit())
 	{
@@ -255,7 +259,7 @@ bool UEnemyMovementComponent::FindFloor(FHitResult& OutHitResult) const
 	{
 		return false;
 	}
-	const UCapsuleComponent* Capsule = EnemyOwner->GetCapsule();
+	const UCapsuleComponent* Capsule = EnemyOwner->GetComponentByClass<UCapsuleComponent>();
 	const FVector CapsuleLocation = Capsule->GetComponentLocation();
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(PawnOwner);
@@ -286,7 +290,7 @@ bool UEnemyMovementComponent::SnapToFloor()
 		if (!(BasisNormal - HitResult.ImpactNormal).IsNearlyZero())
 		{
 			BasisNormal = HitResult.ImpactNormal;
-			const FVector Delta = HitResult.Location - EnemyOwner->GetCapsule()->GetComponentLocation();
+			const FVector Delta = HitResult.Location - EnemyOwner->GetComponentByClass<UCapsuleComponent>()->GetComponentLocation();
 			// Apply the "snap" to our actor, just for safety
 			EnemyOwner->AddActorWorldOffset(Delta);
 		}
@@ -345,7 +349,7 @@ bool UEnemyMovementComponent::IsFalling() const
 
 void UEnemyMovementComponent::ApplyRootMotionToVelocity(float DeltaTime)
 {
-	USkeletalMeshComponent* Mesh = EnemyOwner->GetSkeletalMesh();
+	USkeletalMeshComponent* Mesh = EnemyOwner->GetMesh();
 	if (!Mesh)
 	{
 		return;

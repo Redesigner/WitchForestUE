@@ -6,24 +6,17 @@
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 #include "WitchForestGame/AI/EnemyAIController.h"
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
+#include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 
 #include "Components/CapsuleComponent.h"
 
-AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+
+AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer) :
+	ACharacter(ObjectInitializer.SetDefaultSubobjectClass(ACharacter::CharacterMovementComponentName, UWitchMovementComponent::StaticClass()))
 {
-	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
-	RootComponent = Capsule;
-
-	MovementComponent = CreateDefaultSubobject<UEnemyMovementComponent>(TEXT("Movement Component"));
-	// MovementComponent->SetUpdatedComponent(RootComponent);
-
-	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	Mesh->SetupAttachment(RootComponent);
-
 	AbilitySystem = CreateDefaultSubobject<UWitchForestASC>(TEXT("AbilitySystem"));
 	AttributeSet = CreateDefaultSubobject<UBaseAttributeSet>(TEXT("Character attribute set"));
 	AbilitySystem->OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &AEnemy::GameplayEffectApplied);
@@ -68,7 +61,11 @@ void AEnemy::Die()
 	DropTableComponent->DropItems();
 	AbilitySystem->CancelAllAbilities();
 	SetLifeSpan(2.0f);
-	MovementComponent->SetMovementMode(EEnemyMovementMode::MOVE_None);
+	if (UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		MovementComponent->SetMovementMode(EMovementMode::MOVE_None);
+	}
+
 	OnDeath.Broadcast();
 	// Separate Dynamic delegate?
 	Death.Broadcast();
@@ -79,13 +76,6 @@ void AEnemy::MoveForward()
 {
 	AddMovementInput(GetActorForwardVector());
 }
-
-
-UCapsuleComponent* AEnemy::GetCapsule() const
-{
-	return Capsule;
-}
-
 
 void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
 {
@@ -127,28 +117,6 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 UAbilitySystemComponent* AEnemy::GetAbilitySystemComponent() const
 {
 	return AbilitySystem;
-}
-
-
-UEnemyMovementComponent* AEnemy::GetEnemyMovementComponent() const
-{
-	return MovementComponent;
-}
-
-
-bool AEnemy::IsPlayingRootMotion() const
-{
-	if (Mesh)
-	{
-		return Mesh->IsPlayingRootMotion();
-	}
-	return false;
-}
-
-
-USkeletalMeshComponent* AEnemy::GetSkeletalMesh() const
-{
-	return Mesh;
 }
 
 

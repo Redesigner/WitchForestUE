@@ -4,8 +4,8 @@
 #include "WitchForestGame/AI/Tasks/BTTask_ChangeMovementSpeed.h"
 
 #include "WitchForestGame.h"
-#include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Logging/StructuredLog.h"
 #include "AIController.h"
 
@@ -25,13 +25,13 @@ EBTNodeResult::Type UBTTask_ChangeMovementSpeed::ExecuteTask(UBehaviorTreeCompon
 		return EBTNodeResult::Failed;
 	}
 
-	UEnemyMovementComponent* EnemyMovementComponent = Cast<UEnemyMovementComponent>(Pawn->GetMovementComponent());
-	if (!EnemyMovementComponent)
+	UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(Pawn->GetMovementComponent());
+	if (!MovementComponent)
 	{
 		UE_LOGFMT(LogWitchForestAI, Error, "UBTTask_ChangeMovementSpeed '{Node}' failed. Controller '{ControllerName}' does not have a valid EnemyMovementComponent.", GetName(), OwnerController->GetName());
 		return EBTNodeResult::Failed;
 	}
 
-	EnemyMovementComponent->SetMaxSpeed(MovementSpeed);
+	MovementComponent->MaxWalkSpeed = MovementSpeed;
 	return EBTNodeResult::Succeeded;
 }
