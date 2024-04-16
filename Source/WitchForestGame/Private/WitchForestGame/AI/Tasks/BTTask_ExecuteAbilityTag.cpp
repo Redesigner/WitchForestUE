@@ -16,6 +16,28 @@ void UBTTask_ExecuteAbilityTag::OnInstanceCreated(UBehaviorTreeComponent& OwnerC
 	BehaviorTreeComponent = &OwnerComp;
 }
 
+EBTNodeResult::Type UBTTask_ExecuteAbilityTag::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	if (bAbortAbility)
+	{
+		if (AAIController* OwnerController = OwnerComp.GetAIOwner())
+		{
+			if (APawn* Pawn = OwnerController->GetPawn())
+			{
+				if (IAbilitySystemInterface* AbilityInterface = Cast<IAbilitySystemInterface>(Pawn))
+				{
+					if (UAbilitySystemComponent* ASC = AbilityInterface->GetAbilitySystemComponent())
+					{
+						ASC->CancelAbilityHandle(ActivatedAbility);
+					}
+				}
+			}
+		}
+	}
+
+	return Super::AbortTask(OwnerComp, NodeMemory);
+}
+
 EBTNodeResult::Type UBTTask_ExecuteAbilityTag::ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory)
 {
 	AAIController* OwnerController = OwnerComponent.GetAIOwner();
