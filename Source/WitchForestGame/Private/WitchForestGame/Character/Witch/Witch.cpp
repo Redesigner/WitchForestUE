@@ -186,15 +186,36 @@ void AWitch::Look(const FInputActionInstance& Instance)
 	FVector2D Input = Instance.GetValue().Get<FVector2D>();
 	if (Controller && !Input.IsNearlyZero())
 	{
-		const FVector2D InputNormalized = Input.GetSafeNormal();
-		const float InputRotation = FMath::Atan2(InputNormalized.Y, InputNormalized.X);
-		const float CameraRotation = FollowCamera->GetComponentRotation().Yaw + 90.0f;
-
-		Controller->SetControlRotation(FRotator(0.0f, FMath::RadiansToDegrees(InputRotation) + CameraRotation, 0.0f));
-
-		UE_LOG(LogTemp, Display, TEXT("Look input vector: %s"), *Input.ToString());
-		UE_LOG(LogTemp, Display, TEXT("Look yaw: %f"), InputRotation);
+		if (bTopDownCamera)
+		{
+			RotateTopDownCamera(Input);
+		}
+		else
+		{
+			RotateOTSCamera(Input);
+		}
 	}
+}
+
+void AWitch::RotateTopDownCamera(FVector2D Input)
+{
+	const FVector2D InputNormalized = Input.GetSafeNormal();
+	const float InputRotation = FMath::Atan2(InputNormalized.Y, InputNormalized.X);
+	const float CameraRotation = FollowCamera->GetComponentRotation().Yaw + 90.0f;
+
+	Controller->SetControlRotation(FRotator(0.0f, FMath::RadiansToDegrees(InputRotation) + CameraRotation, 0.0f));
+}
+
+void AWitch::RotateOTSCamera(FVector2D Input)
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	AddControllerPitchInput(Input.Y * World->GetDeltaSeconds() * 150.0f);
+	AddControllerYawInput(Input.X * World->GetDeltaSeconds() * 300.0f);
 }
 
 void AWitch::ShiftSlot(const FInputActionInstance& Instance)

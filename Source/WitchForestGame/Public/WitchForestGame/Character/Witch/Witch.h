@@ -29,6 +29,9 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> CameraBoom;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
+	bool bTopDownCamera = true;
+
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> FollowCamera;
@@ -80,6 +83,9 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 
 	UFUNCTION()
 	void InteractVolumeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	void RotateTopDownCamera(FVector2D Input);
+	void RotateOTSCamera(FVector2D Input);
 
 
 public:
