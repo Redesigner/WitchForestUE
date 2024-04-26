@@ -20,6 +20,31 @@ FGameplayTag UPotionRecipeSet::MakeItem(const TArray<FGameplayTag>& Ingredients)
 	return TAG_RecipeFailed;
 }
 
+bool UPotionRecipeSet::FindRecipeFromTag(FGameplayTag RecipeTag, FPotionRecipe& RecipeOut) const
+{
+	for (const FPotionRecipe& Recipe : Recipes)
+	{
+		if (Recipe.RecipeTag == RecipeTag)
+		{
+			RecipeOut = Recipe;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UPotionRecipeSet::FindRecipeFromIngredients(const TArray<FGameplayTag>& Ingredients, FPotionRecipe& RecipeOut)
+{
+	for (FPotionRecipe& Recipe : Recipes)
+	{
+		if (IngredientsIdentical(Ingredients, Recipe.IngredientItems))
+		{
+			RecipeOut = Recipe;
+			return true;
+		}
+	}
+	return false;
+}
 
 bool UPotionRecipeSet::IngredientsIdentical(TArray<FGameplayTag> ListA, TArray<FGameplayTag> ListB)
 {

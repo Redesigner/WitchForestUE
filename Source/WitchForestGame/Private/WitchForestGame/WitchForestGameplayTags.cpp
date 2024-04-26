@@ -19,4 +19,7 @@ namespace WitchForestGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Stun, "GameplayEffect.Stun");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Immobile, "GameplayEffect.Immobile");
+
+	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery, "Event.Discovery");
+	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery_Recipe, "Event.Discovery.Recipe");
 }

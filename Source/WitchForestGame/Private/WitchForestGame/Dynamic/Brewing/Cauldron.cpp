@@ -7,13 +7,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
+#include "WitchForestGame/Messages/WitchForestMessage.h"
 #include "WitchForestGame/Math/WitchForestMath.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 
 ACauldron::ACauldron()
@@ -93,14 +97,14 @@ void ACauldron::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 
 void ACauldron::Interact(AActor* Source)
 {
-	if (!RecipeBook)
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+	if (!GameMode)
 	{
-		UE_LOGFMT(LogWitchForestGame, Error, "Cauldron '{CauldronName}' is missing a Recipe Book. Make sure one is set.", GetName());
 		return;
 	}
 
-	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
-	if (!GameMode)
+	AWitchForestGameState* GameState = Cast<AWitchForestGameState>(UGameplayStatics::GetGameState(this));
+	if (!GameState)
 	{
 		return;
 	}
@@ -111,17 +115,23 @@ void ACauldron::Interact(AActor* Source)
 		return;
 	}
 
+	UPotionRecipeSet* RecipeBook = GameMode->GetRecipeBook();
+	if (!RecipeBook)
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "Gamemode is missing a Recipe Book. Make sure one is set.");
+		return;
+	}
+
 	UWorld* World = GetWorld();
 	if (!World)
 	{
 		return;
 	}
 
-	// Disable overlap events here, to prevent any side effects
-	// CauldronVolume->SetGenerateOverlapEvents(false);
-	FGameplayTag RecipeResult = RecipeBook->MakeItem(HeldIngredients);
-	if (RecipeResult == TAG_RecipeFailed)
+	FPotionRecipe Recipe;
+	if (!RecipeBook->FindRecipeFromIngredients(HeldIngredients, Recipe))
 	{
+		// Launch all of our ingredients back out
 		TArray<FGameplayTag> PreviouslyHeldItems = HeldIngredients;
 		for (const FGameplayTag& Item : PreviouslyHeldItems)
 		{
@@ -130,7 +140,19 @@ void ACauldron::Interact(AActor* Source)
 	}
 	else
 	{
-		LaunchItem(RecipeResult, ItemSet);
+		LaunchItem(Recipe.ResultItem, ItemSet);
+
+		if (!GameState->HasLearnedRecipe(Recipe.RecipeTag))
+		{
+			GameState->LearnRecipe(Recipe.RecipeTag);
+			UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
+			
+			FWitchForestMessage NewMessage;
+			NewMessage.Verb = WitchForestGameplayTags::Event_Discovery_Recipe;
+			NewMessage.Data = Recipe.RecipeTag;
+			NewMessage.Source = Source;
+			MessageSystem.BroadcastMessage(WitchForestGameplayTags::Event_Discovery, NewMessage);
+		}
 	}
 
 	HeldIngredients.Reset();

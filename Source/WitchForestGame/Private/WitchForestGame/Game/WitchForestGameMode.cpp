@@ -59,6 +59,11 @@ UItemSet* AWitchForestGameMode::GetItemSet() const
     return CurrentItemSet;
 }
 
+UPotionRecipeSet* AWitchForestGameMode::GetRecipeBook() const
+{
+    return RecipeBook;
+}
+
 void AWitchForestGameMode::RestartIfNoLivingPlayers()
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();

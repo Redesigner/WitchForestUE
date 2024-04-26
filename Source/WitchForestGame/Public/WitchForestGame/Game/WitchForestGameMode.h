@@ -8,6 +8,7 @@
 #include "WitchForestGameMode.generated.h"
 
 class UItemSet;
+class UPotionRecipeSet;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
@@ -16,6 +17,9 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UItemSet> CurrentItemSet;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Recipes, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UPotionRecipeSet> RecipeBook;
 
 
 	void PostLogin(APlayerController* NewPlayer) override;
@@ -26,6 +30,8 @@ public:
 	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	UItemSet* GetItemSet() const;
+
+	UPotionRecipeSet* GetRecipeBook() const;
 
 	void RestartIfNoLivingPlayers();
 };

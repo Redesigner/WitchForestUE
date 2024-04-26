@@ -5,10 +5,15 @@
 
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Character/Witch/Witch.h"
+#include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
+#include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 
 AWitchPlayerController::AWitchPlayerController()
 {
@@ -60,6 +65,9 @@ void AWitchPlayerController::BeginPlay()
             }
         }
     }
+
+    UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
+    MessageSubsystem.RegisterListener(WitchForestGameplayTags::Event_Discovery, this, &ThisClass::OnDiscoveryMessage);
 }
 
 UWitchForestASC* AWitchPlayerController::GetWitchForestASC() const
@@ -115,4 +123,34 @@ EWitchForestTeam AWitchPlayerController::GetWitchForestTeam() const
 void AWitchPlayerController::PotentialInteractionsChanged()
 {
     OnPotentialAbilityActivationChanged.Broadcast();
+}
+
+void AWitchPlayerController::OnDiscoveryMessage(FGameplayTag Channel, const FWitchForestMessage& Payload)
+{
+    if (Payload.Verb == WitchForestGameplayTags::Event_Discovery_Recipe)
+    {
+        HandleRecipeDiscoveredMessage(Payload);
+        return;
+    }
+}
+
+void AWitchPlayerController::HandleRecipeDiscoveredMessage(const FWitchForestMessage& Payload)
+{
+    AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+    if (!GameMode)
+    {
+        return;
+    }
+
+    UPotionRecipeSet* RecipeBook = GameMode->GetRecipeBook();
+    if (!RecipeBook)
+    {
+        return;
+    }
+    
+    FPotionRecipe Recipe;
+    if (RecipeBook->FindRecipeFromTag(Payload.Data, Recipe))
+    {
+        DisplayRecipeDiscoveredMessage(Recipe);
+    }
 }

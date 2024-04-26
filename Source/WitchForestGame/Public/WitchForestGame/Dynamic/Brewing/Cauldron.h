@@ -11,9 +11,7 @@
 
 #include "Cauldron.generated.h"
 
-
 class USphereComponent;
-class UPotionRecipeSet;
 class UItemSet;
 class APickup;
 
@@ -27,9 +25,6 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Brewing, ReplicatedUsing = OnRep_HeldIngredients, meta = (AllowPrivateAccess = true))
 	TArray<FGameplayTag> HeldIngredients;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UPotionRecipeSet> RecipeBook;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
 	uint8 Capacity = 4;

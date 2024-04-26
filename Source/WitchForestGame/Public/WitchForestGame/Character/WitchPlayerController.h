@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
 
+#include "WitchForestGame/Messages/WitchForestMessage.h"
+#include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
+
 #include "WitchPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -16,11 +19,11 @@ UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, public IWitchForestTeamAgentInterface
 {
 	GENERATED_BODY()
+
+	DECLARE_MULTICAST_DELEGATE(FOnPotentialAbilityActivationChanged);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
-
-	DECLARE_MULTICAST_DELEGATE(FOnPotentialAbilityActivationChanged);
 
 
 	AWitchPlayerController();
@@ -38,6 +41,11 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 
 	void PotentialInteractionsChanged();
 
+	// GameplayMessageSubsystem Event Handlers
+	void OnDiscoveryMessage(FGameplayTag Channel, const FWitchForestMessage& Payload);
+
+	void HandleRecipeDiscoveredMessage(const FWitchForestMessage& Payload);
+
 public:
 	UFUNCTION(BlueprintCallable)
 	UWitchForestASC* GetWitchForestASC() const;
@@ -47,4 +55,7 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetupUI(AWitchPlayerState* WitchPlayerState);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisplayRecipeDiscoveredMessage(FPotionRecipe Recipe);
 };

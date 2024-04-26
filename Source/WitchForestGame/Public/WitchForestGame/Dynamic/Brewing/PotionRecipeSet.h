@@ -19,6 +19,9 @@ struct WITCHFORESTGAME_API FPotionRecipe
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "RecipeTag"))
+	FGameplayTag RecipeTag;
+
 	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "ItemTag"))
 	FGameplayTag ResultItem;
 
@@ -33,10 +36,14 @@ class WITCHFORESTGAME_API UPotionRecipeSet : public UDataAsset
 	
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "ResultItem"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "RecipeTag"))
 	TArray<FPotionRecipe> Recipes;
 
 	FGameplayTag MakeItem(const TArray<FGameplayTag>& Ingredients) const;
+
+	bool FindRecipeFromTag(FGameplayTag RecipeTag, FPotionRecipe& RecipeOut) const;
+
+	bool FindRecipeFromIngredients(const TArray<FGameplayTag>& Ingredients, FPotionRecipe& RecipeOut);
 
 	static bool IngredientsIdentical(TArray<FGameplayTag> ListA, TArray<FGameplayTag> ListB);
 };

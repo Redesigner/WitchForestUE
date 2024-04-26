@@ -14,7 +14,11 @@ public class WitchForestGame : ModuleRules
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]{
-			"GameplayAbilities", "GameplayTasks", "NavigationSystem", "WitchForestUI"
-		});
+			"GameplayAbilities",
+			"GameplayTasks",
+			"NavigationSystem",
+			"WitchForestUI",
+            "GameplayMessageRuntime"
+        });
 	}
 }
