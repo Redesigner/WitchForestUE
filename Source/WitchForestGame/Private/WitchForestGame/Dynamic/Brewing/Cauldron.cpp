@@ -144,6 +144,7 @@ void ACauldron::Interact(AActor* Source)
 
 		if (!GameState->HasLearnedRecipe(Recipe.RecipeTag))
 		{
+			UE_LOGFMT(LogWitchForestGame, Display, "Player '{PlayerName}' has discovered a new recipe for '{RecipeName}'.", Source->GetName(), Recipe.ResultItem.ToString());
 			GameState->LearnRecipe(Recipe.RecipeTag);
 			UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 			

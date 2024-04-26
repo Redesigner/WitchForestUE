@@ -7,6 +7,7 @@
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
@@ -136,6 +137,11 @@ void AWitchPlayerController::OnDiscoveryMessage(FGameplayTag Channel, const FWit
 
 void AWitchPlayerController::HandleRecipeDiscoveredMessage(const FWitchForestMessage& Payload)
 {
+    if (Payload.Source != GetPawn())
+    {
+        return;
+    }
+
     AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
     if (!GameMode)
     {
@@ -143,14 +149,18 @@ void AWitchPlayerController::HandleRecipeDiscoveredMessage(const FWitchForestMes
     }
 
     UPotionRecipeSet* RecipeBook = GameMode->GetRecipeBook();
-    if (!RecipeBook)
+    UItemSet* ItemSet = GameMode->GetItemSet();
+    if (!RecipeBook || !ItemSet)
     {
         return;
     }
-    
+
     FPotionRecipe Recipe;
     if (RecipeBook->FindRecipeFromTag(Payload.Data, Recipe))
     {
-        DisplayRecipeDiscoveredMessage(Recipe);
+        FInventoryItemData ItemData;
+        ItemSet->FindItemDataForTag(Recipe.ResultItem, ItemData);
+
+        DisplayRecipeDiscoveredMessage(Recipe, ItemData);
     }
 }

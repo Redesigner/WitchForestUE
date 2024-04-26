@@ -57,5 +57,5 @@ protected:
 	void SetupUI(AWitchPlayerState* WitchPlayerState);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void DisplayRecipeDiscoveredMessage(FPotionRecipe Recipe);
+	void DisplayRecipeDiscoveredMessage(FPotionRecipe Recipe, FInventoryItemData Data);
 };
