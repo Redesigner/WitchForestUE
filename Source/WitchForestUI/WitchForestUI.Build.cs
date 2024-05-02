@@ -9,11 +9,20 @@ public class WitchForestUI : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] {
-			"Core", "CoreUObject", "Engine", "GameplayTags", "AIModule"
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"GameplayTags",
+			"AIModule",
+			"CommonUI",
+			"CommonInput",
+			"UMG"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
-            "WitchForestGame", "WitchForestAbility", "GameplayAbilities"
+            "WitchForestGame",
+			"WitchForestAbility",
+			"GameplayAbilities"
 		});
 	}
 }

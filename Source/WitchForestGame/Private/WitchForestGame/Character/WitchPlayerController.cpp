@@ -15,6 +15,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "Blueprint/UserWidget.h"
 
 AWitchPlayerController::AWitchPlayerController()
 {
@@ -65,6 +66,12 @@ void AWitchPlayerController::BeginPlay()
                 InputSystem->AddMappingContext(InputMapping.LoadSynchronous(), 1);
             }
         }
+    }
+
+    if (RootWidgetClass)
+    {
+        UUserWidget* RootWidget = CreateWidget<UUserWidget>(this, RootWidgetClass.Get());
+        RootWidget->AddToViewport();
     }
 
     UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);

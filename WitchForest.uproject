@@ -30,7 +30,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"ModelViewViewModel",
-				"CoreUObject"
+				"CoreUObject",
+				"CommonUI"
 			]
 		}
 	],
@@ -280,6 +281,10 @@
 		},
 		{
 			"Name": "ModelViewViewModel",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
 			"Enabled": true
 		}
 	],

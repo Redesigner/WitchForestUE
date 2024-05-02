@@ -14,6 +14,7 @@
 class UInputMappingContext;
 class UWitchForestASC;
 class UHealthViewModel;
+class UUserWidget;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, public IWitchForestTeamAgentInterface
@@ -24,6 +25,9 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUserWidget> RootWidgetClass;
 
 
 	AWitchPlayerController();
