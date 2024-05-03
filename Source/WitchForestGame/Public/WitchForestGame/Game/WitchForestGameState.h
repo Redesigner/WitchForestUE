@@ -14,6 +14,8 @@ UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 {
 	GENERATED_BODY()
+
+	DECLARE_MULTICAST_DELEGATE(FOnRecipeLearned);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recipes, meta = (AllowPrivateAccess = true, Categories = "RecipeTag"))
 	TArray<FGameplayTag> LearnedRecipes;
@@ -24,4 +26,7 @@ public:
 	bool HasLearnedRecipe(FGameplayTag RecipeTag) const;
 
 	void LearnRecipe(const FGameplayTag& RecipeTag);
+
+
+	FOnRecipeLearned OnRecipeLearned;
 };

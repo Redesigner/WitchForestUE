@@ -11,4 +11,6 @@ bool AWitchForestGameState::HasLearnedRecipe(FGameplayTag RecipeTag) const
 void AWitchForestGameState::LearnRecipe(const FGameplayTag& RecipeTag)
 {
 	LearnedRecipes.AddUnique(RecipeTag);
+
+	OnRecipeLearned.Broadcast();
 }
