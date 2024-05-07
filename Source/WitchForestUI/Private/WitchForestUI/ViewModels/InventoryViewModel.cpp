@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Stephen Melnick
 
 
-#include "WitchForestUI/InventoryViewModel.h"
+#include "WitchForestUI/ViewModels/InventoryViewModel.h"
 
 #include "WitchForestUI.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"

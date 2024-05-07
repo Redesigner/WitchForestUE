@@ -39,6 +39,9 @@ class WITCHFORESTGAME_API AEnemy : public ACharacter, public IAbilitySystemInter
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Attributes, meta = (ClampMin = 0.0f, AllowPrivateAccess = true))
 	float StartingMaxHealth = 100.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Enemy, meta = (Categories = "CreatureTag", AllowPrivateAccess = true))
+	FGameplayTag CreatureTag;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bAlive = true;
 
@@ -73,6 +76,8 @@ public:
 	void GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	FGameplayTag GetCreatureTag() const { return CreatureTag; }
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;

@@ -35,7 +35,6 @@ class WITCHFORESTGAME_API UPotionRecipeSet : public UDataAsset
 	GENERATED_BODY()
 	
 public:
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "RecipeTag"))
 	TArray<FPotionRecipe> Recipes;
 

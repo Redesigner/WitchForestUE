@@ -9,17 +9,22 @@
 
 class UItemSet;
 class UPotionRecipeSet;
+class UBestiaryData;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+	// These sets should only be changed as defaults. We can only get defaults when in multiplayer
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UItemSet> CurrentItemSet;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Recipes, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Recipes, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPotionRecipeSet> RecipeBook;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Bestiary, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBestiaryData> Bestiary;
 
 
 	void PostLogin(APlayerController* NewPlayer) override;
@@ -30,8 +35,8 @@ public:
 	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	UItemSet* GetItemSet() const;
-
 	UPotionRecipeSet* GetRecipeBook() const;
+	UBestiaryData* GetBestiary() const;
 
 	void RestartIfNoLivingPlayers();
 };

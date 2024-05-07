@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Stephen Melnick
 
 
-#include "WitchForestUI/RecipeListViewModel.h"
+#include "WitchForestUI/ViewModels/RecipeListViewModel.h"
 
 #include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"

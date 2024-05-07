@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Stephen Melnick
 
 
-#include "WitchForestUI/HealthViewModel.h"
+#include "WitchForestUI/ViewModels/HealthViewModel.h"
 
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"

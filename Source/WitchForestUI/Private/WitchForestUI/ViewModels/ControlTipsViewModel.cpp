@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Stephen Melnick
 
 
-#include "WitchForestUI/ControlTipsViewModel.h"
+#include "WitchForestUI/ViewModels/ControlTipsViewModel.h"
 
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"

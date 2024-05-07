@@ -50,6 +50,12 @@ void AWitchPlayerController::BeginPlayingState()
     if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
     {
         SetupUI(WitchPlayerState);
+
+        if (RootWidgetClass)
+        {
+            UUserWidget* RootWidget = CreateWidget<UUserWidget>(this, RootWidgetClass.Get());
+            RootWidget->AddToViewport();
+        }
     }
 }
 
@@ -66,12 +72,6 @@ void AWitchPlayerController::BeginPlay()
                 InputSystem->AddMappingContext(InputMapping.LoadSynchronous(), 1);
             }
         }
-    }
-
-    if (RootWidgetClass)
-    {
-        UUserWidget* RootWidget = CreateWidget<UUserWidget>(this, RootWidgetClass.Get());
-        RootWidget->AddToViewport();
     }
 
     UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
