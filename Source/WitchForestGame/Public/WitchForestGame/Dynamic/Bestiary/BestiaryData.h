@@ -15,13 +15,13 @@ struct WITCHFORESTGAME_API FBestiaryEntry
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "CreatureTag"))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Meta = (Categories = "CreatureTag"))
 	FGameplayTag CreatureTag;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FText CreatureName;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FText CreatureDescription;
 };
 

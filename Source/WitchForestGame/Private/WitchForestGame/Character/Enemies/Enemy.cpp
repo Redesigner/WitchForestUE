@@ -7,11 +7,13 @@
 #include "WitchForestGame/AI/EnemyAIController.h"
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 #include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
+#include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AEnemy::AEnemy(const FObjectInitializer& ObjectInitializer) :
@@ -64,6 +66,12 @@ void AEnemy::Die()
 	if (UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent()))
 	{
 		MovementComponent->SetMovementMode(EMovementMode::MOVE_None);
+	}
+
+	// Temporary
+	if (AWitchForestGameState* GameState = Cast<AWitchForestGameState>(UGameplayStatics::GetGameState(GetWorld())) )
+	{
+		GameState->DiscoverCreature(CreatureTag);
 	}
 
 	OnDeath.Broadcast();
