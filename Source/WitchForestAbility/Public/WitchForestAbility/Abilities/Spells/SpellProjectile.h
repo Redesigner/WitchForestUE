@@ -6,14 +6,17 @@
 #include "GameFramework/Actor.h"
 #include "GameplayTagAssetInterface.h" 
 
-#include "GameplayEffectTypes.h" 
-
 #include "SpellProjectile.generated.h"
+
+class UEffectApplicationComponent;
 
 UCLASS()
 class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Components, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UEffectApplicationComponent> EffectApplication;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	FVector Velocity;
@@ -30,9 +33,6 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
-	// The actor that owns this projectile. Filtered out by collision events
-	TWeakObjectPtr<AActor> OwningActor;
-
 
 	void Tick(float DeltaTime) override;
 
@@ -45,12 +45,7 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 public:	
 	ASpellProjectile();
 
-	void SetEffectHandles(TArray<FGameplayEffectSpecHandle> InHandles);
-
 	void SetOwningActor(AActor* Actor);
 
 	void SetVelocity(FVector NewVelocity);
-
-protected:
-	void ApplyGameplayEffectsToTarget(AActor* Target, FHitResult HitResult);
 };

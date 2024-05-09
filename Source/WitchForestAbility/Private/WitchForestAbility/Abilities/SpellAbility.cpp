@@ -11,6 +11,7 @@
 
 #include "WitchForestAbility.h"
 #include "WitchForestAbility/Abilities/Spells/SpellProjectile.h"
+#include "WitchForestAbility/Effects/EffectApplicationComponent.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
 void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -96,8 +97,10 @@ void USpellAbility::SpawnProjectile(FVector Location)
 		NewEffectSpecs.Add(NewEffectSpec);
 	}
 
-	Projectile->SetEffectHandles(NewEffectSpecs);
-	Projectile->SetOwningActor(CurrentActorInfo->AvatarActor.Get());
+	if (UEffectApplicationComponent* EffectApplier = Projectile->GetComponentByClass<UEffectApplicationComponent>())
+	{
+		EffectApplier->SetEffectHandles(CurrentActorInfo->AvatarActor.Get(), NewEffectSpecs);
+	}
 	Projectile->FinishSpawning(ProjectileTransform);
 	Projectile->SetVelocity(CurrentActorInfo->AvatarActor->GetActorForwardVector() * ProjectileSpeed);
 }

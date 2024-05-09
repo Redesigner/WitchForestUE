@@ -19,7 +19,7 @@ class WITCHFORESTABILITY_API USpellReticleAbility : public UWitchForestGameplayA
 	TSubclassOf<AGameplayAbilityTargetActor> TargetingClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile, meta = (AllowPrivateAccess = true))
-	TSubclassOf<ASpellProjectile> ProjectileClass;
+	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<UGameplayEffect>> SpellEffects;
