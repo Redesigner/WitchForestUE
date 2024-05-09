@@ -19,6 +19,8 @@ class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementCom
 
 	UWitchMovementComponent();
 
+	void SetUpdatedComponent(USceneComponent* Component) override;
+
 	void PhysWalking(float DeltaTime, int32 Iterations) override;
 
 	FRotator GetDeltaRotation(float DeltaTime) const override;
@@ -26,4 +28,8 @@ class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementCom
 	float GetMaxSpeed() const override;
 
 	float GetMaxWalkSpeed() const;
+
+public:
+	void SetASC(UWitchForestASC* ASC);
+
 };

@@ -28,8 +28,6 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 	FGameplayTagContainer GameplayTags;
 
 
-	TArray<FGameplayEffectSpecHandle> EffectHandles;
-
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
 	// The actor that owns this projectile. Filtered out by collision events

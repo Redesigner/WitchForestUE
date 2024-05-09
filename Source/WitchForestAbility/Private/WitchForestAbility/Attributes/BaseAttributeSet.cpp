@@ -12,8 +12,8 @@
 
 UBaseAttributeSet::UBaseAttributeSet()
 {
-	MovementSpeed.SetBaseValue(600.0f);
-	MovementSpeed.SetCurrentValue(600.0f);
+	MovementSpeedModifier.SetBaseValue(1.0f);
+	MovementSpeedModifier.SetCurrentValue(1.0f);
 
 	Health.SetBaseValue(100.0f);
 	Health.SetCurrentValue(100.0f);
@@ -58,6 +58,8 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
+	Super::PreAttributeChange(Attribute, NewValue);
+
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
@@ -72,11 +74,14 @@ void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 		{
 			Health.SetCurrentValue(NewValue);
 		}
+		return;
 	}
 }
 
 void UBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
+	Super::PreAttributeBaseChange(Attribute, NewValue);
+
 	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());

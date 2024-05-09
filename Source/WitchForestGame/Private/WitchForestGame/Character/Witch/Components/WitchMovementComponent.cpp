@@ -6,17 +6,30 @@
 #include "AbilitySystemGlobals.h"
 
 #include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
 UWitchMovementComponent::UWitchMovementComponent()
 {
 }
 
+void UWitchMovementComponent::SetUpdatedComponent(USceneComponent* Component)
+{
+	Super::SetUpdatedComponent(Component);
+
+	AbilitySystemComponent = Cast<UWitchForestASC>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()));
+}
+
+void UWitchMovementComponent::SetASC(UWitchForestASC* ASC)
+{
+	AbilitySystemComponent = ASC;
+}
+
 void UWitchMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()))
+	if (AbilitySystemComponent.IsValid())
 	{
-		if (ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+		if (AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
 		{
 			return;
 		}
@@ -27,9 +40,9 @@ void UWitchMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 
 FRotator UWitchMovementComponent::GetDeltaRotation(float DeltaTime) const
 {
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()))
+	if (AbilitySystemComponent.IsValid())
 	{
-		if (ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+		if (AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
 		{
 			return FRotator();
 		}
@@ -62,5 +75,15 @@ float UWitchMovementComponent::GetMaxSpeed() const
 float UWitchMovementComponent::GetMaxWalkSpeed() const
 {
 	const float Dot = FMath::Clamp(UpdatedComponent->GetForwardVector().Dot(Velocity.GetSafeNormal2D()), 0.0f, 1.0f);
-	return FMath::Lerp(MaxWalkSpeedCrouched, MaxWalkSpeed, Dot);
+	float SpeedModifier = 1.0f;
+
+	// @TODO: Use event based changes instead of checking each tick?
+	if (AbilitySystemComponent.IsValid())
+	{
+		if (const UBaseAttributeSet* BaseAttributeSet = Cast<UBaseAttributeSet>(AbilitySystemComponent->GetAttributeSet(UBaseAttributeSet::StaticClass())) )
+		{
+			SpeedModifier = BaseAttributeSet->GetMovementSpeedModifier();
+		}
+	}
+	return FMath::Lerp(MaxWalkSpeedCrouched, MaxWalkSpeed, Dot) * SpeedModifier;
 }

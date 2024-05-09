@@ -42,8 +42,10 @@ public:
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 
 
+	// This probably isn't ideal, but it works fine for multiplicative modififers
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement)
-	FGameplayAttributeData MovementSpeed;
+	FGameplayAttributeData MovementSpeedModifier;
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MovementSpeedModifier)
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Health, ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
