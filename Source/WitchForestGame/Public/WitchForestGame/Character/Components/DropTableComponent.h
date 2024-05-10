@@ -17,5 +17,5 @@ class WITCHFORESTGAME_API UDropTableComponent : public UActorComponent
 	TObjectPtr<UDropTable> DropTable;
 
 public:
-	void DropItems();
+	void DropItems(float DropPower = 100.0f);
 };

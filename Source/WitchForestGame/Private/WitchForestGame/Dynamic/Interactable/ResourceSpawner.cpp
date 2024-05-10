@@ -3,9 +3,14 @@
 
 #include "WitchForestGame/Dynamic/Interactable/ResourceSpawner.h"
 
+#include "WitchForestAbility/Attributes/WitchAttributeSet.h"
+#include "WitchForestGame.h"
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 
 #include "Net/UnrealNetwork.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "Logging/StructuredLog.h"
 
 
 AResourceSpawner::AResourceSpawner()
@@ -35,7 +40,17 @@ void AResourceSpawner::Interact(AActor* Source)
 		return;
 	}
 
-	DropTableComponent->DropItems();
+	float DropPower = 100.0f;
+	if (IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Source))
+	{
+		UAbilitySystemComponent* ASC = AbilitySystemInterface->GetAbilitySystemComponent();
+		if (const UWitchAttributeSet* WitchAttributeSet = Cast<UWitchAttributeSet>(ASC->GetAttributeSet(UWitchAttributeSet::StaticClass())))
+		{
+			DropPower = WitchAttributeSet->GetHarvestPower();
+			UE_LOGFMT(LogWitchForestGame, Display, "'{SourceName}' harvested resources from '{SelfName}', with a DropPower of {DropPower}.", Source ? Source->GetName() : "Null", GetName(), DropPower);
+		}
+	}
+	DropTableComponent->DropItems(DropPower);
 
 	if (bDestroyOnSpawn)
 	{

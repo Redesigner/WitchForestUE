@@ -12,7 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
-void UDropTableComponent::DropItems()
+void UDropTableComponent::DropItems(float DropPower)
 {
 	if (!DropTable)
 	{
@@ -29,7 +29,7 @@ void UDropTableComponent::DropItems()
 	UWorld* World = GetWorld();
 	AActor* Actor = GetOwner();
 	FVector SpawnLocation = Actor->GetActorLocation();
-	for (FDropTableAmount DropTableAmount : DropTable->Evaluate())
+	for (FDropTableAmount DropTableAmount : DropTable->Evaluate(DropPower))
 	{
 		FInventoryItemData ItemData;
 		if (!ItemSet->FindItemDataForTag(DropTableAmount.ItemTag, ItemData))

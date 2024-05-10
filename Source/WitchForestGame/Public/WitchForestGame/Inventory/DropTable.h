@@ -45,5 +45,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "ItemAmount"))
 	TArray<FDropTableEntry> Entries;
 
-	TArray<FDropTableAmount> Evaluate() const;
+	TArray<FDropTableAmount> Evaluate(float Power) const;
 };
