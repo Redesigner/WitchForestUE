@@ -16,6 +16,8 @@ class WITCHFORESTGAME_API AActorSpawner : public AActor
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> SpawnRegion;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Spawning, meta = (AllowPrivateAccess = true))
+	bool bActive = true;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Spawning, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SpawnClass;

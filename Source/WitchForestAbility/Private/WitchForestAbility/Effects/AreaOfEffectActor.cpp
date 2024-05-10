@@ -67,6 +67,11 @@ void AAreaOfEffectActor::RemoveEffectsFromActor(AActor* Actor)
 
 	for (FActiveGameplayEffectHandle& EffectToRemove : *EffectsToRemove)
 	{
+		// Catch in case the ASC became invalidated by one of our effects
+		if (!ASC)
+		{
+			return;
+		}
 		ASC->RemoveActiveGameplayEffect(EffectToRemove);
 	}
 }

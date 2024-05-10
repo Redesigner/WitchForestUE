@@ -17,7 +17,10 @@ void AActorSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnActor();
+	if (bActive)
+	{
+		SpawnActor();
+	}
 }
 
 void AActorSpawner::SpawnActor()
