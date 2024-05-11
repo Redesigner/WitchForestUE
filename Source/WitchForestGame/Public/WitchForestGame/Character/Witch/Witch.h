@@ -48,6 +48,8 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> InteractionVolume;
 
+	FVector LastSafeLocation;
+
 
 	DECLARE_MULTICAST_DELEGATE(FOnPotentialInteractionsChanged);
 
@@ -71,6 +73,8 @@ class WITCHFORESTGAME_API AWitch : public ACharacter, public IAbilitySystemInter
 	void ShiftSlot(const FInputActionInstance& Instance);
 
 	void HeldItemChanged();
+
+	bool IsInSafeLocation() const;
 
 
 	UFUNCTION(BlueprintCallable)

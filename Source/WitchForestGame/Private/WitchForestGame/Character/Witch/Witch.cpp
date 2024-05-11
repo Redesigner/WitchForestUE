@@ -61,7 +61,13 @@ void AWitch::Tick(float DeltaSeconds)
 
 	if (GetActorLocation().Z <= -200.0f)
 	{
-		TeleportToStart();
+		GetMovementComponent()->Velocity = FVector();
+		TeleportTo(LastSafeLocation, GetActorRotation());
+	}
+
+	if (IsInSafeLocation())
+	{
+		LastSafeLocation = GetActorLocation();
 	}
 }
 
@@ -257,6 +263,11 @@ void AWitch::ShiftSlot(const FInputActionInstance& Instance)
 void AWitch::HeldItemChanged()
 {
 	OnPotentialInteractionsChanged.Broadcast();
+}
+
+bool AWitch::IsInSafeLocation() const
+{
+	return Cast<UCharacterMovementComponent>(GetMovementComponent())->MovementMode == EMovementMode::MOVE_Walking;
 }
 
 USphereComponent* AWitch::GetInteractionVolume() const
