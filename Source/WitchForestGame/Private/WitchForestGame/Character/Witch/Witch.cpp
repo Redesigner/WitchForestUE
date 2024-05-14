@@ -61,8 +61,7 @@ void AWitch::Tick(float DeltaSeconds)
 
 	if (GetActorLocation().Z <= -200.0f)
 	{
-		GetMovementComponent()->Velocity = FVector();
-		TeleportTo(LastSafeLocation, GetActorRotation());
+		TeleportToLastSafeLocation();
 	}
 
 	if (IsInSafeLocation())
@@ -267,12 +266,25 @@ void AWitch::HeldItemChanged()
 
 bool AWitch::IsInSafeLocation() const
 {
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		if (ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Danger))
+		{
+			return false;
+		}
+	}
 	return Cast<UCharacterMovementComponent>(GetMovementComponent())->MovementMode == EMovementMode::MOVE_Walking;
 }
 
 USphereComponent* AWitch::GetInteractionVolume() const
 {
 	return InteractionVolume;
+}
+
+void AWitch::TeleportToLastSafeLocation()
+{
+	GetMovementComponent()->Velocity = FVector();
+	TeleportTo(LastSafeLocation, GetActorRotation());
 }
 
 UAbilitySystemComponent* AWitch::GetAbilitySystemComponent() const

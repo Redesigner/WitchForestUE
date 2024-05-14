@@ -4,8 +4,11 @@
 #include "WitchForestGame/Dynamic/World/Freezable.h"
 
 #include "WitchForestGame/WitchForestGameplayTags.h"
+#include "WitchForestGame/Character/Witch/Witch.h"
+#include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 
 #include "GameplayTagAssetInterface.h" 
+#include "Components/BoxComponent.h"
 
 const FName HideTag = "HideWhenUnfrozen";
 const FName ShowTag = "ShowWhenFrozen";
@@ -13,6 +16,14 @@ const FName DisableCollisionTag = "DisableCollisionWhenFrozen";
 const FName EnableCollisionTag = "EnableCollisionWhenFrozen";
 
 // This shares a lot of code with Flammable, so I could probably reuse it in a more generic way
+AFreezable::AFreezable()
+{
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	EndZone = CreateDefaultSubobject<UBoxComponent>(TEXT("EndZone"));
+	EndZone->SetupAttachment(RootComponent);
+	EndZone->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::ObjectEnterEndZone);
+}
+
 void AFreezable::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -82,5 +93,20 @@ void AFreezable::Unfreeze()
 				Primitive->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			}
 		}
+	}
+}
+
+void AFreezable::ObjectEnterEndZone(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (AWitch* Witch = Cast<AWitch>(OtherActor))
+	{
+		Witch->TeleportToLastSafeLocation();
+		return;
+	}
+
+	if (APickup* Pickup = Cast<APickup>(OtherActor))
+	{
+		Pickup->Destroy();
+		return;
 	}
 }

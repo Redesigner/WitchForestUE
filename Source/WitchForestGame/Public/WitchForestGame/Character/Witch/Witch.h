@@ -100,5 +100,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetPlayerColor(FColor Color);
 
+	void TeleportToLastSafeLocation();
+
 	FOnPotentialInteractionsChanged OnPotentialInteractionsChanged;
 };

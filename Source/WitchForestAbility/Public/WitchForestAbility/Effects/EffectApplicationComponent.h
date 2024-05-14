@@ -10,11 +10,18 @@
 
 #include "EffectApplicationComponent.generated.h"
 
+class UGameplayEffect;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WITCHFORESTABILITY_API UEffectApplicationComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+	/// Effects that are applied to actors that enter this area. These do not have an owner component
+	/// If you want the effects to be applied from an owner, have the owner create spec(s) and se them with
+	/// SetEffectHandles instead.
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Effects, meta = (AllowPrivateAccess = true))
+	TArray<TSubclassOf<UGameplayEffect>> DefaultEffects;
 
 	TArray<FGameplayEffectSpecHandle> EffectHandles;
 
