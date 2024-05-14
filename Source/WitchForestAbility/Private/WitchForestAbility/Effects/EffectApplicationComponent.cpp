@@ -73,7 +73,7 @@ TArray<FActiveGameplayEffectHandle> UEffectApplicationComponent::ApplyGameplayEf
 			}
 
 			FGameplayEffectContextHandle ContextHandle = ActorAbility->GetAbilitySystemComponent()->MakeEffectContext();
-			ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(GameplayEffectClass->GetDefaultObject()), 1.0f, ContextHandle);
+			Result.Add(ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(GameplayEffectClass->GetDefaultObject()), 1.0f, ContextHandle));
 		}
 	}
 	return Result;
