@@ -17,6 +17,7 @@ namespace WitchForestGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Element_Fire, "Element.Fire");
 	UE_DEFINE_GAMEPLAY_TAG(Element_Ice, "Element.Ice");
+	UE_DEFINE_GAMEPLAY_TAG(Element_Plant, "Element.Plant");
 
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Stun, "GameplayEffect.Stun");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Immobile, "GameplayEffect.Immobile");

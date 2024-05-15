@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagAssetInterface.h" 
 
 #include "GameplayEffectTypes.h" 
 
@@ -12,12 +13,16 @@
 class UEffectApplicationComponent;
 
 UCLASS()
-class WITCHFORESTABILITY_API AAreaOfEffectActor : public AActor
+class WITCHFORESTABILITY_API AAreaOfEffectActor : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEffectApplicationComponent> EffectApplication;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
+	FGameplayTagContainer GameplayTags;
+
 
 	TMap<AActor*, TArray<FActiveGameplayEffectHandle>> AppliedEffectMap;
 
@@ -28,6 +33,8 @@ class WITCHFORESTABILITY_API AAreaOfEffectActor : public AActor
 	void NotifyActorEndOverlap(AActor* OtherActor) override;
 
 	void Destroyed() override;
+
+	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	void RemoveEffectsFromActor(AActor* Actor);
 };

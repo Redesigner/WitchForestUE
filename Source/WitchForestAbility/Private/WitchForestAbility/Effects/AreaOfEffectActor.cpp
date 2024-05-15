@@ -45,6 +45,11 @@ void AAreaOfEffectActor::Destroyed()
 	}
 }
 
+void AAreaOfEffectActor::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer = GameplayTags;
+}
+
 void AAreaOfEffectActor::RemoveEffectsFromActor(AActor* Actor)
 {
 	IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Actor);
