@@ -10,8 +10,8 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/PawnMovementComponent.h" 
 
-const FName HideTag = "HideWhenAlive";
-const FName ShowTag = "ShowWhenAlive";
+const FName PlantHideTag = "HideWhenAlive";
+const FName PlantShowTag = "ShowWhenAlive";
 
 AGrowableSprout::AGrowableSprout()
 {
@@ -63,7 +63,7 @@ void AGrowableSprout::Tick(float Delta)
 	}
 
 	const FVector DesiredLocation = FMath::Lerp(PlatformStartLocation->GetComponentLocation(), EndLocation, MoveAlpha);
-	PlatformMesh->MoveComponent(DesiredLocation - CurrentLocation, PlatformMesh->GetComponentRotation(), true);
+	PlatformMesh->MoveComponent(DesiredLocation - CurrentLocation, PlatformMesh->GetComponentRotation(), false);
 }
 
 void AGrowableSprout::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -87,15 +87,17 @@ void AGrowableSprout::Grow()
 {
 	bAlive = true;
 
+	PlatformMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	for (UActorComponent* ActorComponent : GetComponents())
 	{
 		if (UPrimitiveComponent* Primitive = Cast<UPrimitiveComponent>(ActorComponent))
 		{
-			if (Primitive->ComponentHasTag(HideTag))
+			if (Primitive->ComponentHasTag(PlantHideTag))
 			{
 				Primitive->SetVisibility(false);
 			}
-			else if (Primitive->ComponentHasTag(ShowTag))
+			else if (Primitive->ComponentHasTag(PlantShowTag))
 			{
 				Primitive->SetVisibility(true);
 			}
@@ -105,7 +107,7 @@ void AGrowableSprout::Grow()
 
 void AGrowableSprout::ObjectEnterTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bMoving)
+	if (bMoving || !bAlive)
 	{
 		return;
 	}
