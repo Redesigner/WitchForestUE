@@ -59,7 +59,7 @@ void AWitch::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (GetActorLocation().Z <= -200.0f)
+	if (GetActorLocation().Z <= -1000.0f)
 	{
 		TeleportToLastSafeLocation();
 	}

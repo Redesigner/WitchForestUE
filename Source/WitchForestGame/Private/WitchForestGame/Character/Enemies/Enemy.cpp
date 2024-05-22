@@ -48,6 +48,11 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GetActorLocation().Z <= -1000.0f)
+	{
+		Destroy();
+	}
 }
 
 
