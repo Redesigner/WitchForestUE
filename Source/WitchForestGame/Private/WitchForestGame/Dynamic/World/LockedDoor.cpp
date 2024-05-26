@@ -4,6 +4,8 @@
 #include "WitchForestGame/Dynamic/World/LockedDoor.h"
 
 #include "Components/BoxComponent.h"
+#include "NavAreas/NavArea_Default.h"
+#include "NavAreas/NavArea_Null.h"
 
 ALockedDoor::ALockedDoor()
 {
@@ -55,6 +57,7 @@ void ALockedDoor::Open()
 
 	bOpen = true;
 	DoorShape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DoorShape->SetAreaClassOverride(UNavArea_Default::StaticClass());
 	OnOpened();
 }
 
@@ -62,5 +65,6 @@ void ALockedDoor::Close()
 {
 	bOpen = false;
 	DoorShape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	DoorShape->SetAreaClassOverride(UNavArea_Null::StaticClass());
 	OnClosed();
 }

@@ -8,6 +8,7 @@
 
 #include "BehaviorTree/BehaviorTreeTypes.h" 
 #include "Perception/AIPerceptionTypes.h"
+#include "GameplayTagContainer.h"
 
 #include "EnemyAIController.generated.h"
 
@@ -60,6 +61,8 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	void SetTarget(AActor* Target);
 
 	void ClearTarget();
+
+	void BlindStacksChanged(const FGameplayTag Tag, int32 Count);
 
 
 	// IGenericTeamAgentInterface

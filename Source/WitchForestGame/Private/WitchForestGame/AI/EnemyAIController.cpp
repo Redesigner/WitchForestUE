@@ -4,6 +4,7 @@
 #include "WitchForestGame/AI/EnemyAIController.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/Enemies/Enemy.h"
 #include "WitchForestGame/Character/Enemies/EnemyMovementComponent.h"
 
@@ -13,8 +14,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h" 
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISense_Sight.h"
 #include "GenericTeamAgentInterface.h"
-
+#include "AbilitySystemComponent.h"
 
 
 AEnemyAIController::AEnemyAIController()
@@ -76,9 +78,19 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	{
 		return;
 	}
+
 	EnemyPawn = Enemy;
 	Enemy->OnDeath.AddUObject(this, &ThisClass::OnDeath);
 	Blackboard->SetValueAsBool("Alive", true);
+
+	UAbilitySystemComponent* EnemyASC = Enemy->GetAbilitySystemComponent();
+	if (!EnemyASC)
+	{
+		return;
+	}
+
+	EnemyASC->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Blind, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
+	EnemyASC->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Sight, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
@@ -126,6 +138,27 @@ void AEnemyAIController::ClearTarget()
 	TargetActor = nullptr;
 	Blackboard->ClearValue("TargetActor");
 }
+
+void AEnemyAIController::BlindStacksChanged(const FGameplayTag Tag, int32 Count)
+{
+	if (!PerceptionComponent || !EnemyPawn.IsValid())
+	{
+		return;
+	}
+
+	// This should never happen since we're being called by the ASC, but just to make sure
+	UAbilitySystemComponent* EnemyASC = EnemyPawn->GetAbilitySystemComponent();
+	if (!EnemyASC)
+	{
+		return;
+	}
+
+	const int32 StacksBlind = EnemyASC->GetGameplayTagCount(WitchForestGameplayTags::GameplayEffect_Blind);
+	const int32 StacksSight = EnemyASC->GetGameplayTagCount(WitchForestGameplayTags::GameplayEffect_Sight);
+
+	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), StacksSight >= StacksBlind);
+}
+
 
 ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Other) const
 {
