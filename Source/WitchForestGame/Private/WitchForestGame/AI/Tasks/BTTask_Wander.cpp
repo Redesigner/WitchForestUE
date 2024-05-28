@@ -60,6 +60,15 @@ EBTNodeResult::Type UBTTask_Wander::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	return EBTNodeResult::InProgress;
 }
 
+EBTNodeResult::Type UBTTask_Wander::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	return EBTNodeResult::Failed;
+}
+
+void UBTTask_Wander::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+{
+}
+
 void UBTTask_Wander::PathRequestCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
 	FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);

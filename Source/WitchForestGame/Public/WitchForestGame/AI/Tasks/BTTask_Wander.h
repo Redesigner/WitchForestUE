@@ -27,6 +27,8 @@ public:
 	void OnInstanceCreated(UBehaviorTreeComponent& OwnerComp) override;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
+	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
 
 	UFUNCTION()
 	void PathRequestCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);

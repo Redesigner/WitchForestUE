@@ -34,29 +34,38 @@ void AEnemyAIController::TargetPerceptionInfoUpdated(const FActorPerceptionUpdat
 		UpdateInfo.Stimulus.IsActive() ? "Active" : "Inactive",
 		UpdateInfo.Stimulus.IsExpired() ? "Expired" : "Not Expired");
 
-	if (!UpdateInfo.Target.IsValid())
-	{
-		UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' recieved perception update, but the perceived target was invalid.", GetName());
-		return;
-	}
-
 	if (UpdateInfo.Stimulus.IsActive())
 	{
-		SetTarget(UpdateInfo.Target.Get());
-	}
-	else if (!AIPerception->HasAnyActiveStimulus(*UpdateInfo.Target.Get()) )
-	{
-		UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' did not have any other stimulus for '{TargetName}', clearing target.", GetName(), UpdateInfo.Target->GetName());
-		ClearTarget();
+		// SetTarget(UpdateInfo.Target.Get());
+		// SetDesiredLocation(UpdateInfo.Stimulus.StimulusLocation);
+		SetAIMovementState(EEnemyAIMovementState::Following);
 	}
 }
 
 void AEnemyAIController::TargetPerceptionForgotten(AActor* Actor)
 {
-	UE_LOGFMT(LogWitchForestAI, Verbose, "AI '{SelfName}' forgot target '{TargetName}'.", GetName(), Actor ? Actor->GetName() : "Null");
-	if (TargetActor == Actor)
+	if (!AIPerception)
 	{
-		ClearTarget();
+		return;
+	}
+
+	TArray<AActor*> PerceivedActors;
+	AIPerception->GetCurrentlyPerceivedActors(nullptr, PerceivedActors);
+	// We're still perceiving some actors, so don't do anything
+	if (!PerceivedActors.IsEmpty())
+	{
+		return;
+	}
+	AIPerception->GetKnownPerceivedActors(nullptr, PerceivedActors);
+	if (PerceivedActors.IsEmpty())
+	{
+		// If we forget a perception, and don't remember any actors, switch to wandering
+		SetAIMovementState(EEnemyAIMovementState::Wandering);
+	}
+	else
+	{
+		// Find out closest remaining perception
+
 	}
 }
 
@@ -98,45 +107,29 @@ void AEnemyAIController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	APawn* OwnerPawn = GetPawn();
-	if (!OwnerPawn || !TargetActor.IsValid())
+	if (!OwnerPawn || MovementState != EEnemyAIMovementState::Following)
 	{
 		return;
 	}
-	const float DistanceSquared = (TargetActor->GetActorLocation() - OwnerPawn->GetActorLocation()).SquaredLength();
-	const float TargetDistance = sqrtf(DistanceSquared);
-	// SetFocus(TargetActor.Get());
 
-	Blackboard->SetValueAsFloat("TargetDistance", TargetDistance);
+	UpdateClosestTarget();
 }
 
 void AEnemyAIController::OnDeath()
 {
 	Blackboard->SetValueAsBool("Alive", false);
-	// Clear our target to make sure we don't look at it anymore
-	SetTarget(nullptr);
 }
 
-void AEnemyAIController::SetTarget(AActor* Target)
+void AEnemyAIController::SetDesiredLocation(FVector Location)
 {
-	if (Target == TargetActor)
-	{
-		return;
-	}
-
-	if (!Target)
-	{
-		// If you're trying to set the target to nullptr intentionally, use ClearTarget() instead.
-		return;
-	}
-
-	TargetActor = Target;
-	Blackboard->SetValueAsObject("TargetActor", Target);
+	TargetLocation = Location;
+	Blackboard->SetValueAsVector("TargetLocation", Location);
 }
 
-void AEnemyAIController::ClearTarget()
+void AEnemyAIController::SetAIMovementState(EEnemyAIMovementState State)
 {
-	TargetActor = nullptr;
-	Blackboard->ClearValue("TargetActor");
+	MovementState = State;
+	Blackboard->SetValueAsEnum("MovementState", static_cast<uint8>(State));
 }
 
 void AEnemyAIController::BlindStacksChanged(const FGameplayTag Tag, int32 Count)
@@ -157,6 +150,49 @@ void AEnemyAIController::BlindStacksChanged(const FGameplayTag Tag, int32 Count)
 	const int32 StacksSight = EnemyASC->GetGameplayTagCount(WitchForestGameplayTags::GameplayEffect_Sight);
 
 	PerceptionComponent->SetSenseEnabled(UAISense_Sight::StaticClass(), StacksSight >= StacksBlind);
+}
+
+void AEnemyAIController::UpdateClosestTarget()
+{
+	if (!AIPerception || !GetPawn())
+	{
+		return;
+	}
+
+	if (MovementState != EEnemyAIMovementState::Following)
+	{
+		return;
+	}
+
+	const FVector CurrentLocation = GetPawn()->GetActorLocation();
+	bool bFoundClosestPerceivedActor = false;
+	float ClosestDistanceSquared = 0.0f;
+	AActor* ClosestTarget = nullptr;
+
+	TArray<AActor*> CurrrentlyPerceivedActors;
+	AIPerception->GetCurrentlyPerceivedActors(nullptr, CurrrentlyPerceivedActors);
+
+	if (CurrrentlyPerceivedActors.IsEmpty())
+	{
+		// We can't perceive any actors right now, but we might remember some
+		SetAIMovementState(EEnemyAIMovementState::Investigating);
+		const FActorPerceptionInfo* PerceptionInfo = AIPerception->GetFreshestTrace(UAISense::GetSenseID(UAISense_Sight::StaticClass()));
+		SetDesiredLocation(PerceptionInfo->GetLastStimulusLocation());
+		return;
+	}
+
+	for (AActor* CurrentlyPerceivedActor : CurrrentlyPerceivedActors)
+	{
+		const float CurrentDistanceSquared = (CurrentlyPerceivedActor->GetActorLocation() - CurrentLocation).SquaredLength();
+		if (!bFoundClosestPerceivedActor || CurrentDistanceSquared < ClosestDistanceSquared)
+		{
+			bFoundClosestPerceivedActor = true;
+			ClosestTarget = CurrentlyPerceivedActor;
+			ClosestDistanceSquared = CurrentDistanceSquared;
+		}
+	}
+	
+	Blackboard->SetValueAsObject("TargetActor", ClosestTarget);
 }
 
 
@@ -190,11 +226,6 @@ void AEnemyAIController::OverrideTeam(EWitchForestTeam NewTeam)
 	if (!PerceptionSystem)
 	{
 		return;
-	}
-
-	if (NewTeam != GetWitchForestTeam())
-	{
-		ClearTarget();
 	}
 
 	PerceptionSystem->UnregisterSource(*this);

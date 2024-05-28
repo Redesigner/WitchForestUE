@@ -16,6 +16,14 @@ class AEnemy;
 class UBehaviorTree;
 class UAIPerceptionComponent;
 
+UENUM(BlueprintType)
+enum class EEnemyAIMovementState : uint8
+{
+	Wandering,
+	Investigating,
+	Following
+};
+
 UCLASS()
 class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWitchForestTeamAgentInterface
 {
@@ -41,16 +49,23 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 
 	TWeakObjectPtr<AEnemy> EnemyPawn;
 
-	TWeakObjectPtr<AActor> TargetActor;
-
+	FVector TargetLocation;
+	EEnemyAIMovementState MovementState = EEnemyAIMovementState::Wandering;
 
 	AEnemyAIController();
 
+	// AI Perception methods
 	UFUNCTION()
 	void TargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
-
 	UFUNCTION()
 	void TargetPerceptionForgotten(AActor* Actor);
+
+	void SetDesiredLocation(FVector Location);
+
+	void SetAIMovementState(EEnemyAIMovementState State);
+
+	void UpdateClosestTarget();
+	// End AI Perception
 
 	void OnPossess(APawn* InPawn) override;
 
@@ -58,12 +73,7 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 
 	void OnDeath();
 
-	void SetTarget(AActor* Target);
-
-	void ClearTarget();
-
 	void BlindStacksChanged(const FGameplayTag Tag, int32 Count);
-
 
 	// IGenericTeamAgentInterface
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
