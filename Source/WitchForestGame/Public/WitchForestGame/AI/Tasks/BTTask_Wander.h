@@ -8,9 +8,19 @@
 
 #include "BTTask_Wander.generated.h"
 
-/**
- * 
- */
+
+class UAITask_MoveTo;
+
+struct FBTWanderMemory
+{
+	/** Move request ID */
+	FAIRequestID MoveRequestID;
+
+	FDelegateHandle BBObserverDelegateHandle;
+
+	TWeakObjectPtr<UAITask_MoveTo> Task;
+};
+
 UCLASS()
 class WITCHFORESTGAME_API UBTTask_Wander : public UBTTask_BlackboardBase
 {
@@ -18,18 +28,18 @@ class WITCHFORESTGAME_API UBTTask_Wander : public UBTTask_BlackboardBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (AllowPrivateAccess = true))
 	float WanderRadius = 500.0f;
-
-	TWeakObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 	
-public:
 	UBTTask_Wander();
-
-	void OnInstanceCreated(UBehaviorTreeComponent& OwnerComp) override;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
+	uint16 GetInstanceMemorySize() const override;
 
-	UFUNCTION()
-	void PathRequestCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+	void OnMessage(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, FName Message, int32 RequestID, bool bSuccess) override;
+
+	EBTNodeResult::Type PerformMoveTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+	UAITask_MoveTo* PrepareMoveTask(UBehaviorTreeComponent& OwnerComp, UAITask_MoveTo* ExistingTask, FAIMoveRequest& MoveRequest);
+
+	const FVector GetDesiredLocation(AActor* OwnerActor, float Radius);
 };

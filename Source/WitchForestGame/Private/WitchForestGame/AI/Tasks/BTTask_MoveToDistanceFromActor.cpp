@@ -16,7 +16,6 @@
 
 using MemoryType = FBTMoveToDistanceFromActorMemory;
 
-
 // This class is *mostly* just a rehash of BTTask_MoveTo, with my own comments added
 UBTTask_MoveToDistanceFromActor::UBTTask_MoveToDistanceFromActor()
 {
@@ -143,11 +142,13 @@ EBTNodeResult::Type UBTTask_MoveToDistanceFromActor::ExecuteTask(UBehaviorTreeCo
 	{
 		return NodeResult;
 	}
+
 	UBlackboardComponent* BlackboardComp = OwnerComponent.GetBlackboardComponent();
 	if (!ensure(BlackboardComp))
 	{
 		return EBTNodeResult::Failed;
 	}
+
 	if (MyMemory->BBObserverDelegateHandle.IsValid())
 	{
 		BlackboardComp->UnregisterObserver(BlackboardKey.GetSelectedKeyID(), MyMemory->BBObserverDelegateHandle);
@@ -213,6 +214,7 @@ void UBTTask_MoveToDistanceFromActor::OnGameplayTaskDeactivated(UGameplayTask& T
 	{
 		return;
 	}
+
 	UBehaviorTreeComponent* BehaviorComp = GetBTComponentForTask(Task);
 	if (BehaviorComp)
 	{

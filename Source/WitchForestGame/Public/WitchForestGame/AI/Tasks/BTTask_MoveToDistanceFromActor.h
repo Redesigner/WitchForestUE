@@ -21,7 +21,6 @@ struct FBTMoveToDistanceFromActorMemory
 	TWeakObjectPtr<UAITask_MoveTo> Task;
 
 	uint8 bObserverCanFinishTask : 1;
-
 };
 
 UCLASS(config = Game)
@@ -91,7 +90,6 @@ class WITCHFORESTGAME_API UBTTask_MoveToDistanceFromActor : public UBTTask_Black
 	FString GetStaticDescription() const override;
 
 	EBTNodeResult::Type PerformMoveTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
-
 	UAITask_MoveTo* PrepareMoveTask(UBehaviorTreeComponent& OwnerComp, UAITask_MoveTo* ExistingTask, FAIMoveRequest& MoveRequest);
 
 	FVector CalculateDesiredLocation(AActor* Avatar, AActor* Target) const;
