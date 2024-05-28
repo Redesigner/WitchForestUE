@@ -11,8 +11,6 @@
 
 #include "WitchForestGame.h"
 
-using MemoryType = FBTWanderMemory;
-
 
 UBTTask_Wander::UBTTask_Wander()
 {
@@ -27,7 +25,7 @@ EBTNodeResult::Type UBTTask_Wander::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 
 EBTNodeResult::Type UBTTask_Wander::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	MemoryType* MyMemory = CastInstanceNodeMemory<MemoryType>(NodeMemory);
+	FBTWanderMemory* MyMemory = CastInstanceNodeMemory<FBTWanderMemory>(NodeMemory);
 	if (MyMemory->MoveRequestID.IsValid())
 	{
 		AAIController* MyController = OwnerComp.GetAIOwner();
@@ -43,7 +41,7 @@ EBTNodeResult::Type UBTTask_Wander::AbortTask(UBehaviorTreeComponent& OwnerComp,
 
 void UBTTask_Wander::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
-	MemoryType* MyMemory = CastInstanceNodeMemory<MemoryType>(NodeMemory);
+	FBTWanderMemory* MyMemory = CastInstanceNodeMemory<FBTWanderMemory>(NodeMemory);
 	MyMemory->Task.Reset();
 
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
@@ -65,7 +63,7 @@ void UBTTask_Wander::OnMessage(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 EBTNodeResult::Type UBTTask_Wander::PerformMoveTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const UBlackboardComponent* MyBlackboard = OwnerComp.GetBlackboardComponent();
-	MemoryType* MyMemory = CastInstanceNodeMemory<MemoryType>(NodeMemory);
+	FBTWanderMemory* MyMemory = CastInstanceNodeMemory<FBTWanderMemory>(NodeMemory);
 	AAIController* MyController = OwnerComp.GetAIOwner();
 
 	if (!MyController || !MyBlackboard)
