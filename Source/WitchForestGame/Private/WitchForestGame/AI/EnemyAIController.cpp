@@ -177,7 +177,10 @@ void AEnemyAIController::UpdateClosestTarget()
 		// We can't perceive any actors right now, but we might remember some
 		SetAIMovementState(EEnemyAIMovementState::Investigating);
 		const FActorPerceptionInfo* PerceptionInfo = AIPerception->GetFreshestTrace(UAISense::GetSenseID(UAISense_Sight::StaticClass()));
-		SetDesiredLocation(PerceptionInfo->GetLastStimulusLocation());
+		if (PerceptionInfo)
+		{
+			SetDesiredLocation(PerceptionInfo->GetLastStimulusLocation());
+		}
 		return;
 	}
 
@@ -244,6 +247,16 @@ void AEnemyAIController::OverrideTeam(EWitchForestTeam NewTeam)
 	PerceptionSystem->RegisterSource(*this);
 	PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
 
+	if (PerceptionComponent)
+	{
+		PerceptionComponent->ForgetAll();
+	}
+
+	if (BrainComponent->GetBlackboardComponent())
+	{
+		BrainComponent->GetBlackboardComponent()->ClearValue("TargetActor");
+	}
+	SetAIMovementState(EEnemyAIMovementState::Wandering);
 	BrainComponent->RestartLogic();
 }
 
