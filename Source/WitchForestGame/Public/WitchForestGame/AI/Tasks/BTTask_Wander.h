@@ -42,4 +42,6 @@ class WITCHFORESTGAME_API UBTTask_Wander : public UBTTask_BlackboardBase
 	UAITask_MoveTo* PrepareMoveTask(UBehaviorTreeComponent& OwnerComp, UAITask_MoveTo* ExistingTask, FAIMoveRequest& MoveRequest);
 
 	const FVector GetDesiredLocation(AActor* OwnerActor, float Radius);
+
+	void SetWandering(UBehaviorTreeComponent& OwnerComp, bool bWandering);
 };

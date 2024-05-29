@@ -10,10 +10,12 @@
 #include "Tasks/AITask_MoveTo.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
 
 
 UBTTask_Wander::UBTTask_Wander()
 {
+	INIT_TASK_NODE_NOTIFY_FLAGS();
 }
 
 
@@ -35,6 +37,7 @@ EBTNodeResult::Type UBTTask_Wander::AbortTask(UBehaviorTreeComponent& OwnerComp,
 		}
 	}
 
+	SetWandering(OwnerComp, false);
 	return Super::AbortTask(OwnerComp, NodeMemory);
 }
 
@@ -44,6 +47,7 @@ void UBTTask_Wander::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* No
 	FBTWanderMemory* MyMemory = CastInstanceNodeMemory<FBTWanderMemory>(NodeMemory);
 	MyMemory->Task.Reset();
 
+	SetWandering(OwnerComp, false);
 	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
 }
 
@@ -56,6 +60,12 @@ uint16 UBTTask_Wander::GetInstanceMemorySize() const
 void UBTTask_Wander::OnMessage(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, FName Message, int32 RequestID, bool bSuccess)
 {
 	bSuccess &= (Message != UBrainComponent::AIMessage_RepathFailed);
+
+	if (bSuccess)
+	{
+		SetWandering(OwnerComp, false);
+	}
+
 	Super::OnMessage(OwnerComp, NodeMemory, Message, RequestID, bSuccess);
 }
 
@@ -115,6 +125,7 @@ EBTNodeResult::Type UBTTask_Wander::PerformMoveTask(UBehaviorTreeComponent& Owne
 	EGameplayTaskState GameplayTaskState = MoveTask->GetState();
 	if (GameplayTaskState != EGameplayTaskState::Finished)
 	{
+		SetWandering(OwnerComp, true);
 		return EBTNodeResult::InProgress;
 	}
 
@@ -143,7 +154,7 @@ const FVector UBTTask_Wander::GetDesiredLocation(AActor* OwnerActor, float Radiu
 	UNavigationSystemV1* NavigationSystem = Cast<UNavigationSystemV1>(NavigationSystemBase);
 	if (!NavigationSystem)
 	{
-		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to execute BehaviorTree task '{TaskName}'. The task requires NavigationSystemV1.", GetName());
+		UE_LOGFMT(LogWitchForestAI, Warning, "Unable to execute BehaviorTree task '{TaskName}'. The task requires NavigationSystemV1.", GetName());
 		return FVector();
 	}
 
@@ -155,4 +166,19 @@ const FVector UBTTask_Wander::GetDesiredLocation(AActor* OwnerActor, float Radiu
 	}
 
 	return WanderLocation;
+}
+
+void UBTTask_Wander::SetWandering(UBehaviorTreeComponent& OwnerComp, bool bWandering)
+{
+	if (AAIController* AIOwner = OwnerComp.GetAIOwner())
+	{
+		if (APawn* Pawn = AIOwner->GetPawn())
+		{
+			if (UWitchMovementComponent* MovementComponent = Cast<UWitchMovementComponent>(Pawn->GetMovementComponent()))
+			{
+				MovementComponent->SetWandering(bWandering);
+				UE_LOGFMT(LogWitchForestAI, Log, "BTTask_Wander '{TaskName}' setting 'Wandering' on '{PawnName}' MovementComponent to '{Truthiness}'.", GetName(), Pawn->GetName(), bWandering ? "True" : "False");
+			}
+		}
+	}
 }

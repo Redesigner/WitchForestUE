@@ -10,6 +10,12 @@
 
 #include "WitchForestGame.h"
 
+UBTTask_ExecuteAbilityTag::UBTTask_ExecuteAbilityTag()
+{
+	INIT_TASK_NODE_NOTIFY_FLAGS();
+	bCreateNodeInstance = true;
+}
+
 void UBTTask_ExecuteAbilityTag::OnInstanceCreated(UBehaviorTreeComponent& OwnerComp)
 {
 	Super::OnInstanceCreated(OwnerComp);
@@ -85,11 +91,6 @@ EBTNodeResult::Type UBTTask_ExecuteAbilityTag::ExecuteTask(UBehaviorTreeComponen
 		return EBTNodeResult::InProgress;
 	}
 	return EBTNodeResult::Failed;
-}
-
-UBTTask_ExecuteAbilityTag::UBTTask_ExecuteAbilityTag()
-{
-	bCreateNodeInstance = true;
 }
 
 void UBTTask_ExecuteAbilityTag::OnAbilityEnded(const FAbilityEndedData& AbilityEndedData)

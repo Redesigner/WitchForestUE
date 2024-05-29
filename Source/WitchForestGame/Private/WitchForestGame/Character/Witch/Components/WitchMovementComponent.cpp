@@ -25,6 +25,11 @@ void UWitchMovementComponent::SetASC(UWitchForestASC* ASC)
 	AbilitySystemComponent = ASC;
 }
 
+void UWitchMovementComponent::SetWandering(bool Wandering)
+{
+	bWandering = Wandering;
+}
+
 void UWitchMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
 	if (AbilitySystemComponent.IsValid())
@@ -85,5 +90,11 @@ float UWitchMovementComponent::GetMaxWalkSpeed() const
 			SpeedModifier = BaseAttributeSet->GetMovementSpeedModifier();
 		}
 	}
+
+	if (bWandering)
+	{
+		return MaxWalkSpeedWandering * SpeedModifier;
+	}
+
 	return FMath::Lerp(MaxWalkSpeedCrouched, MaxWalkSpeed, Dot) * SpeedModifier;
 }

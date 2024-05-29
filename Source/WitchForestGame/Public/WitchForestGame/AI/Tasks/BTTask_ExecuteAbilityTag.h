@@ -32,14 +32,13 @@ class WITCHFORESTGAME_API UBTTask_ExecuteAbilityTag : public UBTTaskNode
 	FGameplayAbilitySpecHandle ActivatedAbility;
 
 
+	UBTTask_ExecuteAbilityTag();
 
 	void OnInstanceCreated(UBehaviorTreeComponent& OwnerComp) override;
 
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory) override;
-
-	UBTTask_ExecuteAbilityTag();
 
 	void OnAbilityEnded(const FAbilityEndedData& AbilityEndedData);
 };
