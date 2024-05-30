@@ -177,7 +177,7 @@ void UBTTask_Wander::SetWandering(UBehaviorTreeComponent& OwnerComp, bool bWande
 			if (UWitchMovementComponent* MovementComponent = Cast<UWitchMovementComponent>(Pawn->GetMovementComponent()))
 			{
 				MovementComponent->SetWandering(bWandering);
-				UE_LOGFMT(LogWitchForestAI, Log, "BTTask_Wander '{TaskName}' setting 'Wandering' on '{PawnName}' MovementComponent to '{Truthiness}'.", GetName(), Pawn->GetName(), bWandering ? "True" : "False");
+				// UE_LOGFMT(LogWitchForestAI, Log, "BTTask_Wander '{TaskName}' setting 'Wandering' on '{PawnName}' MovementComponent to '{Truthiness}'.", GetName(), Pawn->GetName(), bWandering ? "True" : "False");
 			}
 		}
 	}

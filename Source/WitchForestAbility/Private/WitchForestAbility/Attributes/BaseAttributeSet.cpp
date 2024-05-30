@@ -92,8 +92,11 @@ void UBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribu
 void UBaseAttributeSet::BroadcastDamageEventPerception(const FGameplayEffectModCallbackData& Data)
 {
 	FVector DamageLocation;
-
-	if (GetOwningAbilitySystemComponent() && GetOwningAbilitySystemComponent()->GetAvatarActor())
+	if (Data.EffectSpec.GetContext().HasOrigin())
+	{
+		DamageLocation = Data.EffectSpec.GetContext().GetOrigin();
+	}
+	else if (GetOwningAbilitySystemComponent() && GetOwningAbilitySystemComponent()->GetAvatarActor())
 	{
 		DamageLocation = GetOwningAbilitySystemComponent()->GetAvatarActor()->GetActorLocation();
 	}

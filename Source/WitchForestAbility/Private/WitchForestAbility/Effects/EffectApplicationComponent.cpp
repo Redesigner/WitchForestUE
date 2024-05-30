@@ -41,6 +41,7 @@ TArray<FActiveGameplayEffectHandle> UEffectApplicationComponent::ApplyGameplayEf
 			// trying to apply effects with hit results that have fallen out of scope,
 			// since internally they are stored as sharedptrs
 			EffectContext.AddHitResult(HitResult, true);
+			EffectContext.AddOrigin(OwningActor->GetActorLocation());
 
 			FGameplayEffectSpec* Spec = EffectHandle.Data.Get();
 			if (!Spec)

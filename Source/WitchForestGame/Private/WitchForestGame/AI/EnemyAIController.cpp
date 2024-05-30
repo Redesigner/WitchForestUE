@@ -69,6 +69,26 @@ void AEnemyAIController::TargetPerceptionForgotten(AActor* Actor)
 	}
 }
 
+void AEnemyAIController::OnTakeDamage(AActor* Source, FHitResult Hit)
+{
+	if (Team == EWitchForestTeam::Passive)
+	{
+		UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
+		if (!PerceptionSystem)
+		{
+			return;
+		}
+
+		PerceptionSystem->UnregisterSource(*this);
+		PerceptionSystem->UnregisterListener(*PerceptionComponent.Get());
+
+		Team = EWitchForestTeam::Wild;
+
+		PerceptionSystem->RegisterSource(*this);
+		PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
+	}
+}
+
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -90,6 +110,8 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 
 	EnemyPawn = Enemy;
 	Enemy->OnDeath.AddUObject(this, &ThisClass::OnDeath);
+	Enemy->OnTakeDamage.AddUniqueDynamic(this, &ThisClass::OnTakeDamage);
+
 	Blackboard->SetValueAsBool("Alive", true);
 
 	UAbilitySystemComponent* EnemyASC = Enemy->GetAbilitySystemComponent();
@@ -165,6 +187,7 @@ void AEnemyAIController::UpdateClosestTarget()
 	}
 
 	const FVector CurrentLocation = GetPawn()->GetActorLocation();
+	FVector PerceptionLocation;
 	bool bFoundClosestPerceivedActor = false;
 	float ClosestDistanceSquared = 0.0f;
 	AActor* ClosestTarget = nullptr;
@@ -186,7 +209,19 @@ void AEnemyAIController::UpdateClosestTarget()
 
 	for (AActor* CurrentlyPerceivedActor : CurrrentlyPerceivedActors)
 	{
-		const float CurrentDistanceSquared = (CurrentlyPerceivedActor->GetActorLocation() - CurrentLocation).SquaredLength();
+		FActorPerceptionBlueprintInfo PerceptionInfo;
+		if (AIPerception->GetActorsPerception(CurrentlyPerceivedActor, PerceptionInfo))
+		{
+			for (const FAIStimulus& Stimulus : PerceptionInfo.LastSensedStimuli)
+			{
+				if (Stimulus.IsValid())
+				{
+					PerceptionLocation = Stimulus.StimulusLocation;
+					break;
+				}
+			}
+		}
+		const float CurrentDistanceSquared = (PerceptionLocation - CurrentLocation).SquaredLength();
 		if (!bFoundClosestPerceivedActor || CurrentDistanceSquared < ClosestDistanceSquared)
 		{
 			bFoundClosestPerceivedActor = true;
@@ -195,6 +230,9 @@ void AEnemyAIController::UpdateClosestTarget()
 		}
 	}
 	
+	// UE_LOGFMT(LogWitchForestAI, Warning, "EnemyAIController '{AIController}' Perception at location '{Location}'", GetName(), PerceptionLocation.ToString());
+
+	Blackboard->SetValueAsVector("TargetLocation", PerceptionLocation);
 	Blackboard->SetValueAsObject("TargetActor", ClosestTarget);
 }
 
@@ -205,18 +243,22 @@ ETeamAttitude::Type AEnemyAIController::GetTeamAttitudeTowards(const AActor& Oth
 	{
 		if (const IWitchForestTeamAgentInterface* OtherTeamAgent = Cast<IWitchForestTeamAgentInterface>(OtherPawn->GetController()))
 		{
+			if (GetWitchForestTeam() == EWitchForestTeam::Passive)
+			{
+				return ETeamAttitude::Neutral;
+			}
 			if (OtherTeamAgent->GetWitchForestTeam() == GetWitchForestTeam())
 			{
 				// UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is friendly.", GetName(), Other.GetName());
 				// UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}' ''.", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
 				return ETeamAttitude::Friendly;
 			}
-			else
+			if (OtherTeamAgent->GetWitchForestTeam() == EWitchForestTeam::Passive && GetWitchForestTeam() == EWitchForestTeam::Wild)
 			{
-				// UE_LOGFMT(LogWitchForestGame, Display, "EnemyAIController '{SelfName}' attitude towards '{OtherName}' is hostile.", GetName(), Other.GetName());
-				// UE_LOGFMT(LogWitchForestGame, Display, "'' My team is '{TeamName}', perceived target is team '{OtherTeamName}'. ''", UEnum::GetDisplayValueAsText(GetWitchForestTeam()).ToString(), UEnum::GetDisplayValueAsText(OtherTeamAgent->GetWitchForestTeam()).ToString());
-				return ETeamAttitude::Hostile;
+				// If we're wild and the other enemy is passive, assume we *used* to be on the same team
+				return ETeamAttitude::Friendly;
 			}
+			return ETeamAttitude::Hostile;
 		}
 	}
 

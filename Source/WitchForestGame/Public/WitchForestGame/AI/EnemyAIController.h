@@ -67,6 +67,9 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	void UpdateClosestTarget();
 	// End AI Perception
 
+	UFUNCTION()
+	void OnTakeDamage(AActor* Source, FHitResult Hit);
+
 	void OnPossess(APawn* InPawn) override;
 
 	void Tick(float DeltaTime) override;

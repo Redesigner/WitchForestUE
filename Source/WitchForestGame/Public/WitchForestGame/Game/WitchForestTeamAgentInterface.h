@@ -12,6 +12,7 @@ enum EWitchForestTeam
 {
 	Witches,
 	Wild,
+	Passive,
 	Unaffiliated
 };
 
