@@ -108,7 +108,6 @@ EBTNodeResult::Type UBTTask_Wander::PerformMoveTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
-	// I'm not really sure why this variable is set to false and then true immediately after...
 	if (bReuseExistingTask)
 	{
 		if (MoveTask->IsActive())
