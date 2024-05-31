@@ -20,6 +20,9 @@ class WITCHFORESTABILITY_API AAreaOfEffectActor : public AActor, public IGamepla
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEffectApplicationComponent> EffectApplication;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UEffectApplicationComponent> PeriodicEffectApplication;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GameplayTags;
 

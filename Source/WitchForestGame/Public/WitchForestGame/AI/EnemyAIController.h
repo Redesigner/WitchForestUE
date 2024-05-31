@@ -87,4 +87,8 @@ class WITCHFORESTGAME_API AEnemyAIController : public AAIController, public IWit
 	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
 	EWitchForestTeam GetWitchForestTeam() const override;
 	// End IWitchForestTeamAgentInterface
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMovementStateChanged(EEnemyAIMovementState OldState, EEnemyAIMovementState NewState);
 };

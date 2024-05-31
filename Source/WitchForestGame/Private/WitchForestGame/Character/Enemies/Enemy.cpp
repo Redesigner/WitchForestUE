@@ -40,6 +40,7 @@ void AEnemy::BeginPlay()
 	}
 
 	AbilitySystem->SetAvatarActor(this);
+	AttributeSet->OnDeath.AddUObject(this, &ThisClass::Die);
 	AttributeSet->SetMaxHealth(StartingMaxHealth);
 	AttributeSet->SetHealth(StartingMaxHealth);
 }
@@ -62,8 +63,9 @@ void AEnemy::PossessedBy(AController* NewController)
 }
 
 
-void AEnemy::Die()
+void AEnemy::Die(const FGameplayEffectSpec EffectSpec)
 {
+	UE_LOG(LogTemp, Display, TEXT("Enemy '%s' died."), *GetName());
 	bAlive = false;
 	DropTableComponent->DropItems();
 	AbilitySystem->CancelAllAbilities();
@@ -115,12 +117,6 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 			else
 			{
 				OnTakeDamage.Broadcast(Damager, FHitResult());
-			}
-
-			float NewHealth = ModifiedAttribute.Attribute.GetNumericValue(AttributeSet);
-			if (NewHealth <= 0.0f)
-			{
-				Die();
 			}
 		}
 	}

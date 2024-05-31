@@ -71,22 +71,47 @@ void AEnemyAIController::TargetPerceptionForgotten(AActor* Actor)
 
 void AEnemyAIController::OnTakeDamage(AActor* Source, FHitResult Hit)
 {
-	if (Team == EWitchForestTeam::Passive)
+	if (Team != EWitchForestTeam::Passive)
 	{
-		UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
-		if (!PerceptionSystem)
-		{
-			return;
-		}
-
-		PerceptionSystem->UnregisterSource(*this);
-		PerceptionSystem->UnregisterListener(*PerceptionComponent.Get());
-
-		Team = EWitchForestTeam::Wild;
-
-		PerceptionSystem->RegisterSource(*this);
-		PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
+		return;
 	}
+
+	IAbilitySystemInterface* AbilitySystem = Cast<IAbilitySystemInterface>(Source);
+	if (!AbilitySystem)
+	{
+		return;
+	}
+
+	UAbilitySystemComponent* ASC = AbilitySystem->GetAbilitySystemComponent();
+	if (!ASC)
+	{
+		return;
+	}
+
+	const IWitchForestTeamAgentInterface* OtherTeamAgent = Cast<IWitchForestTeamAgentInterface>(ASC->GetOwner());
+	if (!OtherTeamAgent)
+	{
+		return;
+	}
+
+	if (OtherTeamAgent->GetWitchForestTeam() != EWitchForestTeam::Witches)
+	{
+		return;
+	}
+
+	UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
+	if (!PerceptionSystem)
+	{
+		return;
+	}
+
+	PerceptionSystem->UnregisterSource(*this);
+	PerceptionSystem->UnregisterListener(*PerceptionComponent.Get());
+
+	Team = EWitchForestTeam::Wild;
+
+	PerceptionSystem->RegisterSource(*this);
+	PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)
@@ -139,7 +164,7 @@ void AEnemyAIController::Tick(float DeltaTime)
 
 void AEnemyAIController::OnDeath()
 {
-	Blackboard->SetValueAsBool("Alive", false);
+	Blackboard->Deactivate();
 }
 
 void AEnemyAIController::SetDesiredLocation(FVector Location)
@@ -150,8 +175,16 @@ void AEnemyAIController::SetDesiredLocation(FVector Location)
 
 void AEnemyAIController::SetAIMovementState(EEnemyAIMovementState State)
 {
+	if (MovementState == State)
+	{
+		return;
+	}
+
+	EEnemyAIMovementState OldState = MovementState;
 	MovementState = State;
 	Blackboard->SetValueAsEnum("MovementState", static_cast<uint8>(State));
+
+	OnMovementStateChanged(OldState, State);
 }
 
 void AEnemyAIController::BlindStacksChanged(const FGameplayTag Tag, int32 Count)

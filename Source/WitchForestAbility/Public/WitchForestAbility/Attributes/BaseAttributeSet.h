@@ -19,10 +19,26 @@ UCLASS()
 class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
+
+	// This probably isn't ideal, but it works fine for multiplicative modififers
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement, meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MovementSpeedModifier;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Health, ReplicatedUsing = OnRep_Health, meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Health;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth, meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MaxHealth;
+
+	float MaxHealthBeforeAttributeChange;
+	float HealthBeforeAttributeChange;
+
 	
 	UBaseAttributeSet();
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
 
 	void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
@@ -41,18 +57,8 @@ public:
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 
-
-	// This probably isn't ideal, but it works fine for multiplicative modififers
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement)
-	FGameplayAttributeData MovementSpeedModifier;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MovementSpeedModifier)
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Health, ReplicatedUsing = OnRep_Health)
-	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth)
-	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)

@@ -66,7 +66,7 @@ class WITCHFORESTGAME_API AEnemy : public ACharacter, public IAbilitySystemInter
 
 	void PossessedBy(AController* NewController) override;
 
-	void Die();
+	void Die(const FGameplayEffectSpec EffectSpec);
 
 
 public:

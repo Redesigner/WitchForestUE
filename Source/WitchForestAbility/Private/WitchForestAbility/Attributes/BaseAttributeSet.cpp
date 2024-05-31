@@ -30,13 +30,28 @@ void UBaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION_NOTIFY(UBaseAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
+bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
+{
+	if (!Super::PreGameplayEffectExecute(Data))
+	{
+		return false;
+	}
+
+	HealthBeforeAttributeChange = GetHealth();
+	MaxHealthBeforeAttributeChange = GetMaxHealth();
+
+	return true;
+}
+
 
 void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	if (Data.EvaluatedData.Attribute.AttributeName == TEXT("Health"))
 	{
-		if (Data.EvaluatedData.Attribute.GetNumericValue(this) <= 0.0f)
+		const float NewHealth = Data.EvaluatedData.Attribute.GetNumericValue(this);
+		if (NewHealth <= 0.0f && NewHealth != HealthBeforeAttributeChange)
 		{
+			UE_LOG(LogTemp, Display, TEXT("Character died."));
 			OnDeath.Broadcast(Data.EffectSpec);
 
 			FGameplayEventData Payload;
@@ -111,10 +126,14 @@ void UBaseAttributeSet::BroadcastDamageEventPerception(const FGameplayEffectModC
 void UBaseAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UBaseAttributeSet, Health, OldHealth);
+
+	HealthBeforeAttributeChange = GetHealth();
 }
 
 
 void UBaseAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UBaseAttributeSet, MaxHealth, OldMaxHealth);
+
+	MaxHealthBeforeAttributeChange = GetMaxHealth();
 }
