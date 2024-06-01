@@ -7,6 +7,7 @@
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Dynamic/Brewing/PotionRecipeSet.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Game/WitchForestCheatManager.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestAbility/WitchForestASC.h"
@@ -19,6 +20,7 @@
 
 AWitchPlayerController::AWitchPlayerController()
 {
+    CheatClass = UWitchForestCheatManager::StaticClass();
 }
 
 

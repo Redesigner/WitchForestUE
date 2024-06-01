@@ -95,6 +95,11 @@ void AWitchForestGameMode::RestartIfNoLivingPlayers()
 
     if (!bPlayersAlive)
     {
-        RestartGame();
+        FTimerHandle RestartTimer;
+        GetWorld()->GetTimerManager().SetTimer(RestartTimer,  FTimerDelegate::CreateLambda([this]()
+            {
+                RestartGame();
+            }),
+            RestartTime, false, -1.0f);
     }
 }

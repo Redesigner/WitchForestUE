@@ -37,10 +37,16 @@ void AAreaOfEffectActor::NotifyActorEndOverlap(AActor* OtherActor)
 
 void AAreaOfEffectActor::Destroyed()
 {
-	TSet<AActor*> AffectedActors;
+	TSet<FObjectKey> AffectedActors;
 	AppliedEffectMap.GetKeys(AffectedActors);
-	for (AActor* AffectedActor : AffectedActors)
+	for (FObjectKey ObjectKey : AffectedActors)
 	{
+		AActor* AffectedActor = Cast<AActor>(ObjectKey.ResolveObjectPtr());
+		if (!AffectedActor)
+		{
+			continue;
+		}
+
 		RemoveEffectsFromActor(AffectedActor);
 	}
 }

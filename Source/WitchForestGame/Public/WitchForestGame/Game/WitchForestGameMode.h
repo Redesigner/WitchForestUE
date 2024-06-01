@@ -26,6 +26,10 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Bestiary, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBestiaryData> Bestiary;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Restart, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float RestartTime = 5.0f;
+	
+
 
 	void PostLogin(APlayerController* NewPlayer) override;
 

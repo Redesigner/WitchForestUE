@@ -27,4 +27,8 @@ namespace WitchForestGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery, "Event.Discovery");
 	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery_Recipe, "Event.Discovery.Recipe");
+
+#if !UE_BUILD_SHIPPING
+	UE_DEFINE_GAMEPLAY_TAG(Cheat_Immortal, "Cheat.Immortal");
+#endif // !UE_BUILD_SHIPPING
 }

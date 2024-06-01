@@ -46,9 +46,24 @@ bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData&
 
 void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
+	if (Data.EvaluatedData.Magnitude < 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
+	{
+		BroadcastDamageEventPerception(Data);
+	}
+
 	if (Data.EvaluatedData.Attribute.AttributeName == TEXT("Health"))
 	{
-		const float NewHealth = Data.EvaluatedData.Attribute.GetNumericValue(this);
+
+#if !UE_BUILD_SHIPPING
+
+		if (Data.Target.HasMatchingGameplayTag(WitchForestGameplayTags::Cheat_Immortal))
+		{
+			return;
+		}
+
+#endif // !UE_BUILD_SHIPPING
+
+			const float NewHealth = Data.EvaluatedData.Attribute.GetNumericValue(this);
 		if (NewHealth <= 0.0f && NewHealth != HealthBeforeAttributeChange)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Character died."));
@@ -62,11 +77,6 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			GetOwningAbilitySystemComponent()->HandleGameplayEvent(Payload.EventTag, &Payload);
 		}
-	}
-
-	if (Data.EvaluatedData.Magnitude < 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
-	{
-		BroadcastDamageEventPerception(Data);
 	}
 }
 

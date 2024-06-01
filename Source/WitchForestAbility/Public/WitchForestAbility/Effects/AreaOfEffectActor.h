@@ -27,7 +27,7 @@ class WITCHFORESTABILITY_API AAreaOfEffectActor : public AActor, public IGamepla
 	FGameplayTagContainer GameplayTags;
 
 
-	TMap<AActor*, TArray<FActiveGameplayEffectHandle>> AppliedEffectMap;
+	TMap<FObjectKey, TArray<FActiveGameplayEffectHandle>> AppliedEffectMap;
 
 
 	AAreaOfEffectActor();
