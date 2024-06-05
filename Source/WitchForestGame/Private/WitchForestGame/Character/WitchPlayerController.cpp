@@ -17,6 +17,9 @@
 #include "InputMappingContext.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Blueprint/UserWidget.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "Camera/CameraComponent.h"
 
 AWitchPlayerController::AWitchPlayerController()
 {
@@ -32,6 +35,11 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
     {
         WitchPlayerState->GrantAbilities();
         WitchPlayerState->InitializeAttributes();
+
+        if (IsLocalPlayerController())
+        {
+            WitchPlayerState->GetWitchForestASC()->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Blind, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
+        }
     }
 
     if (AWitch* Witch = Cast<AWitch>(InPawn))
@@ -59,6 +67,29 @@ void AWitchPlayerController::BeginPlayingState()
             RootWidget->AddToViewport();
         }
     }
+}
+
+void AWitchPlayerController::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if (!bIsBlind || !EffectParameterCollection.IsValid() || !GetPawn())
+    {
+        return;
+    }
+
+    if (!IsLocalPlayerController())
+    {
+        return;
+    }
+
+    UMaterialParameterCollectionInstance* CollectionInstance = GetWorld()->GetParameterCollectionInstance(EffectParameterCollection.Get());
+    if (!CollectionInstance)
+    {
+        return;
+    }
+
+    CollectionInstance->SetVectorParameterValue("Position", GetPawn()->GetActorLocation());
 }
 
 void AWitchPlayerController::BeginPlay()
@@ -171,5 +202,36 @@ void AWitchPlayerController::HandleRecipeDiscoveredMessage(const FWitchForestMes
         ItemSet->FindItemDataForTag(Recipe.ResultItem, ItemData);
 
         DisplayRecipeDiscoveredMessage(Recipe, ItemData);
+    }
+}
+
+void AWitchPlayerController::BlindStacksChanged(const FGameplayTag Tag, int32 Count)
+{
+    if (!BlindEffectClass)
+    {
+        return;
+    }
+
+    if (!GetPawn())
+    {
+        return;
+    }
+
+    UCameraComponent* Camera = GetPawn()->GetComponentByClass<UCameraComponent>();
+    if (!Camera)
+    {
+        return;
+    }
+
+    if (Count > 0 && !bIsBlind)
+    {
+        bIsBlind = true;
+        Camera->PostProcessSettings.AddBlendable(BlindEffectClass, 1.0f);
+    }
+
+    if (Count <= 0 && bIsBlind)
+    {
+        bIsBlind = false;
+        Camera->PostProcessSettings.RemoveBlendable(BlindEffectClass);
     }
 }

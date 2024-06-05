@@ -15,6 +15,8 @@ class UInputMappingContext;
 class UWitchForestASC;
 class UHealthViewModel;
 class UUserWidget;
+class UMaterialParameterCollection;
+class IBlendableInterface;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, public IWitchForestTeamAgentInterface
@@ -29,12 +31,20 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Widgets, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> RootWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
+	TScriptInterface<IBlendableInterface> BlindEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
+	TSoftObjectPtr<UMaterialParameterCollection> EffectParameterCollection;
+
+	bool bIsBlind = false;
 
 	AWitchPlayerController();
 
 	void BeginPlay() override;
 	void OnPossess(APawn* InPawn) override;
 	void BeginPlayingState() override;
+	void Tick(float DeltaSeconds) override;
 	void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 
 	// Begin IWitchForestTeamAgentInterface
@@ -49,6 +59,8 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	void OnDiscoveryMessage(FGameplayTag Channel, const FWitchForestMessage& Payload);
 
 	void HandleRecipeDiscoveredMessage(const FWitchForestMessage& Payload);
+
+	void BlindStacksChanged(const FGameplayTag Tag, int32 Count);
 
 public:
 	UFUNCTION(BlueprintCallable)
