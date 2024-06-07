@@ -89,7 +89,7 @@ void AWitchPlayerController::Tick(float DeltaSeconds)
         return;
     }
 
-    CollectionInstance->SetVectorParameterValue("Position", GetPawn()->GetActorLocation());
+    CollectionInstance->SetVectorParameterValue("Center", GetPawn()->GetActorLocation());
 }
 
 void AWitchPlayerController::BeginPlay()

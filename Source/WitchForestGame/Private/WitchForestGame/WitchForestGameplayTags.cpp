@@ -19,6 +19,8 @@ namespace WitchForestGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Element_Ice, "Element.Ice");
 	UE_DEFINE_GAMEPLAY_TAG(Element_Plant, "Element.Plant");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffectData, "GameplayEffectData", "Tag representing data for gameplayeffect, such as icon, name, etc.");
+
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Stun, "GameplayEffect.Stun");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Immobile, "GameplayEffect.Immobile");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Danger, "GameplayEffect.Danger", "In an area where respawn (such as from falling) is not valid.");

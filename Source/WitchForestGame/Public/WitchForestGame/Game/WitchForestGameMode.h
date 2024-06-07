@@ -10,6 +10,7 @@
 class UItemSet;
 class UPotionRecipeSet;
 class UBestiaryData;
+class UGameplayEffectDataSet;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode

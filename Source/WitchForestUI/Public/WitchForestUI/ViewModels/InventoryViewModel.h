@@ -18,7 +18,6 @@ class WITCHFORESTUI_API UInventoryViewModel : public UMVVMViewModelBase
 	GENERATED_BODY()
 
 	// The ItemSet we will pull our item data from
-	UPROPERTY()
 	TWeakObjectPtr<UItemSet> RelevantItemSet;
 
 	// Unless there is a better way to support array types, each slot needs its own viewmodel
