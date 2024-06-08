@@ -31,6 +31,7 @@ EBTNodeResult::Type UBTTask_Look::ExecuteTask(UBehaviorTreeComponent& OwnerCompo
 	FRotator DesiredRotation = Pawn->GetActorRotation();
 	DesiredRotation.Yaw += RotationAngleYaw;
 	AIOwner->SetControlRotation(DesiredRotation);
+
 	float DesiredYaw = DesiredRotation.Yaw;
 	if (DesiredYaw > 180.0f)
 	{
@@ -61,6 +62,7 @@ void UBTTask_Look::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory
 			DifferenceYaw -= 360.0f;
 		}
 		// UE_LOG(LogTemp, Display, TEXT("Desired yaw: %f, Current yaw: %f, Difference yaw: %f"), DesiredYaw, CurrentYaw, DifferenceYaw);
+
 		if (FMath::Abs(DifferenceYaw) <= Precision)
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

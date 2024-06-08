@@ -47,6 +47,7 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void USpellAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
