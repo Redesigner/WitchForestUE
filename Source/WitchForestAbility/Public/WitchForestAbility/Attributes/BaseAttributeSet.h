@@ -30,6 +30,9 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth, meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth;
 
+	UPROPERTY(BlueprintReadOnly, Category = Health, meta = (HideFromModifiers, AllowPrivateAccess = true))
+	FGameplayAttributeData Damage;
+
 	float MaxHealthBeforeAttributeChange;
 	float HealthBeforeAttributeChange;
 
@@ -60,6 +63,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MovementSpeedModifier)
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Damage)
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
 	FOnDeath OnDeath;

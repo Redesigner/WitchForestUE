@@ -14,6 +14,7 @@ namespace WitchForestGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEvent_AbilityTrigger_Throw, "GameplayEvent.AbilityTrigger.Throw");
 
 	UE_DEFINE_GAMEPLAY_TAG(SetByCaller_Damage, "SetByCaller.Damage");
+	UE_DEFINE_GAMEPLAY_TAG(SetByCaller_Duration, "SetByCaller.Duration");
 
 	UE_DEFINE_GAMEPLAY_TAG(Element_Fire, "Element.Fire");
 	UE_DEFINE_GAMEPLAY_TAG(Element_Ice, "Element.Ice");

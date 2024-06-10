@@ -37,6 +37,16 @@ bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData&
 		return false;
 	}
 
+#if !UE_BUILD_SHIPPING
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		if (Data.Target.HasMatchingGameplayTag(WitchForestGameplayTags::Cheat_Immortal))
+		{
+			Data.EvaluatedData.Magnitude = 0.0f;
+		}
+	}
+#endif // !UE_BUILD_SHIPPING
+
 	HealthBeforeAttributeChange = GetHealth();
 	MaxHealthBeforeAttributeChange = GetMaxHealth();
 
@@ -46,25 +56,25 @@ bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData&
 
 void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	if (Data.EvaluatedData.Magnitude < 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
+	Super::PostGameplayEffectExecute(Data);
+
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
-		BroadcastDamageEventPerception(Data);
-	}
-
-	if (Data.EvaluatedData.Attribute.AttributeName == TEXT("Health"))
-	{
-
-#if !UE_BUILD_SHIPPING
-
-		if (Data.Target.HasMatchingGameplayTag(WitchForestGameplayTags::Cheat_Immortal))
+		// Make sure this damage wasn't self-inflicted
+		if (Data.EvaluatedData.Magnitude > 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
 		{
-			return;
+			BroadcastDamageEventPerception(Data);
 		}
 
-#endif // !UE_BUILD_SHIPPING
+		// Modify health, and clear the damage attribute
+		const float NewHealth = FMath::Clamp(GetHealth() - GetDamage(), 0.0f, GetMaxHealth());
+		SetHealth(NewHealth);
+		SetDamage(0.0f);
+	}
 
-			const float NewHealth = Data.EvaluatedData.Attribute.GetNumericValue(this);
-		if (NewHealth <= 0.0f && NewHealth != HealthBeforeAttributeChange)
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute() || Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		if (GetHealth() <= 0.0f && GetHealth() != HealthBeforeAttributeChange)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Character died."));
 			OnDeath.Broadcast(Data.EffectSpec);
