@@ -45,15 +45,18 @@ void UEffectDisplayViewModel::GameplayEffectApplied(UAbilitySystemComponent* Abi
 	FOnActiveGameplayEffectRemoved_Info* EffectRemovalDelegate = OwningASC->OnGameplayEffectRemoved_InfoDelegate(ActiveGameplayEffectHandle);
 	if (!EffectRemovalDelegate)
 	{
-		UE_LOGFMT(LogWitchForestUI, Error, "EffectDisplayViewModel failed to bind to AbilitySystemComponent of '{ASCOwner}'. The EffectRemovalDelegate was null.",
-			OwningASC->GetOwner() ? OwningASC->GetOwner()->GetName() : "Null");
+		UE_LOGFMT(LogWitchForestUI, Error, "EffectDisplayViewModel failed to bind to AbilitySystemComponent of '{ASCOwner}'. The EffectRemovalDelegate was null. An icon will not be displayed for '{EffectName}'.",
+			OwningASC->GetOwner() ? OwningASC->GetOwner()->GetName() : "Null", GameplayEffectSpec.Def->GetName());
 		return;
 	}
 
-	UGameplayEffectUIDataWrapper* EffectUIData = NewObject<UGameplayEffectUIDataWrapper>();
-	EffectUIData->Data = UIDataComponent->GetUIData();
-	CurrentEffects.Add(EffectUIData);
-
+	UGameplayEffectUIDataWrapper* EffectUIData;
+	if (!TryIncrementIconCount(UIDataComponent, EffectUIData))
+	{
+		EffectUIData = NewObject<UGameplayEffectUIDataWrapper>();
+		EffectUIData->Data = UIDataComponent->GetUIData();
+		CurrentEffects.Add(EffectUIData);
+	}
 	TWeakObjectPtr<UGameplayEffectUIDataWrapper> WeakRef = EffectUIData;
 
 	BroadcastFieldValueChanged(ThisClass::FFieldNotificationClassDescriptor::CurrentEffects);
@@ -63,8 +66,27 @@ void UEffectDisplayViewModel::GameplayEffectApplied(UAbilitySystemComponent* Abi
 		{
 			if (WeakRef.IsValid())
 			{
-				CurrentEffects.Remove(WeakRef.Get());
+				WeakRef->Count--;
+				if (WeakRef->Count <= 0)
+				{
+					CurrentEffects.Remove(WeakRef.Get());
+				}
+
+				BroadcastFieldValueChanged(ThisClass::FFieldNotificationClassDescriptor::CurrentEffects);
 			}
-			BroadcastFieldValueChanged(ThisClass::FFieldNotificationClassDescriptor::CurrentEffects);
 		});
+}
+
+bool UEffectDisplayViewModel::TryIncrementIconCount(const UGameplayEffectUIDataComponent* UIDataComponent, UGameplayEffectUIDataWrapper*& DataWrapper)
+{
+	for (UGameplayEffectUIDataWrapper* CurrentEffectData : CurrentEffects)
+	{
+		if (CurrentEffectData->Data.Icon == UIDataComponent->GetUIData().Icon)
+		{
+			DataWrapper = CurrentEffectData;
+			CurrentEffectData->Count++;
+			return true;
+		}
+	}
+	return false;
 }

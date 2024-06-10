@@ -14,6 +14,7 @@
 
 
 class UAbilitySystemComponent;
+class UGameplayEffectUIDataComponent;
 
 UCLASS(BlueprintType)
 class WITCHFORESTUI_API UGameplayEffectUIDataWrapper : public UObject
@@ -23,6 +24,9 @@ class WITCHFORESTUI_API UGameplayEffectUIDataWrapper : public UObject
 public:
 	UPROPERTY(BlueprintReadOnly)
 	FWitchForestGameplayEffectUIData Data;
+
+	UPROPERTY(BlueprintReadOnly)
+	uint8 Count = 1;
 };
 
 UCLASS()
@@ -37,6 +41,7 @@ public:
 private:
 	void GameplayEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
+	bool TryIncrementIconCount(const UGameplayEffectUIDataComponent* UIDataComponent, UGameplayEffectUIDataWrapper*& DataWrapper);
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UGameplayEffectUIDataWrapper>> CurrentEffects;
