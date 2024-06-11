@@ -24,13 +24,13 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Movement, meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MovementSpeedModifier;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Health, ReplicatedUsing = OnRep_Health, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Health, ReplicatedUsing = OnRep_Health, meta = (HideFromModifiers, AllowPrivateAccess = true))
 	FGameplayAttributeData Health;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth, meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Health, ReplicatedUsing = OnRep_MaxHealth, meta = (HideFromModifiers, AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth;
 
-	UPROPERTY(BlueprintReadOnly, Category = Health, meta = (HideFromModifiers, AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
 	float MaxHealthBeforeAttributeChange;

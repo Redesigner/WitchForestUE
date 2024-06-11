@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"
+
+#include "WitchForestAbility/Effects/GameplayEffectContainer.h"
+
 #include "SpellReticleAbility.generated.h"
 
 
@@ -21,11 +24,8 @@ class WITCHFORESTABILITY_API USpellReticleAbility : public UWitchForestGameplayA
 	UPROPERTY(EditDefaultsOnly, Category = Projectile, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
-	TArray<TSubclassOf<UGameplayEffect>> SpellEffects;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect, meta = (AllowPrivateAccess = true))
-	float DamageAmount = 0.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (AllowPrivateAccess = true))
+	FGameplayEffectContainer EffectContainer;
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float ProjectileSpawnHeight = 500.0f;

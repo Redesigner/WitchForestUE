@@ -14,6 +14,7 @@
 #include "WitchForestAbility/Effects/EffectApplicationComponent.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
+
 void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -77,30 +78,10 @@ void USpellAbility::SpawnProjectile(FVector Location)
 	ProjectileTransform.SetLocation(Location);
 	ProjectileTransform.SetRotation(SpawnRotation);
 	ASpellProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASpellProjectile>(ProjectileClass.Get(), ProjectileTransform);
-	TArray<FGameplayEffectSpecHandle> NewEffectSpecs;
-
-
-	for (TSubclassOf<UGameplayEffect> SpellEffect : SpellEffects)
-	{
-		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
-		if (!NewEffectSpec.IsValid())
-		{
-			UE_LOGFMT(LogWitchForestAbility, Error, "SpellAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
-			return;
-		}
-
-		FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
-		if (Spec)
-		{
-			Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
-		}
-
-		NewEffectSpecs.Add(NewEffectSpec);
-	}
 
 	if (UEffectApplicationComponent* EffectApplier = Projectile->GetComponentByClass<UEffectApplicationComponent>())
 	{
-		EffectApplier->SetEffectHandles(CurrentActorInfo->AvatarActor.Get(), NewEffectSpecs);
+		EffectApplier->SetEffectHandles(CurrentActorInfo->AvatarActor.Get(), EffectContainer.MakeEffectSpecs(this));
 	}
 	Projectile->FinishSpawning(ProjectileTransform);
 	Projectile->SetVelocity(CurrentActorInfo->AvatarActor->GetActorForwardVector() * ProjectileSpeed);

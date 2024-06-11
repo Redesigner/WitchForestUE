@@ -9,7 +9,7 @@
 #include "WitchForestAbility.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
-TArray<FGameplayEffectSpecHandle> UGameplayEffectContainer::MakeEffectSpecs(UGameplayAbility* OwningAbility) const
+TArray<FGameplayEffectSpecHandle> FGameplayEffectContainer::MakeEffectSpecs(UGameplayAbility* OwningAbility) const
 {
 	TArray<FGameplayEffectSpecHandle> NewEffectSpecs;
 

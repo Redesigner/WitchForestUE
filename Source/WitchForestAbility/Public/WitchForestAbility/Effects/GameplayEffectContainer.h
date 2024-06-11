@@ -34,14 +34,12 @@ struct FGameplayEffectMagnitudeEntry
 	TArray<FGameplayEffectMagnitudePair> Magnitudes;
 };
 
-UCLASS()
-class WITCHFORESTABILITY_API UGameplayEffectContainer : public UObject
+USTRUCT(BlueprintType)
+struct WITCHFORESTABILITY_API FGameplayEffectContainer
 {
 	GENERATED_BODY()
 	
-public:
 	TArray<FGameplayEffectSpecHandle> MakeEffectSpecs(UGameplayAbility* OwningAbility) const;
-
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Effects)
 	TArray<FGameplayEffectMagnitudeEntry> Effects;

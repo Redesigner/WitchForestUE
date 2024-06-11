@@ -123,30 +123,10 @@ void USpellReticleAbility::SpawnProjectile(FVector Location)
 	ProjectileTransform.SetLocation(Location);
 	ProjectileTransform.SetRotation(SpawnRotation);
 	AActor* Projectile = GetWorld()->SpawnActorDeferred<AActor>(ProjectileClass.Get(), ProjectileTransform);
-	TArray<FGameplayEffectSpecHandle> NewEffectSpecs;
-
-
-	for (TSubclassOf<UGameplayEffect> SpellEffect : SpellEffects)
-	{
-		FGameplayEffectSpecHandle NewEffectSpec = MakeOutgoingGameplayEffectSpec(SpellEffect);
-		if (!NewEffectSpec.IsValid())
-		{
-			UE_LOGFMT(LogWitchForestAbility, Error, "SpellReticleAbility '{AbilityName}' failed to create spec of GameplayEffect '{GameplayEffectName}'.", GetName(), SpellEffect->GetName());
-			return;
-		}
-
-		FGameplayEffectSpec* Spec = NewEffectSpec.Data.Get();
-		if (Spec)
-		{
-			Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
-		}
-		
-		NewEffectSpecs.Add(NewEffectSpec);
-	}
 
 	if (UEffectApplicationComponent* EffectApplier = Projectile->GetComponentByClass<UEffectApplicationComponent>())
 	{
-		EffectApplier->SetEffectHandles(CurrentActorInfo->AvatarActor.Get(), NewEffectSpecs);
+		EffectApplier->SetEffectHandles(CurrentActorInfo->AvatarActor.Get(), EffectContainer.MakeEffectSpecs(this));
 	}
 	Projectile->FinishSpawning(ProjectileTransform);
 }
