@@ -32,11 +32,17 @@ class WITCHFORESTABILITY_API UWitchAttributeSet : public UAttributeSet
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, ReplicatedUsing = OnRep_MaxMana, Category = Spellcasting, meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxMana;
 
+	// How much mana is restored per tick
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Spellcasting, meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData ManaRegenRate;
+
+
 public:
 	ATTRIBUTE_ACCESSORS(UWitchAttributeSet, HarvestPower)
 	ATTRIBUTE_ACCESSORS(UWitchAttributeSet, SpellPower)
 	ATTRIBUTE_ACCESSORS(UWitchAttributeSet, Mana);
 	ATTRIBUTE_ACCESSORS(UWitchAttributeSet, MaxMana);
+	ATTRIBUTE_ACCESSORS(UWitchAttributeSet, ManaRegenRate);
 
 private:
 	UWitchAttributeSet();

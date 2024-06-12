@@ -39,7 +39,7 @@ void UEffectDisplayViewModel::GameplayEffectApplied(UAbilitySystemComponent* Abi
 	const UGameplayEffectUIDataComponent* UIDataComponent = GameplayEffectSpec.Def->FindComponent<UGameplayEffectUIDataComponent>();
 	if (!UIDataComponent)
 	{
-		UE_LOGFMT(LogWitchForestUI, Display, "GameplayEffect '{EffectName}' did not have a valid UIDataComponent", GameplayEffectSpec.Def->GetName());
+		// UE_LOGFMT(LogWitchForestUI, Display, "GameplayEffect '{EffectName}' did not have a valid UIDataComponent", GameplayEffectSpec.Def->GetName());
 		return;
 	}
 

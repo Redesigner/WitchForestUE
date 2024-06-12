@@ -19,6 +19,9 @@ UWitchAttributeSet::UWitchAttributeSet()
 
 	MaxMana.SetBaseValue(100.0f);
 	MaxMana.SetCurrentValue(100.0f);
+
+	ManaRegenRate.SetBaseValue(1.0f);
+	ManaRegenRate.SetCurrentValue(1.0f);
 }
 
 void UWitchAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
