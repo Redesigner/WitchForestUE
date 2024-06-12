@@ -7,6 +7,8 @@
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"
 
+#include "Logging/StructuredLog.h"
+
 void FWitchForestAbilitySet_GrantedHandles::AddAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle)
 {
 	if (Handle.IsValid())
@@ -73,6 +75,7 @@ void UWitchForestAbilitySet::GiveToAbilitySystem(UWitchForestASC* WitchForestASC
 
 	if (!WitchForestASC->IsOwnerActorAuthoritative())
 	{
+		UE_LOGFMT(LogWitchForestAbility, Warning, "Failed to give AbilitySet '{SetName}' to ASC. The owning actor does not have the authority to grant abilities.", GetName());
 		// Must be authoritative to give or take ability sets.
 		return;
 	}

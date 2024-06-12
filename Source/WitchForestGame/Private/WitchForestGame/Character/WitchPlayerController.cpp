@@ -31,17 +31,6 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
-    if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
-    {
-        WitchPlayerState->GrantAbilities();
-        WitchPlayerState->InitializeAttributes();
-
-        if (IsLocalPlayerController())
-        {
-            WitchPlayerState->GetWitchForestASC()->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Blind, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
-        }
-    }
-
     if (AWitch* Witch = Cast<AWitch>(InPawn))
     {
         Witch->OnPotentialInteractionsChanged.AddUObject(this, &ThisClass::PotentialInteractionsChanged);
@@ -59,6 +48,14 @@ void AWitchPlayerController::BeginPlayingState()
 
     if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
     {
+        WitchPlayerState->GrantAbilities();
+        WitchPlayerState->InitializeAttributes();
+
+        if (IsLocalPlayerController())
+        {
+            WitchPlayerState->GetWitchForestASC()->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Blind, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
+        }
+
         SetupUI(WitchPlayerState);
 
         if (RootWidgetClass)

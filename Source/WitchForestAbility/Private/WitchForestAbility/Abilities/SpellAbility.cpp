@@ -47,7 +47,9 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		SpawnProjectile(ActorInfo->AvatarActor->GetActorLocation());
 	}
 
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+	// CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+	CommitExecute(Handle, ActorInfo, ActivationInfo);
+
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
@@ -57,6 +59,23 @@ void USpellAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
+}
+
+void USpellAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	Super::ApplyCooldown(Handle, ActorInfo, ActivationInfo);
+	/*
+	UGameplayEffect* GameplayEffect = GetCooldownGameplayEffect();
+	if (GameplayEffect && (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo)))
+	{
+		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(Handle, ActorInfo, ActivationInfo, GameplayEffect->GetClass(), GetAbilityLevel(Handle, ActorInfo));
+		if (SpecHandle.IsValid())
+		{
+			SpecHandle.Data->SetStackCount(1);
+			ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+		}
+	}
+	*/
 }
 
 

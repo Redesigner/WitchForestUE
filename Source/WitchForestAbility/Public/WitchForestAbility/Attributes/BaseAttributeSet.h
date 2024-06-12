@@ -33,10 +33,20 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 	UPROPERTY(BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
+public:
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MovementSpeedModifier)
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
+	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Damage)
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
+	FOnDeath OnDeath;
+
+private:
 	float MaxHealthBeforeAttributeChange;
 	float HealthBeforeAttributeChange;
 
-	
+
 	UBaseAttributeSet();
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -52,19 +62,9 @@ class WITCHFORESTABILITY_API UBaseAttributeSet : public UAttributeSet
 	void BroadcastDamageEventPerception(const FGameplayEffectModCallbackData& Data);
 
 
-public:
-
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
-
-	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MovementSpeedModifier)
-	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Health)
-	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxHealth)
-	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, Damage)
-
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
-	FOnDeath OnDeath;
 };

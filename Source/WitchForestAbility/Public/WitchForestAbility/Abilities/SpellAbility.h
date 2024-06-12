@@ -32,5 +32,8 @@ class WITCHFORESTABILITY_API USpellAbility : public UWitchForestGameplayAbility
 
 	void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
+	void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
+
 	void SpawnProjectile(FVector Location);
 };

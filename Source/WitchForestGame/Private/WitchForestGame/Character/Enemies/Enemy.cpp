@@ -30,6 +30,11 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
 	for (const UWitchForestAbilitySet* AbilitySet : AbilitySets)
 	{
 		if (!AbilitySet)

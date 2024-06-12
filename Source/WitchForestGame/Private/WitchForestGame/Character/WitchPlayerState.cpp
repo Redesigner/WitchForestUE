@@ -6,9 +6,11 @@
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Logging/StructuredLog.h"
 
 
 AWitchPlayerState::AWitchPlayerState()
@@ -62,6 +64,7 @@ void AWitchPlayerState::GrantAbilities()
         {
             continue;
         }
+        UE_LOGFMT(LogWitchForestGame, Display, "AbilitySet '{AbilitySetName}' granted to player state '{PlayerStateName}'", AbilitySet->GetName(), GetName());
         AbilitySet->GiveToAbilitySystem(AbilitySystem, nullptr);
     }
 }

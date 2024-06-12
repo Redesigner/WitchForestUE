@@ -43,7 +43,7 @@ void USpellReticleAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 void USpellReticleAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
+	// CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
 
 	if (APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor))
 	{
@@ -100,6 +100,7 @@ void USpellReticleAbility::OnTargetDataReadyCallback(const FGameplayAbilityTarge
 			}
 		}
 	}
+	CommitExecute(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
