@@ -93,12 +93,22 @@ APickup::APickup()
 
 void APickup::EnableMovement()
 {
+    if (!CollisionSphere)
+    {
+        return;
+    }
+
     CollisionSphere->SetSimulatePhysics(true);
     CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void APickup::DisableMovement()
 {
+    if (!CollisionSphere)
+    {
+        return;
+    }
+
     CollisionSphere->SetSimulatePhysics(false);
     CollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
