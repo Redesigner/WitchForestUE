@@ -35,6 +35,17 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
     {
         Witch->OnPotentialInteractionsChanged.AddUObject(this, &ThisClass::PotentialInteractionsChanged);
     }
+
+    if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
+    {
+        WitchPlayerState->GrantAbilities();
+        WitchPlayerState->InitializeAttributes();
+
+        if (HasAuthority() && IsLocalPlayerController())
+        {
+            SpawnHUD();
+        }
+    }
 }
 
 void AWitchPlayerController::BeginPlayingState()
@@ -48,9 +59,6 @@ void AWitchPlayerController::BeginPlayingState()
 
     if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
     {
-        WitchPlayerState->GrantAbilities();
-        WitchPlayerState->InitializeAttributes();
-
         if (IsLocalPlayerController())
         {
             WitchPlayerState->GetWitchForestASC()->RegisterGameplayTagEvent(WitchForestGameplayTags::GameplayEffect_Blind, EGameplayTagEventType::AnyCountChange).AddUObject(this, &ThisClass::BlindStacksChanged);
@@ -58,10 +66,10 @@ void AWitchPlayerController::BeginPlayingState()
 
         SetupUI(WitchPlayerState);
 
-        if (RootWidgetClass)
+        // We don't need to wait for our attributes to be set up, if this isn't an authoratative controller
+        if (!HasAuthority())
         {
-            UUserWidget* RootWidget = CreateWidget<UUserWidget>(this, RootWidgetClass.Get());
-            RootWidget->AddToViewport();
+            SpawnHUD();
         }
     }
 }
@@ -161,6 +169,16 @@ EWitchForestTeam AWitchPlayerController::GetWitchForestTeam() const
 void AWitchPlayerController::PotentialInteractionsChanged()
 {
     OnPotentialAbilityActivationChanged.Broadcast();
+}
+
+void AWitchPlayerController::SpawnHUD()
+{
+    // Make sure we don't create another rootwidget
+    if (RootWidgetClass && !RootWidget.IsValid())
+    {
+        RootWidget = CreateWidget<UUserWidget>(this, RootWidgetClass.Get());
+        RootWidget->AddToViewport();
+    }
 }
 
 void AWitchPlayerController::OnDiscoveryMessage(FGameplayTag Channel, const FWitchForestMessage& Payload)

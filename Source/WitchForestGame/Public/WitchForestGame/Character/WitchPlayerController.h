@@ -37,6 +37,9 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effects, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UMaterialParameterCollection> EffectParameterCollection;
 
+
+	TWeakObjectPtr<UUserWidget> RootWidget;
+
 	bool bIsBlind = false;
 
 	AWitchPlayerController();
@@ -54,6 +57,8 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	// End IWitchForestTeamAgentInterface
 
 	void PotentialInteractionsChanged();
+
+	void SpawnHUD();
 
 	// GameplayMessageSubsystem Event Handlers
 	void OnDiscoveryMessage(FGameplayTag Channel, const FWitchForestMessage& Payload);
