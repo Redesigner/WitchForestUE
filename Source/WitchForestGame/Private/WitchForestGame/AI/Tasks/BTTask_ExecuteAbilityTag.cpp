@@ -20,6 +20,7 @@ void UBTTask_ExecuteAbilityTag::OnInstanceCreated(UBehaviorTreeComponent& OwnerC
 {
 	Super::OnInstanceCreated(OwnerComp);
 	BehaviorTreeComponent = &OwnerComp;
+	NodeName = TEXT("Execute AbilityTag");
 }
 
 EBTNodeResult::Type UBTTask_ExecuteAbilityTag::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -70,10 +71,10 @@ EBTNodeResult::Type UBTTask_ExecuteAbilityTag::ExecuteTask(UBehaviorTreeComponen
 	UAbilitySystemComponent* ASC = AbilityInterface->GetAbilitySystemComponent();
 	ASC->OnAbilityEnded.AddUObject(this, &ThisClass::OnAbilityEnded);
 	TArray<FGameplayAbilitySpecHandle> FoundSpecHandles;
-	ASC->FindAllAbilitiesWithTags(FoundSpecHandles, AbilityTag);
+	ASC->FindAllAbilitiesWithTags(FoundSpecHandles, AbilityTag.GetSingleTagContainer());
 	if (FoundSpecHandles.Num() <= 0)
 	{
-		UE_LOGFMT(LogWitchForestAI, Error, "UBTTask_ExecuteAbilityTag '{Node}' failed. Could not find an ability matching AbilityTag '{AbilityTag}'.", GetName(), AbilityTag.ToStringSimple());
+		UE_LOGFMT(LogWitchForestAI, Error, "UBTTask_ExecuteAbilityTag '{Node}' failed. Could not find an ability matching AbilityTag '{AbilityTag}'.", GetName(), AbilityTag.ToString());
 		return EBTNodeResult::Failed;
 	}
 
@@ -99,4 +100,9 @@ void UBTTask_ExecuteAbilityTag::OnAbilityEnded(const FAbilityEndedData& AbilityE
 	{
 		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);
 	}
+}
+
+FString UBTTask_ExecuteAbilityTag::GetStaticDescription() const
+{
+	return TEXT("Execute AbilityTag: ") + AbilityTag.ToString();
 }
