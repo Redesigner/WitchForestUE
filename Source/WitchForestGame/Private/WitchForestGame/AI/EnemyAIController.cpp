@@ -112,6 +112,8 @@ void AEnemyAIController::OnTakeDamage(AActor* Source, FHitResult Hit)
 
 	PerceptionSystem->RegisterSource(*this);
 	PerceptionSystem->UpdateListener(*PerceptionComponent.Get());
+
+	UE_LOGFMT(LogWitchForestAI, Display, "EnemyAIController '{Name}' received damage. Switching team to 'Wild'.", GetName());
 }
 
 void AEnemyAIController::OnPossess(APawn* InPawn)

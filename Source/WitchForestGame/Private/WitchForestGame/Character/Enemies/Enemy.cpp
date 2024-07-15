@@ -111,7 +111,7 @@ void AEnemy::GameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplay
 			return;
 		}
 
-		if (ModifiedAttribute.Attribute == AttributeSet->GetHealthAttribute())
+		if (ModifiedAttribute.Attribute == AttributeSet->GetDamageAttribute())
 		{
 			AActor* Damager = GameplayEffectSpec.GetContext().GetInstigator();
 			if (GameplayEffectSpec.GetContext().GetHitResult())

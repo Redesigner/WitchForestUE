@@ -52,7 +52,7 @@ bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData&
 	HealthBeforeAttributeChange = GetHealth();
 	MaxHealthBeforeAttributeChange = GetMaxHealth();
 
-	UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet GameplayEffect '{EffectName}' about to execute '{AttributeName}' of '{OwnerName}' to '{NewValue}'", Data.EffectSpec.Def->GetName(), Data.EvaluatedData.Attribute.AttributeName, Data.Target.GetOwner() ? Data.Target.GetOwner()->GetName() : "Null", Data.EvaluatedData.Magnitude);
+	// UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet GameplayEffect '{EffectName}' about to execute '{AttributeName}' of '{OwnerName}' to '{NewValue}'", Data.EffectSpec.Def->GetName(), Data.EvaluatedData.Attribute.AttributeName, Data.Target.GetOwner() ? Data.Target.GetOwner()->GetName() : "Null", Data.EvaluatedData.Magnitude);
 
 	return true;
 }
@@ -109,7 +109,7 @@ void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	{
 		const float OldHealth = NewValue;
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
-		UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet clamping health  of '{OwnerName}' from '{OldValue}' value to '{NewValue}'", GetOwningActor() ? GetOwningActor()->GetName() : "Null", OldHealth, NewValue);
+		// UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet clamping health  of '{OwnerName}' from '{OldValue}' value to '{NewValue}'", GetOwningActor() ? GetOwningActor()->GetName() : "Null", OldHealth, NewValue);
 		return;
 	}
 
