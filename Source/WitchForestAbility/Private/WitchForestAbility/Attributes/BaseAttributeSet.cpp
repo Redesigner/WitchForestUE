@@ -7,7 +7,9 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h" 
 #include "Perception/AISense_Damage.h" 
+#include "Logging/StructuredLog.h"
 
+#include "WitchForestAbility.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
 UBaseAttributeSet::UBaseAttributeSet()
@@ -50,6 +52,8 @@ bool UBaseAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData&
 	HealthBeforeAttributeChange = GetHealth();
 	MaxHealthBeforeAttributeChange = GetMaxHealth();
 
+	UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet GameplayEffect '{EffectName}' about to execute '{AttributeName}' of '{OwnerName}' to '{NewValue}'", Data.EffectSpec.Def->GetName(), Data.EvaluatedData.Attribute.AttributeName, Data.Target.GetOwner() ? Data.Target.GetOwner()->GetName() : "Null", Data.EvaluatedData.Magnitude);
+
 	return true;
 }
 
@@ -61,9 +65,16 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		// Make sure this damage wasn't self-inflicted
-		if (Data.EvaluatedData.Magnitude > 0.0f && Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
+		if (Data.EvaluatedData.Magnitude > 0.0f)
 		{
-			BroadcastDamageEventPerception(Data);
+			if (Data.EffectSpec.GetEffectContext().GetInstigatorAbilitySystemComponent() != GetOwningAbilitySystemComponent())
+			{
+				BroadcastDamageEventPerception(Data);
+			}
+			else
+			{
+				UE_LOGFMT(LogWitchForestAbility, Display, "'{OwnerName}' took '{Value}' self inflicted damage", GetOwningActor() ? GetOwningActor()->GetName() : "Null", Data.EvaluatedData.Magnitude);
+			}
 		}
 
 		// Modify health, and clear the damage attribute
@@ -76,7 +87,6 @@ void UBaseAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		if (GetHealth() <= 0.0f && GetHealth() != HealthBeforeAttributeChange)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Character died."));
 			OnDeath.Broadcast(Data.EffectSpec);
 
 			FGameplayEventData Payload;
@@ -97,7 +107,9 @@ void UBaseAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 
 	if (Attribute == GetHealthAttribute())
 	{
+		const float OldHealth = NewValue;
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
+		UE_LOGFMT(LogWitchForestAbility, Display, "BaseAttributeSet clamping health  of '{OwnerName}' from '{OldValue}' value to '{NewValue}'", GetOwningActor() ? GetOwningActor()->GetName() : "Null", OldHealth, NewValue);
 		return;
 	}
 
@@ -117,7 +129,7 @@ void UBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribu
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
-	if (Attribute == GetHealthAttribute() || Attribute == GetMaxHealthAttribute())
+	if (Attribute == GetHealthAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, MaxHealth.GetCurrentValue());
 		return;
@@ -138,7 +150,7 @@ void UBaseAttributeSet::BroadcastDamageEventPerception(const FGameplayEffectModC
 
 	UAISense_Damage::ReportDamageEvent(
 		GetWorld(), GetOwningAbilitySystemComponent()->GetOwnerActor(), Data.EffectSpec.GetEffectContext().GetEffectCauser(),
-		-Data.EvaluatedData.Magnitude, DamageLocation, DamageLocation
+		Data.EvaluatedData.Magnitude, DamageLocation, DamageLocation
 	);
 }
 

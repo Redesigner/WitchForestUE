@@ -82,7 +82,7 @@ void UMeleeAbility::OnEnemyHit(AActor* Enemy)
 			continue;
 		}
 
-		Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, -DamageAmount);
+		Spec->SetSetByCallerMagnitude(WitchForestGameplayTags::SetByCaller_Damage, DamageAmount);
 		EnemyASC->ApplyGameplayEffectSpecToSelf(*GameplayEffectToApply.Data.Get());
 	}
 
