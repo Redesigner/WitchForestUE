@@ -42,6 +42,8 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnDeath, const FGameplayEffectSpec)
 	FOnDeath OnDeath;
 
+	void KillOwner();
+
 private:
 	float MaxHealthBeforeAttributeChange;
 	float HealthBeforeAttributeChange;

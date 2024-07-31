@@ -9,6 +9,8 @@
 
 #include "WitchForestGameState.generated.h"
 
+class UCurse;
+class AWitchForestGameMode;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
@@ -21,8 +23,11 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recipes, meta = (AllowPrivateAccess = true, Categories = "RecipeTag"))
 	TArray<FGameplayTag> LearnedRecipes;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Bestiart, meta = (AllowPrivateAccess = true, Categories = "CreatureTag"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Bestiary, meta = (AllowPrivateAccess = true, Categories = "CreatureTag"))
 	TArray<FGameplayTag> DiscoveredBestiaryEntries;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCurse> CurrentCurse;
 
 public:
 	TArray<FGameplayTag> GetLearnedRecipes() const { return LearnedRecipes; }
@@ -34,6 +39,22 @@ public:
 	bool HasDiscoveredCreature(FGameplayTag CreatureTag) const;
 	void DiscoverCreature(const FGameplayTag& CreatureTag);
 
+	void CursePlayers();
+
+	void SetCurse(UCurse* Curse);
+
+	UCurse* GetCurrentCurse() const { return CurrentCurse; }
+
+	bool TryLiftCurse(TArray<FGameplayTag> Items);
+
+	bool IsCurseActive() const { return bCurseActive; }
+
 	FOnRecipeLearned OnRecipeLearned;
 	FOnCreatureDiscovered OnCreatureDiscovered;
+
+	FTimerHandle CurrentDayTimer;
+	uint8 CurseTimeRemaining;
+
+private:
+	bool bCurseActive = false;
 };

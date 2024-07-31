@@ -89,6 +89,12 @@ void ACauldron::OnRep_HeldIngredients(TArray<FGameplayTag> OldTags)
 	OnContentsChanged.Broadcast();
 }
 
+void ACauldron::ClearContents()
+{
+	HeldIngredients.Reset();
+	OnContentsChanged.Broadcast();
+}
+
 void ACauldron::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -156,8 +162,7 @@ void ACauldron::Interact(AActor* Source)
 		}
 	}
 
-	HeldIngredients.Reset();
-	OnContentsChanged.Broadcast();
+	ClearContents();
 	// StartCooldown();
 }
 

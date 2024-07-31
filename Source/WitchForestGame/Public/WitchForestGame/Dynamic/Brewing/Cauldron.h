@@ -23,9 +23,11 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> CauldronVolume;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Brewing, ReplicatedUsing = OnRep_HeldIngredients, meta = (AllowPrivateAccess = true))
 	TArray<FGameplayTag> HeldIngredients;
 
+public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Brewing, meta = (AllowPrivateAccess = true))
 	uint8 Capacity = 4;
 
@@ -45,6 +47,8 @@ class WITCHFORESTGAME_API ACauldron : public AActor, public IInteractableInterfa
 
 	UFUNCTION()
 	void OnRep_HeldIngredients(TArray<FGameplayTag> OldTags);
+
+	void ClearContents();
 
 public:	
 	ACauldron();

@@ -24,7 +24,6 @@ UBaseAttributeSet::UBaseAttributeSet()
 	MaxHealth.SetCurrentValue(100.0f);
 }
 
-
 void UBaseAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -168,4 +167,27 @@ void UBaseAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHeal
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UBaseAttributeSet, MaxHealth, OldMaxHealth);
 
 	MaxHealthBeforeAttributeChange = GetMaxHealth();
+}
+
+
+void UBaseAttributeSet::KillOwner()
+{
+	Health.SetCurrentValue(0.0f);
+	FGameplayEffectSpec EmptySpec;
+	OnDeath.Broadcast(EmptySpec);
+	FGameplayEffectContextHandle EffectContext = GetOwningAbilitySystemComponent()->MakeEffectContext();
+
+	FGameplayEventData Payload;
+	Payload.EventTag = WitchForestGameplayTags::GameplayEvent_Death;
+	Payload.Instigator = GetOwningAbilitySystemComponent()->GetOwnerActor();
+	Payload.Target = GetOwningAbilitySystemComponent()->GetOwnerActor();
+	Payload.ContextHandle = EffectContext;
+
+	// Since the delegate is called by effect application, manually force the delegate to broadcast
+	FOnAttributeChangeData HealthChangedByDeath;
+	HealthChangedByDeath.Attribute = GetHealthAttribute();
+	HealthChangedByDeath.OldValue = Health.GetCurrentValue();
+	HealthChangedByDeath.NewValue = 0.0f;
+	GetOwningAbilitySystemComponent()->HandleGameplayEvent(Payload.EventTag, &Payload);
+	GetOwningAbilitySystemComponent()->GetGameplayAttributeValueChangeDelegate(GetHealthAttribute()).Broadcast(HealthChangedByDeath);
 }

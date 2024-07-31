@@ -3,6 +3,12 @@
 
 #include "WitchForestGame/Game/WitchForestGameState.h"
 
+#include "WitchForestGame.h"
+#include "WitchForestGame/Dynamic/Curse/Curse.h"
+#include "WitchForestGame/Game/WitchForestGameMode.h"
+
+#include "Logging/StructuredLog.h"
+
 bool AWitchForestGameState::HasLearnedRecipe(FGameplayTag RecipeTag) const
 {
 	return LearnedRecipes.Contains(RecipeTag);
@@ -33,4 +39,38 @@ void AWitchForestGameState::DiscoverCreature(const FGameplayTag& CreatureTag)
 
 	DiscoveredBestiaryEntries.Add(CreatureTag);
 	OnCreatureDiscovered.Broadcast();
+}
+
+void AWitchForestGameState::CursePlayers()
+{
+	if (bCurseActive)
+	{
+		UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameState '{Name}' failed to curse players, they are already cursed!", GetName());
+		return;
+	}
+
+	bCurseActive = true;
+	// Actually apply curse here? Or in Gamemode?
+}
+
+void AWitchForestGameState::SetCurse(UCurse* Curse)
+{
+	if (bCurseActive)
+	{
+		// Dont change the curse if there's one active right now
+		return;
+	}
+
+	CurrentCurse = Curse;
+}
+
+bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
+{
+	if (!CurrentCurse->CanLiftCurse(Items))
+	{
+		return false;
+	}
+
+	bCurseActive = false;
+	return true;
 }

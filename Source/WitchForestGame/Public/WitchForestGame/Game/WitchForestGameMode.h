@@ -10,6 +10,7 @@
 class UItemSet;
 class UPotionRecipeSet;
 class UBestiaryData;
+class UCurse;
 class UGameplayEffectDataSet;
 
 UCLASS()
@@ -29,11 +30,17 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Restart, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float RestartTime = 5.0f;
+
+	// How long until the curse becomes lethal, in days
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
+	uint8 CurseTimeLimit = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float DayLengthSeconds = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	TSubclassOf<UCurse> DefaultCurse;
 	
-
-
-	void PostLogin(APlayerController* NewPlayer) override;
-
 public:
 	AWitchForestGameMode();
 
@@ -44,4 +51,18 @@ public:
 	UBestiaryData* GetBestiary() const;
 
 	void RestartIfNoLivingPlayers();
+
+	uint8 GetCurseTimeLimit() const { return CurseTimeLimit; }
+	float GetDayLength() const { return DayLengthSeconds; }
+
+private:
+	void PostLogin(APlayerController* NewPlayer) override;
+
+	void StartPlay() override;
+
+	void StartRound();
+	void StartDay();
+	void EndDay();
+
+	void KillAllPlayers();
 };
