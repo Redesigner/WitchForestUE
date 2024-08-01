@@ -4,6 +4,7 @@
 #include "WitchForestGame/Dynamic/Curse/CurseOfferingCircle.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
@@ -49,7 +50,7 @@ void ACurseOfferingCircle::Interact(AActor* Source)
 
 		FWitchForestMessage NewMessage;
 		NewMessage.Verb = WitchForestGameplayTags::Event_Discovery_Recipe;
-		NewMessage.Data = Recipe.RecipeTag;
+		// NewMessage.Data = Recipe.RecipeTag;
 		NewMessage.Source = Source;
 		MessageSystem.BroadcastMessage(WitchForestGameplayTags::Event_Discovery, NewMessage);
 	}

@@ -73,6 +73,8 @@ public:
 
 	FOnPotentialAbilityActivationChanged OnPotentialAbilityActivationChanged;
 
+	UUserWidget* GetRootWidget() const { return RootWidget.Get(); }
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetupUI(AWitchPlayerState* WitchPlayerState);

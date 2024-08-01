@@ -30,8 +30,12 @@ namespace WitchForestGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery, "Event.Discovery");
 	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery_Recipe, "Event.Discovery.Recipe");
-	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery_Recipe, "Event.Curse.Lifted");
-	UE_DEFINE_GAMEPLAY_TAG(Event_Discovery_Recipe, "Event.Curse.Afflicted");
+	UE_DEFINE_GAMEPLAY_TAG(Event_Notification, "Event.Notification");
+
+	// Gameplay tags for our natively defined notifications, to be used with our UI
+	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse, "Notification.Curse");
+	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse_Afflicted, "Notification.Curse.Afflicted");
+	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse_Lifted, "Notification.Curse.Lifted");
 
 #if !UE_BUILD_SHIPPING
 	UE_DEFINE_GAMEPLAY_TAG(Cheat_Immortal, "Cheat.Immortal");

@@ -22,7 +22,8 @@ public class WitchForestUI : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] {
             "WitchForestGame",
 			"WitchForestAbility",
-			"GameplayAbilities"
-		});
+			"GameplayAbilities",
+            "GameplayMessageRuntime"
+        });
 	}
 }
