@@ -45,7 +45,6 @@ void ACurseOfferingCircle::Interact(AActor* Source)
 	}
 	else
 	{
-		UE_LOGFMT(LogWitchForestGame, Display, "CurseOfferingCircle '{Name}' successfully lifted the curse... for now.", GetName());
 		UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 
 		FWitchForestMessage NewMessage;

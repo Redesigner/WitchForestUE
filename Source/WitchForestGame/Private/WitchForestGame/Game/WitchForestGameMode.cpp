@@ -3,16 +3,19 @@
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Game/WitchForestGameInstance.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
+#include "WitchForestGame/Messages/WitchForestMessage.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 
 #include "Engine/StreamableManager.h"
 #include "Logging/StructuredLog.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 
 
 AWitchForestGameMode::AWitchForestGameMode()
@@ -134,6 +137,13 @@ void AWitchForestGameMode::StartRound()
     WitchGameState->CursePlayers();
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
     StartDay();
+
+    UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
+    FWitchForestMessage NewMessage;
+    NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+    NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
+    NewMessage.Source = this;
+    MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
 }
 
 void AWitchForestGameMode::StartDay()
