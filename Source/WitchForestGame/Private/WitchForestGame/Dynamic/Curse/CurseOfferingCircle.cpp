@@ -49,10 +49,10 @@ void ACurseOfferingCircle::Interact(AActor* Source)
 		UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 
 		FWitchForestMessage NewMessage;
-		NewMessage.Verb = WitchForestGameplayTags::Event_Discovery_Recipe;
-		// NewMessage.Data = Recipe.RecipeTag;
+		NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+		NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lifted;
 		NewMessage.Source = Source;
-		MessageSystem.BroadcastMessage(WitchForestGameplayTags::Event_Discovery, NewMessage);
+		MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
 	}
 	HeldIngredients.Reset();
 	OnContentsChanged.Broadcast();

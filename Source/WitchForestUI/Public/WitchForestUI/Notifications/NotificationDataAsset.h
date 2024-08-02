@@ -16,7 +16,7 @@ struct FNotificationDataAsset_Entry
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "Event.Notification"))
+	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "Notification"))
 	FGameplayTag NotificationTag;
 
 	UPROPERTY(EditDefaultsOnly)
