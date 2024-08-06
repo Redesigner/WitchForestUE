@@ -58,6 +58,12 @@ void AWitchPlayerState::BeginPlay()
 
 void AWitchPlayerState::GrantAbilities()
 {
+    if (bAbilitiesGranted)
+    {
+        // Don't grant default abilities again
+        return;
+    }
+
     for (const UWitchForestAbilitySet* AbilitySet : AbilitySets)
     {
         if (!AbilitySet)
@@ -67,6 +73,7 @@ void AWitchPlayerState::GrantAbilities()
         UE_LOGFMT(LogWitchForestGame, Display, "AbilitySet '{AbilitySetName}' granted to player state '{PlayerStateName}'", AbilitySet->GetName(), GetName());
         AbilitySet->GiveToAbilitySystem(AbilitySystem, nullptr);
     }
+    bAbilitiesGranted = true;
 }
 
 void AWitchPlayerState::InitializeAttributes()

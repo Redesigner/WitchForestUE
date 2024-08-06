@@ -102,7 +102,7 @@ bool UStoreItemAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Hand
 	APawn* Pawn = Cast<APawn>(ActorInfo->AvatarActor);
 	if (!Pawn)
 	{
-		UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Owner '{OwnerName}' was not a pawn.", Owner->GetName());
+		// UE_LOGFMT(LogWitchForestAbility, Error, "StoreItemAbility failed. Owner '{OwnerName}' was not a pawn.", Owner->GetName());
 		return false;
 	}
 

@@ -41,6 +41,7 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 
 	bool bAlive = false;
 
+	bool bAbilitiesGranted = false;
 
 	AWitchPlayerState();
 	

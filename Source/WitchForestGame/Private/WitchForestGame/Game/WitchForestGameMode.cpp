@@ -101,11 +101,17 @@ void AWitchForestGameMode::EndDayIfNoLivingPlayers()
 {
     if (AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>())
     {
+        if (WitchGameState->CurseTimeRemaining <= 0)
+        {
+            return;
+        }
+
         GetWorld()->GetTimerManager().ClearTimer(WitchGameState->CurrentDayTimer);
     }
 
     if (!AnyPlayersAlive())
     {
+        UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGameMode: Day ending because all players have died.");
         FTimerHandle RestartTimer;
         GetWorld()->GetTimerManager().SetTimer(RestartTimer, FTimerDelegate::CreateLambda([this]()
             {
@@ -160,6 +166,8 @@ void AWitchForestGameMode::StartDay()
         return;
     }
 
+    UE_LOGFMT(LogWitchForestGame, Display, "'{GameModeName}' Day started. {DayCount} days remain.", GetName(), WitchGameState->CurseTimeRemaining);
+
     RespawnDeadPlayers();
     World->GetTimerManager().SetTimer(WitchGameState->CurrentDayTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndDay), DayLengthSeconds, false, -1.0f);
 }
@@ -179,6 +187,7 @@ void AWitchForestGameMode::EndDay()
     {
         if (WitchGameState->IsCurseActive())
         {
+            WitchGameState->CurseTimeRemaining--;
             EndRound();
         }
         else
@@ -197,6 +206,19 @@ void AWitchForestGameMode::EndDay()
 void AWitchForestGameMode::EndRound()
 {
     KillAllPlayers();
+    UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
+    FWitchForestMessage NewMessage;
+    NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+    NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lethal;
+    NewMessage.Source = this;
+    MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
+
+    FTimerHandle RestartGameTimer;
+    GetWorld()->GetTimerManager().SetTimer(RestartGameTimer, FTimerDelegate::CreateLambda([this]()
+        {
+            RestartGame();
+        }),
+        RestartTime, false, -1.0f);
 }
 
 void AWitchForestGameMode::KillAllPlayers()
@@ -247,7 +269,7 @@ void AWitchForestGameMode::RespawnDeadPlayers()
     }
 }
 
-bool AWitchForestGameMode::AnyPlayersAlive()
+bool AWitchForestGameMode::AnyPlayersAlive() const
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
     if (!WitchForestGameState)

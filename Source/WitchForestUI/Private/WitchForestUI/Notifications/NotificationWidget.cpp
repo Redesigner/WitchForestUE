@@ -29,6 +29,6 @@ void UNotificationWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
 {
 	Super::NativeOnFocusLost(InFocusEvent);
 
-	UE_LOG(LogTemp, Error, TEXT("Notification widget lost focus! Reason: %d"), InFocusEvent.GetCause());
+	// UE_LOG(LogTemp, Error, TEXT("Notification widget lost focus! Reason: %d"), InFocusEvent.GetCause());
 }
 

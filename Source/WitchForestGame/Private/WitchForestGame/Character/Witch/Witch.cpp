@@ -297,7 +297,8 @@ UWitchForestASC* AWitch::GetWitchForestASC() const
 	APlayerState* State = GetPlayerState();
 	if (!State)
 	{
-		UE_LOGFMT(LogWitchForestGame, Warning, "Unable to get ASC in AWitch {Name}. The player state is invalid.", GetName());
+		// Don't log here? Expect whoever is calling the method to handle nullptr instead
+		// UE_LOGFMT(LogWitchForestGame, Warning, "Unable to get ASC in AWitch {Name}. The player state is invalid.", GetName());
 		return nullptr;
 	}
 	AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(State);

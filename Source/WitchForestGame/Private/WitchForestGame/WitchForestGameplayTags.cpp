@@ -36,6 +36,7 @@ namespace WitchForestGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse, "Notification.Curse");
 	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse_Afflicted, "Notification.Curse.Afflicted");
 	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse_Lifted, "Notification.Curse.Lifted");
+	UE_DEFINE_GAMEPLAY_TAG(Notification_Curse_Lethal, "Notification.Curse.Lethal");
 
 #if !UE_BUILD_SHIPPING
 	UE_DEFINE_GAMEPLAY_TAG(Cheat_Immortal, "Cheat.Immortal");

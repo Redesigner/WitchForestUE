@@ -6,8 +6,6 @@
 void UWitchForestGameViewportClient::ReceivedFocus(FViewport* ViewportFocused)
 {
 	Super::ReceivedFocus(ViewportFocused);
-
-	UE_LOG(LogTemp, Display, TEXT("Viewport received focus."));
 }
 
 EMouseCaptureMode UWitchForestGameViewportClient::GetMouseCaptureMode() const

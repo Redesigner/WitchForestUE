@@ -69,5 +69,5 @@ private:
 	void KillAllPlayers();
 	void RespawnDeadPlayers();
 
-	bool AnyPlayersAlive();
+	bool AnyPlayersAlive() const;
 };
