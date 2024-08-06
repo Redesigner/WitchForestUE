@@ -14,7 +14,14 @@ TOptional<FUIInputConfig> UWitchForestActivatableWidget::GetDesiredInputConfig()
 	case EWitchForestWidgetInputMode::Game:
 		return FUIInputConfig(ECommonInputMode::Game, GameMouseCaptureMode);
 	case EWitchForestWidgetInputMode::Menu:
-		return FUIInputConfig(ECommonInputMode::Menu, EMouseCaptureMode::NoCapture);
+		return FUIInputConfig(ECommonInputMode::Menu, GameMouseCaptureMode);
+	case EWitchForestWidgetInputMode::Notification:
+	{
+		FUIInputConfig Config = FUIInputConfig(ECommonInputMode::Menu, GameMouseCaptureMode);
+		Config.bIgnoreLookInput = true;
+		Config.bIgnoreMoveInput = true;
+		return Config;
+	}
 	case EWitchForestWidgetInputMode::Default:
 	default:
 		return TOptional<FUIInputConfig>();

@@ -17,3 +17,18 @@ void UNotificationWidget::SetNotification(FNotificationDataAsset_Entry Notificat
 		SubtitleText->SetText(Notification.NotificationSubtitle);
 	}
 }
+
+FReply UNotificationWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	DeactivateWidget();
+
+	return FReply::Handled();
+}
+
+void UNotificationWidget::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusLost(InFocusEvent);
+
+	UE_LOG(LogTemp, Error, TEXT("Notification widget lost focus! Reason: %d"), InFocusEvent.GetCause());
+}
+

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonUserWidget.h"
+#include "WitchForestUI/WitchForestActivatableWidget.h"
 
 #include "WitchForestGame/Messages/WitchForestMessage.h"
 
@@ -13,7 +13,7 @@ class UNotificationDataAsset;
 class UNotificationWidget;
 
 UCLASS()
-class WITCHFORESTUI_API UWitchForestRootWidget : public UCommonUserWidget
+class WITCHFORESTUI_API UWitchForestRootWidget : public UWitchForestActivatableWidget
 {
 	GENERATED_BODY()
 	

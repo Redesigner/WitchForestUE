@@ -13,7 +13,8 @@ enum class EWitchForestWidgetInputMode : uint8
 	Default,
 	GameAndMenu,
 	Game,
-	Menu
+	Menu,
+	Notification
 };
 
 UCLASS()

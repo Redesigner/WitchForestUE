@@ -24,4 +24,9 @@ class WITCHFORESTUI_API UNotificationWidget : public UWitchForestActivatableWidg
 
 public:
 	void SetNotification(FNotificationDataAsset_Entry Notification);
+
+private:
+	FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+	void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 };

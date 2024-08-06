@@ -46,4 +46,14 @@ void UWitchForestRootWidget::OnNotification(FGameplayTag Channel, const FWitchFo
 	NotificationWidget->SetNotification(NotificationEntry);
 	NotificationWidget->AddToViewport();
 	NotificationWidget->ActivateWidget();
+	NotificationWidget->SetFocus();
+	
+	if (!NotificationWidget->GetIsEnabled())
+	{
+		UE_LOGFMT(LogWitchForestUI, Warning, "Failed to enable '{WidgetName}'.", NotificationWidget->GetName());
+	}
+	else
+	{
+		UE_LOGFMT(LogWitchForestUI, Display, "Successfully enabled notification widget '{WidgetName}'.", NotificationWidget->GetName());
+	}
 }

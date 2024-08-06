@@ -58,10 +58,18 @@ void UDeathAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 			else
 			{
 				UE_LOGFMT(LogWitchForestAbility, Error, "DeathAbility '{AbilityName}' failed to spawn SoulSprite for Player '{PCName}'.", GetName(), PlayerController->GetName());
+				return;
 			}
 
-			SoulSprite->SetOwningASC(ActorInfo->AbilitySystemComponent.Get());
-			ActorInfo->AbilitySystemComponent->SetAvatarActor(SoulSprite);
+			if (ActorInfo->AbilitySystemComponent.IsValid())
+			{
+				SoulSprite->SetOwningASC(ActorInfo->AbilitySystemComponent.Get());
+				ActorInfo->AbilitySystemComponent->SetAvatarActor(SoulSprite);
+			}
+			else
+			{
+				UE_LOGFMT(LogWitchForestAbility, Error, "DeathAbility '{AbilityName}' tried to assign AbilitySystemComponent's avatar actor, but the ASC was invalid.", GetName());
+			}
 		}
 	}
 
