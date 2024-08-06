@@ -8,6 +8,7 @@
 #include "WitchForestGame/Character/WitchPlayerState.h"
 
 #include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 
 void UWitchForestCheatManager::SetImmortal(bool bImmortal)
 {
@@ -37,4 +38,21 @@ void UWitchForestCheatManager::SetImmortal(bool bImmortal)
 	{
 		ASC->RemoveLooseGameplayTag(WitchForestGameplayTags::Cheat_Immortal);
 	}
+}
+
+void UWitchForestCheatManager::KillPlayer()
+{
+	AWitchPlayerController* WitchPlayerController = Cast<AWitchPlayerController>(GetOuterAPlayerController());
+	if (!WitchPlayerController)
+	{
+		return;
+	}
+
+	AWitchPlayerState* WitchPlayerState = WitchPlayerController->GetPlayerState<AWitchPlayerState>();
+	if (!WitchPlayerState)
+	{
+		return;
+	}
+
+	WitchPlayerState->GetAttributeSet()->KillOwner();
 }

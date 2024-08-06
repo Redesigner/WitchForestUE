@@ -51,6 +51,7 @@ public:
 	UBestiaryData* GetBestiary() const;
 
 	void RestartIfNoLivingPlayers();
+	void EndDayIfNoLivingPlayers();
 
 	uint8 GetCurseTimeLimit() const { return CurseTimeLimit; }
 	float GetDayLength() const { return DayLengthSeconds; }
@@ -63,6 +64,10 @@ private:
 	void StartRound();
 	void StartDay();
 	void EndDay();
+	void EndRound();
 
 	void KillAllPlayers();
+	void RespawnDeadPlayers();
+
+	bool AnyPlayersAlive();
 };

@@ -5,6 +5,7 @@
 
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/WitchPlayerController.h"
+#include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestAbility.h"
 
 #include "Logging/StructuredLog.h"
@@ -16,6 +17,15 @@ void URespawnAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, c
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		UE_LOGFMT(LogWitchForestAbility, Error, "RespawnAbility '{AbilityName}' failed to respawn. PlayerController was invalid.", GetName());
 		return;
+	}
+
+	AWitchPlayerState* PlayerState = ActorInfo->PlayerController->GetPlayerState<AWitchPlayerState>();
+	if (PlayerState && !PlayerState->IsAlive())
+	{
+		if (ActorInfo->AvatarActor.IsValid())
+		{
+			ActorInfo->AvatarActor->Destroy();
+		}
 	}
 
 	UE_LOGFMT(LogWitchForestAbility, Display, "RespawnAbility '{AbilityName}' respawning player.", GetName());

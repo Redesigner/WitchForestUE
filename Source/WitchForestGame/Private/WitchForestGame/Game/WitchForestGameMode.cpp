@@ -11,6 +11,7 @@
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Messages/WitchForestMessage.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestAbility/WitchForestASC.h"
 
 #include "Engine/StreamableManager.h"
 #include "Logging/StructuredLog.h"
@@ -33,7 +34,8 @@ void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
 
     if (AWitchPlayerState* WitchPlayerState = NewPlayer->GetPlayerState<AWitchPlayerState>())
     {
-        WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::RestartIfNoLivingPlayers);
+        // WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::RestartIfNoLivingPlayers);
+        WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::EndDayIfNoLivingPlayers);
     }
 }
 
@@ -84,34 +86,30 @@ UBestiaryData* AWitchForestGameMode::GetBestiary() const
 
 void AWitchForestGameMode::RestartIfNoLivingPlayers()
 {
-    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
-    if (!WitchForestGameState)
-    {
-        return;
-    }
-
-    bool bPlayersAlive = false;
-
-    for (APlayerState* PlayerState : WitchForestGameState->PlayerArray)
-    {
-        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
-        if (!WitchPlayerState)
-        {
-            continue;
-        }
-
-        if (WitchPlayerState->IsAlive())
-        {
-            bPlayersAlive = true;
-        }
-    }
-
-    if (!bPlayersAlive)
+    if (!AnyPlayersAlive())
     {
         FTimerHandle RestartTimer;
         GetWorld()->GetTimerManager().SetTimer(RestartTimer,  FTimerDelegate::CreateLambda([this]()
             {
                 RestartGame();
+            }),
+            RestartTime, false, -1.0f);
+    }
+}
+
+void AWitchForestGameMode::EndDayIfNoLivingPlayers()
+{
+    if (AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(WitchGameState->CurrentDayTimer);
+    }
+
+    if (!AnyPlayersAlive())
+    {
+        FTimerHandle RestartTimer;
+        GetWorld()->GetTimerManager().SetTimer(RestartTimer, FTimerDelegate::CreateLambda([this]()
+            {
+                EndDay();
             }),
             RestartTime, false, -1.0f);
     }
@@ -162,6 +160,7 @@ void AWitchForestGameMode::StartDay()
         return;
     }
 
+    RespawnDeadPlayers();
     World->GetTimerManager().SetTimer(WitchGameState->CurrentDayTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndDay), DayLengthSeconds, false, -1.0f);
 }
 
@@ -180,10 +179,7 @@ void AWitchForestGameMode::EndDay()
     {
         if (WitchGameState->IsCurseActive())
         {
-            KillAllPlayers();
-            // Play end sequence
-            // Kill all players?
-            // Restart game
+            EndRound();
         }
         else
         {
@@ -196,6 +192,11 @@ void AWitchForestGameMode::EndDay()
         WitchGameState->CurseTimeRemaining--;
         StartDay();
     }
+}
+
+void AWitchForestGameMode::EndRound()
+{
+    KillAllPlayers();
 }
 
 void AWitchForestGameMode::KillAllPlayers()
@@ -216,4 +217,57 @@ void AWitchForestGameMode::KillAllPlayers()
 
         WitchPlayerState->GetAttributeSet()->KillOwner();
     }
+}
+
+void AWitchForestGameMode::RespawnDeadPlayers()
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        return;
+    }
+
+    for (APlayerState* PlayerState : WitchForestGameState->PlayerArray)
+    {
+        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+        if (!WitchPlayerState)
+        {
+            continue;
+        }
+
+        if (!WitchPlayerState->IsAlive() && WitchPlayerState->GetWitchForestASC())
+        {
+            FGameplayEventData Payload;
+            Payload.EventTag = WitchForestGameplayTags::GameplayEvent_Respawn;
+            Payload.Instigator = this;
+            Payload.Target = WitchPlayerState->GetWitchForestASC()->GetOwnerActor();
+
+            WitchPlayerState->GetWitchForestASC()->HandleGameplayEvent(Payload.EventTag, &Payload);
+        }
+    }
+}
+
+bool AWitchForestGameMode::AnyPlayersAlive()
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        UE_LOGFMT(LogWitchForestGame, Error, "WitchForestGameMode cannot determine if any players are alive, the game state was invalid.");
+        return false;
+    }
+
+    for (APlayerState* PlayerState : WitchForestGameState->PlayerArray)
+    {
+        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+        if (!WitchPlayerState)
+        {
+            continue;
+        }
+
+        if (WitchPlayerState->IsAlive())
+        {
+            return true;
+        }
+    }
+    return false;
 }

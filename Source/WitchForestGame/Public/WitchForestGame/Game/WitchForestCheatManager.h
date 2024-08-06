@@ -16,4 +16,7 @@ class WITCHFORESTGAME_API UWitchForestCheatManager : public UCheatManager
 	
 	UFUNCTION(Exec)
 	void SetImmortal(bool bImmortal);
+
+	UFUNCTION(Exec)
+	void KillPlayer();
 };
