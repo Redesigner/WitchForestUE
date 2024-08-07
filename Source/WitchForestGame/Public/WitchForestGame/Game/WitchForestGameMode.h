@@ -31,6 +31,13 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Restart, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float RestartTime = 5.0f;
 
+	// Should players outside of a safe zone be killed when night falls?
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Time, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	bool bKillUnsafePlayersAtNight = true;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Time, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
+	float IntermissionTime = 5.0f;
+
 	// How long until the curse becomes lethal, in days
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
 	uint8 CurseTimeLimit = 3;
@@ -64,9 +71,10 @@ private:
 	void StartRound();
 	void StartDay();
 	void EndDay();
-	void EndRound();
+	void EndGame();
 
 	void KillAllPlayers();
+	void KillUnsafePlayers();
 	void RespawnDeadPlayers();
 
 	bool AnyPlayersAlive() const;

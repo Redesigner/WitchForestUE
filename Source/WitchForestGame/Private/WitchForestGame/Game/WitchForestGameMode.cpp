@@ -105,19 +105,12 @@ void AWitchForestGameMode::EndDayIfNoLivingPlayers()
         {
             return;
         }
-
-        GetWorld()->GetTimerManager().ClearTimer(WitchGameState->CurrentDayTimer);
     }
 
     if (!AnyPlayersAlive())
     {
         UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGameMode: Day ending because all players have died.");
-        FTimerHandle RestartTimer;
-        GetWorld()->GetTimerManager().SetTimer(RestartTimer, FTimerDelegate::CreateLambda([this]()
-            {
-                EndDay();
-            }),
-            RestartTime, false, -1.0f);
+        EndDay();
     }
 }
 
@@ -159,6 +152,14 @@ void AWitchForestGameMode::StartDay()
         return;
     }
 
+    if (WitchGameState->Phase == EWitchForestGamePhase::Daytime)
+    {
+        UE_LOGFMT(LogWitchForestGame, Error, "'{GameModeName}' StartDay failed: the day has already started.", GetName());
+        return;
+    }
+
+    WitchGameState->Phase = EWitchForestGamePhase::Daytime;
+
     UWorld* World = GetWorld();
     if (!World)
     {
@@ -183,27 +184,44 @@ void AWitchForestGameMode::EndDay()
         return;
     }
 
+    if (WitchGameState->Phase != EWitchForestGamePhase::Daytime)
+    {
+        UE_LOGFMT(LogWitchForestGame, Error, "'{GameModeName}' EndDay failed. Day has already ended. Make sure to call StartDay.", GetName());
+        return;
+    }
+
+    GetWorld()->GetTimerManager().ClearTimer(WitchGameState->CurrentDayTimer);
+    WitchGameState->Phase = EWitchForestGamePhase::Intermission;
+
+    if (bKillUnsafePlayersAtNight)
+    {
+        KillUnsafePlayers();
+    }
+
     if (WitchGameState->CurseTimeRemaining <= 1)
     {
         if (WitchGameState->IsCurseActive())
         {
             WitchGameState->CurseTimeRemaining--;
-            EndRound();
+            EndGame();
         }
         else
         {
             UE_LOGFMT(LogWitchForestGame, Display, "Round ending...");
-            StartRound();
+
+            FTimerHandle IntermissionTimer;
+            GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateUObject(this, &ThisClass::StartRound), IntermissionTime, false, -1.0f);
         }
     }
     else
     {
         WitchGameState->CurseTimeRemaining--;
-        StartDay();
+        FTimerHandle IntermissionTimer;
+        GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateUObject(this, &ThisClass::StartDay), IntermissionTime, false, -1.0f);
     }
 }
 
-void AWitchForestGameMode::EndRound()
+void AWitchForestGameMode::EndGame()
 {
     KillAllPlayers();
     UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
@@ -238,6 +256,35 @@ void AWitchForestGameMode::KillAllPlayers()
         }
 
         WitchPlayerState->GetAttributeSet()->KillOwner();
+    }
+}
+
+void AWitchForestGameMode::KillUnsafePlayers()
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        return;
+    }
+
+    for (APlayerState* PlayerState : WitchForestGameState->PlayerArray)
+    {
+        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+        if (!WitchPlayerState)
+        {
+            continue;
+        }
+
+        UWitchForestASC* ASC = WitchPlayerState->GetWitchForestASC();
+        if (!ASC)
+        {
+            continue;
+        }
+
+        if (WitchPlayerState->IsAlive() && !ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Safe))
+        {
+            WitchPlayerState->GetAttributeSet()->KillOwner();
+        }
     }
 }
 

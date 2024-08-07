@@ -12,6 +12,14 @@
 class UCurse;
 class AWitchForestGameMode;
 
+UENUM()
+enum class EWitchForestGamePhase: uint8
+{
+	Starting,
+	Daytime,
+	Intermission
+};
+
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 {
@@ -54,6 +62,8 @@ public:
 
 	FTimerHandle CurrentDayTimer;
 	uint8 CurseTimeRemaining;
+
+	EWitchForestGamePhase Phase = EWitchForestGamePhase::Starting;
 
 private:
 	bool bCurseActive = false;
