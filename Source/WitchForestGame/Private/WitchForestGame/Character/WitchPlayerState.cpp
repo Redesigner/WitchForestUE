@@ -85,5 +85,7 @@ void AWitchPlayerState::InitializeAttributes()
 void AWitchPlayerState::OnAttributeSetDeath(FGameplayEffectSpec SpecCauser)
 {
     bAlive = false;
+    
+    AbilitySystem->RemoveAllActiveEffects();
     OnDeath.Broadcast();
 }

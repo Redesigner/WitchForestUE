@@ -50,6 +50,7 @@ public:
 
 	bool GetFirstAbilityForInputTag(const FGameplayTag& InputTag, FGameplayAbilitySpec& AbilitySpecOut) const;
 
+	void RemoveAllActiveEffects();
 
 	FOnAbilitiesChanged OnAbilitiesChanged;
 

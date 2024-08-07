@@ -281,7 +281,7 @@ void AWitchForestGameMode::KillUnsafePlayers()
             continue;
         }
 
-        if (WitchPlayerState->IsAlive() && !ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Safe))
+        if (WitchPlayerState->IsAlive() && ASC->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Outside))
         {
             WitchPlayerState->GetAttributeSet()->KillOwner();
         }

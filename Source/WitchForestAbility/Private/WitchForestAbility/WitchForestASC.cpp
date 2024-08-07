@@ -262,6 +262,14 @@ bool UWitchForestASC::GetFirstAbilityForInputTag(const FGameplayTag& InputTag, F
 	return false;
 }
 
+void UWitchForestASC::RemoveAllActiveEffects()
+{
+	for (FActiveGameplayEffectHandle EffectHandle : GetActiveGameplayEffects().GetAllActiveEffectHandles())
+	{
+		RemoveActiveGameplayEffect(EffectHandle);
+	}
+}
+
 
 void UWitchForestASC::InsertSortPriority(TArray<FGameplayAbilitySpecHandle>& Array, FGameplayAbilitySpecHandle SpecToInsert) const
 {

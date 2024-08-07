@@ -25,7 +25,7 @@ namespace WitchForestGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Stun, "GameplayEffect.Stun");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayEffect_Immobile, "GameplayEffect.Immobile");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Danger, "GameplayEffect.Danger", "In an area where respawn (such as from falling) is not valid.");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Safe, "GameplayEffect.Safe", "In an area where nighttime will not kill the player.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Outside, "GameplayEffect.Outside", "In an area where nighttime will kill the player.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Blind, "GameplayEffect.Blind", "Blocks enemy sight perception. Does not currently impact players.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEffect_Sight, "GameplayEffect.Sight", "Counters blind stacks. Does not currently impact players.");
 
