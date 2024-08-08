@@ -9,6 +9,16 @@
 
 #include "Logging/StructuredLog.h"
 
+float AWitchForestGameState::GetDayRemainingSeconds() const
+{
+	return GetWorld()->GetTimerManager().GetTimerRemaining(CurrentDayTimer);
+}
+
+uint8 AWitchForestGameState::GetNumberOfDaysRemaining() const
+{
+	return CurseTimeRemaining;
+}
+
 bool AWitchForestGameState::HasLearnedRecipe(FGameplayTag RecipeTag) const
 {
 	return LearnedRecipes.Contains(RecipeTag);

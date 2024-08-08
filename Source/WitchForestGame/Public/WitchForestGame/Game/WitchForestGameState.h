@@ -38,6 +38,12 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	TObjectPtr<UCurse> CurrentCurse;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	float GetDayRemainingSeconds() const;
+
+	UFUNCTION(BlueprintCallable)
+	uint8 GetNumberOfDaysRemaining() const;
+
 	TArray<FGameplayTag> GetLearnedRecipes() const { return LearnedRecipes; }
 	TArray<FGameplayTag> GetDiscoveredCreatures() const { return DiscoveredBestiaryEntries; }
 

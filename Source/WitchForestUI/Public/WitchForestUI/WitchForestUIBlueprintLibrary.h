@@ -16,4 +16,7 @@ class WITCHFORESTUI_API UWitchForestUIBlueprintLibrary : public UBlueprintFuncti
 	
 	UFUNCTION(BlueprintPure, Category = "WitchForestUI", meta = (DisplayName = "To Bool (Vector2D)"))
 	static FVector2D SelectVector2D(bool bSelector, FVector2D TrueVector, FVector2D FalseVector);
+
+	UFUNCTION(BlueprintPure, Category = "WitchForestUI", meta = (DisplayName = "To Minutes and Seconds (Float)"))
+	static FText SecondsToText(float Seconds);
 };
