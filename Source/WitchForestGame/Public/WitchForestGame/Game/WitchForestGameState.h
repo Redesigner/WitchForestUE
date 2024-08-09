@@ -67,10 +67,18 @@ public:
 	FOnCreatureDiscovered OnCreatureDiscovered;
 
 	FTimerHandle CurrentDayTimer;
+
+	UPROPERTY(Replicated)
+	float CurrentDayEndTimeServer;
+
+	UPROPERTY(Replicated)
 	uint8 CurseTimeRemaining;
 
 	EWitchForestGamePhase Phase = EWitchForestGamePhase::Starting;
 
 private:
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	bool bCurseActive = false;
 };

@@ -171,6 +171,8 @@ void AWitchForestGameMode::StartDay()
 
     RespawnDeadPlayers();
     World->GetTimerManager().SetTimer(WitchGameState->CurrentDayTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndDay), DayLengthSeconds, false, -1.0f);
+    WitchGameState->CurrentDayEndTimeServer = WitchGameState->GetServerWorldTimeSeconds() + DayLengthSeconds;
+    UE_LOGFMT(LogWitchForestGame, Display, "'{GameModeName}' Day started. Current time: '{CurrentTime}'. Day ends: '{EndTime}' ", GetName(), WitchGameState->GetServerWorldTimeSeconds(), WitchGameState->CurrentDayEndTimeServer);
 }
 
 void AWitchForestGameMode::EndDay()

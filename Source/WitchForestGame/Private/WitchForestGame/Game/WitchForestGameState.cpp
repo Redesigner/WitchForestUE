@@ -7,11 +7,13 @@
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 
+#include "Net/UnrealNetwork.h"
 #include "Logging/StructuredLog.h"
 
 float AWitchForestGameState::GetDayRemainingSeconds() const
 {
-	return GetWorld()->GetTimerManager().GetTimerRemaining(CurrentDayTimer);
+	// UE_LOGFMT(LogWitchForestGame, Display, "'{CurrentTime}' | '{EndTime}'", CurrentDayEndTimeServer, GetServerWorldTimeSeconds());
+	return (CurrentDayEndTimeServer - GetServerWorldTimeSeconds());
 }
 
 uint8 AWitchForestGameState::GetNumberOfDaysRemaining() const
@@ -83,4 +85,12 @@ bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
 
 	bCurseActive = false;
 	return true;
+}
+
+void AWitchForestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurseTimeRemaining);
+	DOREPLIFETIME_CONDITION(ThisClass, CurrentDayEndTimeServer, COND_SkipOwner);
 }
