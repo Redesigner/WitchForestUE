@@ -36,6 +36,20 @@ void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
     {
         // WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::RestartIfNoLivingPlayers);
         WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::EndDayIfNoLivingPlayers);
+
+
+        if (AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>())
+        {
+            // if (WitchForestGameState->IsCurseActive())
+            {
+                UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGameMode sending login message to client, PlayerState '{PlayerStateName}'", WitchPlayerState->GetName());
+                FWitchForestMessage NewMessage;
+                NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+                NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
+                NewMessage.Source = this;
+                WitchPlayerState->ClientBroadcastMessage(NewMessage);
+            }
+        }
     }
 }
 
@@ -135,12 +149,11 @@ void AWitchForestGameMode::StartRound()
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
     StartDay();
 
-    UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
     FWitchForestMessage NewMessage;
     NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
     NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
     NewMessage.Source = this;
-    MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
+    BroadcastMessageAllClients(NewMessage);
 }
 
 void AWitchForestGameMode::StartDay()
@@ -226,12 +239,11 @@ void AWitchForestGameMode::EndDay()
 void AWitchForestGameMode::EndGame()
 {
     KillAllPlayers();
-    UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
     FWitchForestMessage NewMessage;
     NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
     NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lethal;
     NewMessage.Source = this;
-    MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
+    BroadcastMessageAllClients(NewMessage);
 
     FTimerHandle RestartGameTimer;
     GetWorld()->GetTimerManager().SetTimer(RestartGameTimer, FTimerDelegate::CreateLambda([this]()
@@ -341,4 +353,29 @@ bool AWitchForestGameMode::AnyPlayersAlive() const
         }
     }
     return false;
+}
+
+void AWitchForestGameMode::BroadcastMessageAllClients(const FWitchForestMessage& Message)
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        UE_LOGFMT(LogWitchForestGame, Error, "WitchForestGameMode::BroadcastMessageAllClients failed. The game state was invalid.");
+        return;
+    }
+
+    for (APlayerState* PlayerState : WitchForestGameState->PlayerArray)
+    {
+        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+        if (!WitchPlayerState)
+        {
+            continue;
+        }
+
+        WitchPlayerState->ClientBroadcastMessage(Message);
+    }
+
+    // Broadcast the message to the host, in case this is a listen server
+    UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(this);
+    MessageSystem.BroadcastMessage(Message.Verb, Message);
 }

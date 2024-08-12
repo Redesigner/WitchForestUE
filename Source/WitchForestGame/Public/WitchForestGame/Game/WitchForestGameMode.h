@@ -12,6 +12,7 @@ class UPotionRecipeSet;
 class UBestiaryData;
 class UCurse;
 class UGameplayEffectDataSet;
+struct FWitchForestMessage;
 
 UCLASS()
 class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
@@ -78,4 +79,6 @@ private:
 	void RespawnDeadPlayers();
 
 	bool AnyPlayersAlive() const;
+
+	void BroadcastMessageAllClients(const FWitchForestMessage& Message);
 };

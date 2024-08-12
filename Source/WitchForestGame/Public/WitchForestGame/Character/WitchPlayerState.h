@@ -8,6 +8,7 @@
 #include "WitchForestGame/Game/WitchForestTeamAgentInterface.h"
 
 #include "GameplayEffect.h" 
+#include "WitchForestGame/Messages/WitchForestMessage.h"
 
 #include "WitchPlayerState.generated.h"
 
@@ -38,7 +39,29 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Behavior, meta = (AllowPrivateAccess = true))
 	TEnumAsByte<EWitchForestTeam> TeamId;
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
+	UWitchForestASC* GetWitchForestASC() const { return AbilitySystem; }
 
+	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
+	UBaseAttributeSet* GetAttributeSet() const;
+
+	UFUNCTION(Client, Unreliable, BlueprintCallable, Category = "WitchForest|PlayerState")
+	void ClientBroadcastMessage(const FWitchForestMessage Message);
+
+	void GrantAbilities();
+
+	/// Set our attributes to their default values;
+	void InitializeAttributes();
+
+	void OnAttributeSetDeath(FGameplayEffectSpec SpecCauser);
+
+	bool IsAlive() const { return bAlive; }
+
+	DECLARE_MULTICAST_DELEGATE(FOnDeath)
+	FOnDeath OnDeath;
+
+private:
 	bool bAlive = false;
 
 	bool bAbilitiesGranted = false;
@@ -54,23 +77,4 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	void SetWitchForestTeam(EWitchForestTeam InTeam) override;
 	EWitchForestTeam GetWitchForestTeam() const override;
 	// End IWitchForestTeamAgentInterface
-
-public:
-	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
-	UWitchForestASC* GetWitchForestASC() const { return AbilitySystem; }
-
-	UFUNCTION(BlueprintCallable, Category = "WitchForest|PlayerState")
-	UBaseAttributeSet* GetAttributeSet() const;
-
-	void GrantAbilities();
-
-	/// Set our attributes to their default values;
-	void InitializeAttributes();
-
-	void OnAttributeSetDeath(FGameplayEffectSpec SpecCauser);
-
-	bool IsAlive() const { return bAlive; }
-
-	DECLARE_MULTICAST_DELEGATE(FOnDeath)
-	FOnDeath OnDeath;
 };

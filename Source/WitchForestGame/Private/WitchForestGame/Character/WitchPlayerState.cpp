@@ -9,6 +9,7 @@
 #include "WitchForestGame.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Net/UnrealNetwork.h"
 #include "Logging/StructuredLog.h"
 
@@ -48,6 +49,15 @@ EWitchForestTeam AWitchPlayerState::GetWitchForestTeam() const
 UBaseAttributeSet* AWitchPlayerState::GetAttributeSet() const
 {
     return AttributeSet;
+}
+
+void AWitchPlayerState::ClientBroadcastMessage_Implementation(const FWitchForestMessage Message)
+{
+    // This is how Lyra handles broadcasting messages to clients!
+    if (GetNetMode() == NM_Client)
+    {
+        UGameplayMessageSubsystem::Get(this).BroadcastMessage(Message.Verb, Message);
+    }
 }
 
 

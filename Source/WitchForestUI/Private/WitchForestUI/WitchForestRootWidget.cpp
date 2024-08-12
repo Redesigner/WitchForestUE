@@ -16,13 +16,12 @@ void UWitchForestRootWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
+	UE_LOGFMT(LogWitchForestUI, Display, "RootWidget '{Name}' registering listener for notifications", GetName());
 	MessageSubsystem.RegisterListener(WitchForestGameplayTags::Event_Notification, this, &ThisClass::OnNotification);
 }
 
 void UWitchForestRootWidget::OnNotification(FGameplayTag Channel, const FWitchForestMessage& Payload)
 {
-	UE_LOG(LogTemp, Display, TEXT("Game notification sent"));
-
 	if (!NotificationWidgetClass)
 	{
 		UE_LOGFMT(LogWitchForestUI, Warning, "RootWidget '{Name}' received a notification with GameplayTag '{TagName}', but no notification widget was found.", GetName(), Payload.Data.ToString());
