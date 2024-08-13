@@ -24,6 +24,7 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	GENERATED_BODY()
 
 	DECLARE_MULTICAST_DELEGATE(FOnPotentialAbilityActivationChanged);
+	DECLARE_MULTICAST_DELEGATE(FOnHUDCreated);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UInputMappingContext> InputMapping;
@@ -38,6 +39,17 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	TSoftObjectPtr<UMaterialParameterCollection> EffectParameterCollection;
 
 
+public:
+	UFUNCTION(BlueprintCallable)
+	UWitchForestASC* GetWitchForestASC() const;
+
+	FOnPotentialAbilityActivationChanged OnPotentialAbilityActivationChanged;
+
+	FOnHUDCreated OnHUDCreated;
+
+	UUserWidget* GetRootWidget() const { return RootWidget.Get(); }
+
+private:
 	TWeakObjectPtr<UUserWidget> RootWidget;
 
 	bool bIsBlind = false;
@@ -66,14 +78,6 @@ class WITCHFORESTGAME_API AWitchPlayerController : public APlayerController, pub
 	void HandleRecipeDiscoveredMessage(const FWitchForestMessage& Payload);
 
 	void BlindStacksChanged(const FGameplayTag Tag, int32 Count);
-
-public:
-	UFUNCTION(BlueprintCallable)
-	UWitchForestASC* GetWitchForestASC() const;
-
-	FOnPotentialAbilityActivationChanged OnPotentialAbilityActivationChanged;
-
-	UUserWidget* GetRootWidget() const { return RootWidget.Get(); }
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

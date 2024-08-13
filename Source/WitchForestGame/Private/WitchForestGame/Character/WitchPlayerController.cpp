@@ -70,6 +70,7 @@ void AWitchPlayerController::BeginPlayingState()
         if (!HasAuthority())
         {
             SpawnHUD();
+            OnHUDCreated.Broadcast();
         }
     }
 }

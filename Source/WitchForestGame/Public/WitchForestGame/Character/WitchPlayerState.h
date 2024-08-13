@@ -64,11 +64,17 @@ public:
 private:
 	bool bAlive = false;
 
+	bool bReceivingNotifications = false;
+
 	bool bAbilitiesGranted = false;
+
+	TQueue<FWitchForestMessage> UnprocessedNotifications;
 
 	AWitchPlayerState();
 	
 	void BeginPlay() override;
+
+	void FlushNotifications();
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 

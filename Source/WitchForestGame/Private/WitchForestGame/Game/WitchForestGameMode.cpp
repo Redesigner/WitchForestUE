@@ -4,19 +4,20 @@
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
-#include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
-#include "WitchForestGame/Game/WitchForestGameInstance.h"
+#include "WitchForestGame/Character/WitchPlayerController.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
+#include "WitchForestGame/Game/WitchForestGameState.h"
+#include "WitchForestGame/Game/WitchForestGameInstance.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Messages/WitchForestMessage.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestAbility/WitchForestASC.h"
 
 #include "Engine/StreamableManager.h"
-#include "Logging/StructuredLog.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "Logging/StructuredLog.h"
 
 
 AWitchForestGameMode::AWitchForestGameMode()
@@ -32,24 +33,35 @@ void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
         return;
     }
 
-    if (AWitchPlayerState* WitchPlayerState = NewPlayer->GetPlayerState<AWitchPlayerState>())
+    AWitchPlayerState* WitchPlayerState = NewPlayer->GetPlayerState<AWitchPlayerState>();
+    if (!WitchPlayerState)
     {
-        // WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::RestartIfNoLivingPlayers);
-        WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::EndDayIfNoLivingPlayers);
+        return;
+    }
 
+    AWitchPlayerController* WitchPlayerController = Cast<AWitchPlayerController>(NewPlayer);
+    if (!WitchPlayerController)
+    {
+        return;
+    }
 
-        if (AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>())
-        {
-            // if (WitchForestGameState->IsCurseActive())
-            {
-                UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGameMode sending login message to client, PlayerState '{PlayerStateName}'", WitchPlayerState->GetName());
-                FWitchForestMessage NewMessage;
-                NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
-                NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
-                NewMessage.Source = this;
-                WitchPlayerState->ClientBroadcastMessage(NewMessage);
-            }
-        }
+    // WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::RestartIfNoLivingPlayers);
+    WitchPlayerState->OnDeath.AddUObject(this, &ThisClass::EndDayIfNoLivingPlayers);
+
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        return;
+    }
+
+    // UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode::PostLogin() PlayerState '{PlayerStateName}' connected", WitchPlayerState->GetName());
+    if (WitchForestGameState->IsCurseActive())
+    {
+        FWitchForestMessage NewMessage;
+        NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+        NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
+        NewMessage.Source = this;
+        WitchPlayerState->ClientBroadcastMessage(NewMessage);
     }
 }
 
@@ -57,6 +69,8 @@ void AWitchForestGameMode::StartPlay()
 {
     Super::StartPlay();
 
+    // FTimerHandle RestartTimer;
+    // GetWorld()->GetTimerManager().SetTimer(RestartTimer, FTimerDelegate::CreateUObject(this, &ThisClass::StartRound), RestartTime, false, -1.0f);
     StartRound();
 }
 

@@ -7,6 +7,7 @@
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 #include "WitchForestAbility/Attributes/BaseAttributeSet.h"
 #include "WitchForestGame.h"
+#include "WitchForestGame/Character/WitchPlayerController.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 
 #include "GameFramework/GameplayMessageSubsystem.h"
@@ -54,15 +55,38 @@ UBaseAttributeSet* AWitchPlayerState::GetAttributeSet() const
 void AWitchPlayerState::ClientBroadcastMessage_Implementation(const FWitchForestMessage Message)
 {
     // This is how Lyra handles broadcasting messages to clients!
-    if (GetNetMode() == NM_Client)
+    if (GetNetMode() != NM_Client)
+    {
+        return;
+    }
+
+    if (bReceivingNotifications)
     {
         UGameplayMessageSubsystem::Get(this).BroadcastMessage(Message.Verb, Message);
+    }
+    else
+    {
+        UnprocessedNotifications.Enqueue(Message);
     }
 }
 
 
 void AWitchPlayerState::BeginPlay()
 {
+    if (AWitchPlayerController* WitchPlayerController = Cast<AWitchPlayerController>(GetPlayerController()))
+    {
+        WitchPlayerController->OnHUDCreated.AddUObject(this, &ThisClass::FlushNotifications);
+    }
+}
+
+void AWitchPlayerState::FlushNotifications()
+{
+    FWitchForestMessage Notification;
+    while (UnprocessedNotifications.Dequeue(Notification))
+    {
+        UGameplayMessageSubsystem::Get(this).BroadcastMessage(Notification.Verb, Notification);
+    }
+    bReceivingNotifications = true;
 }
 
 
