@@ -64,6 +64,8 @@ public:
 	uint8 GetCurseTimeLimit() const { return CurseTimeLimit; }
 	float GetDayLength() const { return DayLengthSeconds; }
 
+	void RequestStartDay();
+
 private:
 	void PostLogin(APlayerController* NewPlayer) override;
 

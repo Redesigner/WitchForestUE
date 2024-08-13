@@ -17,6 +17,7 @@ enum class EWitchForestGamePhase: uint8
 {
 	Starting,
 	Daytime,
+	Nighttime,
 	Intermission
 };
 
@@ -27,6 +28,8 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 
 	DECLARE_MULTICAST_DELEGATE(FOnRecipeLearned);
 	DECLARE_MULTICAST_DELEGATE(FOnCreatureDiscovered);
+	DECLARE_MULTICAST_DELEGATE(FOnDayEnd);
+	DECLARE_MULTICAST_DELEGATE(FOnDayStart);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recipes, meta = (AllowPrivateAccess = true, Categories = "RecipeTag"))
 	TArray<FGameplayTag> LearnedRecipes;
@@ -65,8 +68,18 @@ public:
 
 	float GetDayTime() const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastEndDay();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastStartDay();
+
+
 	FOnRecipeLearned OnRecipeLearned;
 	FOnCreatureDiscovered OnCreatureDiscovered;
+
+	FOnDayEnd OnDayEnd;
+	FOnDayStart OnDayStart;
 
 	FTimerHandle CurrentDayTimer;
 

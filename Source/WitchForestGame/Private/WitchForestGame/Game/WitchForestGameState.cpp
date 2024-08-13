@@ -103,6 +103,16 @@ float AWitchForestGameState::GetDayTime() const
 	return 1.0f - (GetDayRemainingSeconds() / WitchForestGameMode->GetDayLength());
 }
 
+void AWitchForestGameState::MulticastStartDay_Implementation()
+{
+	OnDayStart.Broadcast();
+}
+
+void AWitchForestGameState::MulticastEndDay_Implementation()
+{
+	OnDayEnd.Broadcast();
+}
+
 void AWitchForestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

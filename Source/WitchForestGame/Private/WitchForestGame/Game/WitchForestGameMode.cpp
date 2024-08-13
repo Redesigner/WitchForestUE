@@ -161,13 +161,15 @@ void AWitchForestGameMode::StartRound()
     WitchGameState->SetCurse(NewObject<UCurse>(this, DefaultCurse.Get(), TEXT("Default Curse")));
     WitchGameState->CursePlayers();
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
-    StartDay();
 
     FWitchForestMessage NewMessage;
     NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
     NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
     NewMessage.Source = this;
     BroadcastMessageAllClients(NewMessage);
+
+    WitchGameState->Phase = EWitchForestGamePhase::Nighttime;
+    // StartDay();
 }
 
 void AWitchForestGameMode::StartDay()
@@ -185,8 +187,6 @@ void AWitchForestGameMode::StartDay()
         return;
     }
 
-    WitchGameState->Phase = EWitchForestGamePhase::Daytime;
-
     UWorld* World = GetWorld();
     if (!World)
     {
@@ -196,10 +196,12 @@ void AWitchForestGameMode::StartDay()
 
     UE_LOGFMT(LogWitchForestGame, Display, "'{GameModeName}' Day started. {DayCount} days remain.", GetName(), WitchGameState->CurseTimeRemaining);
 
-    RespawnDeadPlayers();
     World->GetTimerManager().SetTimer(WitchGameState->CurrentDayTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndDay), DayLengthSeconds, false, -1.0f);
     WitchGameState->CurrentDayEndTimeServer = WitchGameState->GetServerWorldTimeSeconds() + DayLengthSeconds;
-    UE_LOGFMT(LogWitchForestGame, Display, "'{GameModeName}' Day started. Current time: '{CurrentTime}'. Day ends: '{EndTime}' ", GetName(), WitchGameState->GetServerWorldTimeSeconds(), WitchGameState->CurrentDayEndTimeServer);
+    WitchGameState->Phase = EWitchForestGamePhase::Daytime;
+
+    // See the note below about MulticastEndDay
+    WitchGameState->MulticastStartDay();
 }
 
 void AWitchForestGameMode::EndDay()
@@ -245,10 +247,37 @@ void AWitchForestGameMode::EndDay()
     else
     {
         WitchGameState->CurseTimeRemaining--;
+        WitchGameState->Phase = EWitchForestGamePhase::Intermission;
         FTimerHandle IntermissionTimer;
-        GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateUObject(this, &ThisClass::StartDay), IntermissionTime, false, -1.0f);
+        GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateLambda([this, WitchGameState]()
+            {
+                if (WitchGameState)
+                {
+                    WitchGameState->Phase = EWitchForestGamePhase::Nighttime;
+                    RespawnDeadPlayers();
+                }
+            }), IntermissionTime, false, -1.0f);
+    }
+
+    // Invoke the replicated EndDay function. This needs to be called on the game state, since the game mode can't replicate functions
+    // as it doesn't exist on the clients. (Only a CDO exists)
+    WitchGameState->MulticastEndDay();
+}
+
+void AWitchForestGameMode::RequestStartDay()
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        return;
+    }
+
+    if (WitchForestGameState->Phase == EWitchForestGamePhase::Nighttime)
+    {
+        StartDay();
     }
 }
+
 
 void AWitchForestGameMode::EndGame()
 {
