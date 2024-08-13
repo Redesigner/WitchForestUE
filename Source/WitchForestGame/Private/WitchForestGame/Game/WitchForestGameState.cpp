@@ -109,4 +109,5 @@ void AWitchForestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(ThisClass, CurseTimeRemaining);
 	DOREPLIFETIME_CONDITION(ThisClass, CurrentDayEndTimeServer, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(ThisClass, Phase, COND_SkipOwner);
 }

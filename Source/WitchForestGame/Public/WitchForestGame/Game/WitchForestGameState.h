@@ -76,6 +76,7 @@ public:
 	UPROPERTY(Replicated)
 	uint8 CurseTimeRemaining;
 
+	UPROPERTY(Replicated)
 	EWitchForestGamePhase Phase = EWitchForestGamePhase::Starting;
 
 private:
