@@ -63,6 +63,8 @@ public:
 
 	bool IsCurseActive() const { return bCurseActive; }
 
+	float GetDayTime() const;
+
 	FOnRecipeLearned OnRecipeLearned;
 	FOnCreatureDiscovered OnCreatureDiscovered;
 

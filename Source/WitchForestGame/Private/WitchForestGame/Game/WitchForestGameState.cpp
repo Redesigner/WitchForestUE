@@ -87,6 +87,22 @@ bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
 	return true;
 }
 
+float AWitchForestGameState::GetDayTime() const
+{
+	if (Phase != EWitchForestGamePhase::Daytime)
+	{
+		return -1.0f;
+	}
+
+	const AWitchForestGameMode* WitchForestGameMode = Cast<AWitchForestGameMode>(GetDefaultGameMode());
+	if (!WitchForestGameMode)
+	{
+		return -1.0f;
+	}
+
+	return 1.0f - (GetDayRemainingSeconds() / WitchForestGameMode->GetDayLength());
+}
+
 void AWitchForestGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
