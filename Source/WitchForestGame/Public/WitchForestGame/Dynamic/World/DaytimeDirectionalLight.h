@@ -15,9 +15,21 @@ class WITCHFORESTGAME_API ADaytimeDirectionalLight : public AActor
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDirectionalLightComponent> SunLight;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Curves, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCurveFloat> LightIntensityCurve;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Curves, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCurveFloat> LightAngleCurve;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Curves, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCurveFloat> LightTemperatureCurve;
+
+
 	ADaytimeDirectionalLight();
 	
 	void Tick(float DeltaSeconds) override;
 
-	FQuat GetLightAngle() const;
+	float GetLightIntensity(float DaytimePercentage) const;
+	FQuat GetLightAngle(float DaytimePercentage) const;
+	float GetLightTemperature(float DaytimePercentage) const;
 };

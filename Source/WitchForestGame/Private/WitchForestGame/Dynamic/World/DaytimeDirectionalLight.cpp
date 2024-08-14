@@ -21,20 +21,43 @@ void ADaytimeDirectionalLight::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	SetActorRotation(GetLightAngle());
+	AWitchForestGameState* GameState = Cast<AWitchForestGameState>(UGameplayStatics::GetGameState(this));
+	float DaytimePercentage = GameState ? GameState->GetDayTime() : 0.0f;
+
+	SetActorRotation(GetLightAngle(DaytimePercentage));
+	SunLight->SetIntensity(GetLightIntensity(DaytimePercentage));
+	SunLight->SetTemperature(GetLightTemperature(DaytimePercentage));
 }
 
-FQuat ADaytimeDirectionalLight::GetLightAngle() const
+float ADaytimeDirectionalLight::GetLightIntensity(float DaytimePercentage) const
 {
-	AWitchForestGameState* GameState = Cast<AWitchForestGameState>(UGameplayStatics::GetGameState(this));
-	if (!GameState)
+	if (!LightIntensityCurve)
 	{
-		return FQuat::MakeFromEuler(FVector(00.0f, -90.0f, 0.0f));
+		return 5.0f;
 	}
 
-	return FQuat::Slerp(
-		FQuat::MakeFromEuler(FVector(60.0f, 0.0f, 0.0f)),
-		FQuat::MakeFromEuler(FVector(60.0f, -180.0f, 0.0f)),
-		GameState->GetDayTime()
-	);
+	return LightIntensityCurve->GetFloatValue(DaytimePercentage);
+}
+
+FQuat ADaytimeDirectionalLight::GetLightAngle(float DaytimePercentage) const
+{
+	if (!LightAngleCurve)
+	{
+		return FQuat::Slerp(
+			FQuat::MakeFromEuler(FVector(60.0f, 0.0f, 0.0f)),
+			FQuat::MakeFromEuler(FVector(60.0f, -180.0f, 0.0f)),
+			DaytimePercentage
+		);
+	}
+
+	return FQuat::MakeFromEuler(FVector(60.0f, LightAngleCurve->GetFloatValue(DaytimePercentage), 0.0f));
+}
+
+float ADaytimeDirectionalLight::GetLightTemperature(float DaytimePercentage) const
+{
+	if (!LightTemperatureCurve)
+	{
+		return 5000.0f;
+	}
+	return LightTemperatureCurve->GetFloatValue(DaytimePercentage);
 }
