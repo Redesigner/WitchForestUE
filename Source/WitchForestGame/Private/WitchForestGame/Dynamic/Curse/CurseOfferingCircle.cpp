@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 
+// @TODO: move this to a separate class instead of inheriting from cauldron and hold our items in game state?
 void ACurseOfferingCircle::Interact(AActor* Source)
 {
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
@@ -57,3 +58,5 @@ void ACurseOfferingCircle::Interact(AActor* Source)
 	OnContentsChanged.Broadcast();
 	// StartCooldown();
 }
+
+// Reject items that aren't required for lifting our curse?

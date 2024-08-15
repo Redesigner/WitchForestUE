@@ -30,6 +30,7 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	DECLARE_MULTICAST_DELEGATE(FOnCreatureDiscovered);
 	DECLARE_MULTICAST_DELEGATE(FOnDayEnd);
 	DECLARE_MULTICAST_DELEGATE(FOnDayStart);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCurseChanged, UCurse*, bool);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recipes, meta = (AllowPrivateAccess = true, Categories = "RecipeTag"))
 	TArray<FGameplayTag> LearnedRecipes;
@@ -80,6 +81,8 @@ public:
 
 	FOnDayEnd OnDayEnd;
 	FOnDayStart OnDayStart;
+
+	FOnCurseChanged OnCurseChanged;
 
 	FTimerHandle CurrentDayTimer;
 

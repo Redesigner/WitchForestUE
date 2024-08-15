@@ -151,14 +151,15 @@ void AWitchForestGameMode::StartRound()
         return;
     }
 
-    if (!DefaultCurse)
+    /* if (!DefaultCurse)
     {
         UE_LOGFMT(LogWitchForestGame, Warning, "'{GameModeName}' Start round failed, no curse is set.", GetName());
         return;
-    }
+    } */
 
 
-    WitchGameState->SetCurse(NewObject<UCurse>(this, DefaultCurse.Get(), TEXT("Default Curse")));
+    // WitchGameState->SetCurse(NewObject<UCurse>(this, DefaultCurse.Get(), TEXT("Default Curse")));
+    WitchGameState->SetCurse(GenerateCurse());
     WitchGameState->CursePlayers();
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
 
@@ -421,4 +422,32 @@ void AWitchForestGameMode::BroadcastMessageAllClients(const FWitchForestMessage&
     // Broadcast the message to the host, in case this is a listen server
     UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(this);
     MessageSystem.BroadcastMessage(Message.Verb, Message);
+}
+
+UCurse* AWitchForestGameMode::GenerateCurse() const
+{
+    if (!CurrentItemSet)
+    {
+        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet was invalid.");
+        return nullptr;
+    }
+
+    if (CurrentItemSet->Items.Num() == 0)
+    {
+        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet '{ItemSetname}' does not have any valid entries.", CurrentItemSet->GetName());
+        return nullptr;
+    }
+
+    UCurse* NewCurse = NewObject<UCurse>();
+    TArray<FGameplayTag> ChosenIngredients;
+
+    const uint8 NumIngredients = FMath::RandRange(1, 5);
+    for (int i = 0; i < NumIngredients; ++i)
+    {
+        const uint8 IngredientIndex = FMath::RandRange(0, CurrentItemSet->Items.Num() - 1);
+        ChosenIngredients.Add(CurrentItemSet->Items[IngredientIndex].ItemTag);
+    }
+
+    NewCurse->SetRequiredItems(ChosenIngredients);
+    return NewCurse;
 }

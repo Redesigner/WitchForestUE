@@ -83,4 +83,6 @@ private:
 	bool AnyPlayersAlive() const;
 
 	void BroadcastMessageAllClients(const FWitchForestMessage& Message);
+
+	UCurse* GenerateCurse() const;
 };

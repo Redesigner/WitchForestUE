@@ -24,4 +24,8 @@ class WITCHFORESTGAME_API UCurse : public UObject
 
 public:
 	bool CanLiftCurse(TArray<FGameplayTag> ExistingItems) const;
+
+	void SetRequiredItems(TArray<FGameplayTag> RequiredItemsIn);
+
+	TArray<FGameplayTag> GetRequiredItems() const { return RequiredItems; }
 };

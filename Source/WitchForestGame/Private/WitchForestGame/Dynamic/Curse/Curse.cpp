@@ -18,3 +18,8 @@ bool UCurse::CanLiftCurse(TArray<FGameplayTag> ExistingItems) const
 
 	return ItemsA == ItemsB;
 }
+
+void UCurse::SetRequiredItems(TArray<FGameplayTag> RequiredItemsIn)
+{
+	RequiredItems = RequiredItemsIn;
+}

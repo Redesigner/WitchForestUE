@@ -61,6 +61,7 @@ void AWitchForestGameState::CursePlayers()
 		return;
 	}
 
+	OnCurseChanged.Broadcast(CurrentCurse, true);
 	bCurseActive = true;
 	// Actually apply curse here? Or in Gamemode?
 }
@@ -83,6 +84,7 @@ bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
 		return false;
 	}
 
+	OnCurseChanged.Broadcast(CurrentCurse, false);
 	bCurseActive = false;
 	return true;
 }
