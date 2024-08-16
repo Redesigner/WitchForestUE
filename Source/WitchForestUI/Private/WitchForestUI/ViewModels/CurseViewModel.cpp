@@ -3,6 +3,9 @@
 
 #include "WitchForestUI/ViewModels/CurseViewModel.h"
 
+#include "Logging/StructuredLog.h"
+
+#include "WitchForestUI.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
@@ -32,6 +35,12 @@ void UCurseViewModel::CurseChanged(UCurse* Curse, bool bCurseActive)
 	UItemSet* ItemSet = GameMode->GetItemSet();
 	if (!ItemSet)
 	{
+		return;
+	}
+
+	if (!Curse)
+	{
+		UE_LOGFMT(LogWitchForestUI, Warning, "CurseViewModel::CurseChanged failed to update. The curse was invalid.");
 		return;
 	}
 

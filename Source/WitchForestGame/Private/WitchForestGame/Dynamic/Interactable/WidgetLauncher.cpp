@@ -4,6 +4,9 @@
 #include "WitchForestGame/Dynamic/Interactable/WidgetLauncher.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Logging/StructuredLog.h"
+
+#include "WitchForestGame.h"
 
 void AWidgetLauncher::Interact(AActor* Source)
 {
@@ -13,8 +16,10 @@ void AWidgetLauncher::Interact(AActor* Source)
 		return;
 	}
 
+	// We can't launch widgets on non-local controllers!
+	// Unreal will catch this, but it's better to avoid here
 	APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
-	if (!PlayerController)
+	if (!PlayerController || !PlayerController->IsLocalController())
 	{
 		return;
 	}
@@ -25,5 +30,11 @@ void AWidgetLauncher::Interact(AActor* Source)
 	}
 
 	UUserWidget* SpawnedWidget = CreateWidget(PlayerController, WidgetClass);
+	if (!SpawnedWidget)
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "WidgetLauncher '{LauncherName}' failed to launch widget. Widget of type '{ClassName}' was not created successfully.", GetName(), WidgetClass->GetName());
+		return;
+	}
+
 	SpawnedWidget->AddToViewport();
 }

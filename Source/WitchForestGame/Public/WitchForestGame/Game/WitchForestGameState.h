@@ -38,7 +38,7 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Bestiary, meta = (AllowPrivateAccess = true, Categories = "CreatureTag"))
 	TArray<FGameplayTag> DiscoveredBestiaryEntries;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCurse> CurrentCurse;
 
 public:

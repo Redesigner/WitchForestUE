@@ -11,6 +11,8 @@
 
 class UGameplayEffect;
 
+
+// @TODO: Make this a struct instead???
 UCLASS(DisplayName = Curse, Blueprintable, BlueprintType)
 class WITCHFORESTGAME_API UCurse : public UObject
 {
