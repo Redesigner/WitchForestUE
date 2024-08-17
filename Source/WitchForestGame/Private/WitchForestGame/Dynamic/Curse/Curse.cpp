@@ -3,7 +3,7 @@
 
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 
-bool UCurse::CanLiftCurse(TArray<FGameplayTag> ExistingItems) const
+bool FCurse::CanLiftCurse(TArray<FGameplayTag> ExistingItems) const
 {
 	if (ExistingItems.Num() != RequiredItems.Num())
 	{
@@ -19,7 +19,7 @@ bool UCurse::CanLiftCurse(TArray<FGameplayTag> ExistingItems) const
 	return ItemsA == ItemsB;
 }
 
-void UCurse::SetRequiredItems(TArray<FGameplayTag> RequiredItemsIn)
+void FCurse::SetRequiredItems(TArray<FGameplayTag> RequiredItemsIn)
 {
 	RequiredItems = RequiredItemsIn;
 }

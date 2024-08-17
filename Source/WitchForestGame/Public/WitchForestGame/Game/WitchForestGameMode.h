@@ -5,12 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h" 
 
+#include "WitchForestGame/Dynamic/Curse/Curse.h"
+
 #include "WitchForestGameMode.generated.h"
 
 class UItemSet;
 class UPotionRecipeSet;
 class UBestiaryData;
-class UCurse;
 class UGameplayEffectDataSet;
 struct FWitchForestMessage;
 
@@ -45,9 +46,6 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float DayLengthSeconds = 300.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
-	TSubclassOf<UCurse> DefaultCurse;
 	
 public:
 	AWitchForestGameMode();
@@ -84,5 +82,5 @@ private:
 
 	void BroadcastMessageAllClients(const FWitchForestMessage& Message);
 
-	UCurse* GenerateCurse() const;
+	FCurse GenerateCurse() const;
 };

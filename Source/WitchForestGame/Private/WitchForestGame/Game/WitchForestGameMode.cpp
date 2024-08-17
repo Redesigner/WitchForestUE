@@ -424,21 +424,21 @@ void AWitchForestGameMode::BroadcastMessageAllClients(const FWitchForestMessage&
     MessageSystem.BroadcastMessage(Message.Verb, Message);
 }
 
-UCurse* AWitchForestGameMode::GenerateCurse() const
+FCurse AWitchForestGameMode::GenerateCurse() const
 {
     if (!CurrentItemSet)
     {
         UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet was invalid.");
-        return nullptr;
+        return FCurse();
     }
 
     if (CurrentItemSet->Items.Num() == 0)
     {
         UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet '{ItemSetname}' does not have any valid entries.", CurrentItemSet->GetName());
-        return nullptr;
+        return FCurse();
     }
 
-    UCurse* NewCurse = NewObject<UCurse>();
+    FCurse NewCurse;
     TArray<FGameplayTag> ChosenIngredients;
 
     const uint8 NumIngredients = FMath::RandRange(1, 5);
@@ -448,6 +448,6 @@ UCurse* AWitchForestGameMode::GenerateCurse() const
         ChosenIngredients.Add(CurrentItemSet->Items[IngredientIndex].ItemTag);
     }
 
-    NewCurse->SetRequiredItems(ChosenIngredients);
+    NewCurse.RequiredItems = ChosenIngredients;
     return NewCurse;
 }

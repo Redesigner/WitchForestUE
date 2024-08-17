@@ -66,7 +66,7 @@ void AWitchForestGameState::CursePlayers()
 	// Actually apply curse here? Or in Gamemode?
 }
 
-void AWitchForestGameState::SetCurse(UCurse* Curse)
+void AWitchForestGameState::SetCurse(FCurse Curse)
 {
 	if (bCurseActive)
 	{
@@ -79,7 +79,7 @@ void AWitchForestGameState::SetCurse(UCurse* Curse)
 
 bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
 {
-	if (!CurrentCurse->CanLiftCurse(Items))
+	if (!CurrentCurse.CanLiftCurse(Items))
 	{
 		return false;
 	}

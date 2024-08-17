@@ -6,7 +6,6 @@
 #include "Logging/StructuredLog.h"
 
 #include "WitchForestUI.h"
-#include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
 
@@ -17,7 +16,7 @@ void UCurseViewModel::BindGameState(AWitchForestGameState* GameState)
 	CurseChanged(GameState->GetCurrentCurse(), GameState->IsCurseActive());
 }
 
-void UCurseViewModel::CurseChanged(UCurse* Curse, bool bCurseActive)
+void UCurseViewModel::CurseChanged(FCurse Curse, bool bCurseActive)
 {
 	CurrentlyRequiredItems.Reset();
 
@@ -38,13 +37,7 @@ void UCurseViewModel::CurseChanged(UCurse* Curse, bool bCurseActive)
 		return;
 	}
 
-	if (!Curse)
-	{
-		UE_LOGFMT(LogWitchForestUI, Warning, "CurseViewModel::CurseChanged failed to update. The curse was invalid.");
-		return;
-	}
-
-	for (FGameplayTag& ItemTag : Curse->GetRequiredItems())
+	for (FGameplayTag& ItemTag : Curse.RequiredItems)
 	{
 		FInventoryItemData InventoryItemData;
 		if (ItemSet->FindItemDataForTag(ItemTag, InventoryItemData))

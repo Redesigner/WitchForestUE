@@ -6,10 +6,10 @@
 #include "GameFramework/GameState.h"
 
 #include "GameplayTagContainer.h"
+#include "WitchForestGame/Dynamic/Curse/Curse.h"
 
 #include "WitchForestGameState.generated.h"
 
-class UCurse;
 class AWitchForestGameMode;
 
 UENUM()
@@ -30,7 +30,7 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	DECLARE_MULTICAST_DELEGATE(FOnCreatureDiscovered);
 	DECLARE_MULTICAST_DELEGATE(FOnDayEnd);
 	DECLARE_MULTICAST_DELEGATE(FOnDayStart);
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCurseChanged, UCurse*, bool);
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCurseChanged, FCurse, bool);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Recipes, meta = (AllowPrivateAccess = true, Categories = "RecipeTag"))
 	TArray<FGameplayTag> LearnedRecipes;
@@ -39,7 +39,7 @@ class WITCHFORESTGAME_API AWitchForestGameState : public AGameState
 	TArray<FGameplayTag> DiscoveredBestiaryEntries;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCurse> CurrentCurse;
+	FCurse CurrentCurse;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -59,9 +59,9 @@ public:
 
 	void CursePlayers();
 
-	void SetCurse(UCurse* Curse);
+	void SetCurse(FCurse Curse);
 
-	UCurse* GetCurrentCurse() const { return CurrentCurse; }
+	FCurse GetCurrentCurse() const { return CurrentCurse; }
 
 	bool TryLiftCurse(TArray<FGameplayTag> Items);
 
