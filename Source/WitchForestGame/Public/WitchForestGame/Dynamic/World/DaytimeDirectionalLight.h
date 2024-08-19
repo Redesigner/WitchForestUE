@@ -24,6 +24,12 @@ class WITCHFORESTGAME_API ADaytimeDirectionalLight : public AActor
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Curves, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCurveFloat> LightTemperatureCurve;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Curves, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCurveFloat> RampAdjustmentCurve;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Material, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialParameterCollection> RampedMaterialParameterCollection;
+
 
 	ADaytimeDirectionalLight();
 	
@@ -32,4 +38,6 @@ class WITCHFORESTGAME_API ADaytimeDirectionalLight : public AActor
 	float GetLightIntensity(float DaytimePercentage) const;
 	FQuat GetLightAngle(float DaytimePercentage) const;
 	float GetLightTemperature(float DaytimePercentage) const;
+
+	void UpdateRelevantMaterialCollectionParams(float DaytimePercentage);
 };

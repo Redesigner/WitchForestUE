@@ -3,8 +3,9 @@
 
 #include "WitchForestGame/Dynamic/World/DaytimeDirectionalLight.h"
 
-#include "Kismet/GameplayStatics.h"
 #include "Components/DirectionalLightComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 #include "WitchForestGame/Game/WitchForestGameState.h"
 
@@ -14,7 +15,7 @@ ADaytimeDirectionalLight::ADaytimeDirectionalLight()
 	SunLight = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("SunLight"));
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	// PrimaryActorTick.TickInterval = 1.0f;
+	// PrimaryActorTick.TickInterval = 0.25f;
 }
 
 void ADaytimeDirectionalLight::Tick(float DeltaSeconds)
@@ -27,6 +28,7 @@ void ADaytimeDirectionalLight::Tick(float DeltaSeconds)
 	SetActorRotation(GetLightAngle(DaytimePercentage));
 	SunLight->SetIntensity(GetLightIntensity(DaytimePercentage));
 	SunLight->SetTemperature(GetLightTemperature(DaytimePercentage));
+	UpdateRelevantMaterialCollectionParams(DaytimePercentage);
 }
 
 float ADaytimeDirectionalLight::GetLightIntensity(float DaytimePercentage) const
@@ -60,4 +62,22 @@ float ADaytimeDirectionalLight::GetLightTemperature(float DaytimePercentage) con
 		return 5000.0f;
 	}
 	return LightTemperatureCurve->GetFloatValue(DaytimePercentage);
+}
+
+void ADaytimeDirectionalLight::UpdateRelevantMaterialCollectionParams(float DaytimePercentage)
+{
+	if (!RampedMaterialParameterCollection || !RampAdjustmentCurve)
+	{
+		return;
+	}
+
+	UMaterialParameterCollectionInstance* MaterialParameters = GetWorld()->GetParameterCollectionInstance(RampedMaterialParameterCollection);
+	if (!MaterialParameters)
+	{
+		return;
+	}
+
+	float AdjustmentValue = RampAdjustmentCurve->GetFloatValue(DaytimePercentage);
+	MaterialParameters->SetScalarParameterValue(TEXT("IncomingLuminanceAdjustment"), AdjustmentValue);
+	MaterialParameters->SetScalarParameterValue(TEXT("OutgoingLuminanceAdjustment"), 1.0f / AdjustmentValue);
 }
