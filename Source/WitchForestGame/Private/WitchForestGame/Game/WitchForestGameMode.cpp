@@ -438,14 +438,34 @@ FCurse AWitchForestGameMode::GenerateCurse() const
         return FCurse();
     }
 
+    TArray<FGameplayTag> PossibleIngredients;
+
+    for (const FItemSetEntry& Entry : CurrentItemSet->Items)
+    {
+        FGameplayTagContainer TemporaryContainer = FGameplayTagContainer(Entry.ItemTag);
+        if (TemporaryContainer.MatchesQuery(CurseItemFilter))
+        {
+            PossibleIngredients.Add(Entry.ItemTag);
+        }
+    }
+
+    UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGameMode generating curse. '{FilteredItemCount}' items matched the filter out of '{UnfilteredItemCount}'.",
+        PossibleIngredients.Num(), CurrentItemSet->Items.Num());
+
     FCurse NewCurse;
     TArray<FGameplayTag> ChosenIngredients;
+
+    if (PossibleIngredients.Num() <= 0)
+    {
+        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode failed to generate a curse. No items in the itemset matched the filter.");
+        return NewCurse;
+    }
 
     const uint8 NumIngredients = FMath::RandRange(1, 5);
     for (int i = 0; i < NumIngredients; ++i)
     {
-        const uint8 IngredientIndex = FMath::RandRange(0, CurrentItemSet->Items.Num() - 1);
-        ChosenIngredients.Add(CurrentItemSet->Items[IngredientIndex].ItemTag);
+        const uint8 IngredientIndex = FMath::RandRange(0, PossibleIngredients.Num() - 1);
+        ChosenIngredients.Add(PossibleIngredients[IngredientIndex]);
     }
 
     NewCurse.RequiredItems = ChosenIngredients;

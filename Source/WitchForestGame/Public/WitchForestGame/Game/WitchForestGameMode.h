@@ -46,6 +46,9 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float DayLengthSeconds = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
+	FGameplayTagQuery CurseItemFilter;
 	
 public:
 	AWitchForestGameMode();
