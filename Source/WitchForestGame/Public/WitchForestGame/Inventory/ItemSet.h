@@ -53,6 +53,8 @@ public:
 
 	bool FindItemTagFromClass(TSubclassOf<APickup> InputClass, FGameplayTag& TagOut) const;
 
+	bool FindItemTagFromString(FString InputString, FInventoryItemData& DataOut) const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "ItemTag"))
 	TArray<FItemSetEntry> Items;
 };

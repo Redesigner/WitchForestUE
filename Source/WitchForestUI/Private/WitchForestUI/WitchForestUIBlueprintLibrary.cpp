@@ -10,10 +10,11 @@ FVector2D UWitchForestUIBlueprintLibrary::SelectVector2D(bool bSelector, FVector
 
 FText UWitchForestUIBlueprintLibrary::SecondsToText(float Seconds)
 {
-	if (Seconds > 0.0f)
+	int SecondsWhole = Seconds;
+	if (SecondsWhole > 0)
 	{
-		int MinutePart = FMath::Floor(Seconds / 60.f);
-		int SecondPart = FMath::RoundToFloat(Seconds - MinutePart);
+		int MinutePart = SecondsWhole / 60;
+		int SecondPart = SecondsWhole - (MinutePart * 60);
 
 		if (SecondPart >= 10.0f)
 		{

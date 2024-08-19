@@ -59,6 +59,8 @@ public:
 	UPotionRecipeSet* GetRecipeBook() const;
 	UBestiaryData* GetBestiary() const;
 
+	void ApplyNewRandomCurse();
+
 	void RestartIfNoLivingPlayers();
 	void EndDayIfNoLivingPlayers();
 
@@ -66,6 +68,8 @@ public:
 	float GetDayLength() const { return DayLengthSeconds; }
 
 	void RequestStartDay();
+
+	void RequestEndDay();
 
 private:
 	void PostLogin(APlayerController* NewPlayer) override;

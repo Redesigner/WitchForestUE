@@ -12,7 +12,11 @@
 
 float AWitchForestGameState::GetDayRemainingSeconds() const
 {
-	// UE_LOGFMT(LogWitchForestGame, Display, "'{CurrentTime}' | '{EndTime}'", CurrentDayEndTimeServer, GetServerWorldTimeSeconds());
+	if (Phase != EWitchForestGamePhase::Daytime)
+	{
+		return 0.0f;
+	}
+
 	return (CurrentDayEndTimeServer - GetServerWorldTimeSeconds());
 }
 
@@ -68,12 +72,7 @@ void AWitchForestGameState::CursePlayers()
 
 void AWitchForestGameState::SetCurse(FCurse Curse)
 {
-	if (bCurseActive)
-	{
-		// Dont change the curse if there's one active right now
-		return;
-	}
-
+	OnCurseChanged.Broadcast(CurrentCurse, bCurseActive);
 	CurrentCurse = Curse;
 }
 

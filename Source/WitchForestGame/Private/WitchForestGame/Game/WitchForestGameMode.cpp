@@ -112,6 +112,14 @@ UBestiaryData* AWitchForestGameMode::GetBestiary() const
     return Bestiary;
 }
 
+void AWitchForestGameMode::ApplyNewRandomCurse()
+{
+    if (AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>())
+    {
+        WitchGameState->SetCurse(GenerateCurse());
+    }
+}
+
 void AWitchForestGameMode::RestartIfNoLivingPlayers()
 {
     if (!AnyPlayersAlive())
@@ -157,9 +165,8 @@ void AWitchForestGameMode::StartRound()
         return;
     } */
 
-
-    // WitchGameState->SetCurse(NewObject<UCurse>(this, DefaultCurse.Get(), TEXT("Default Curse")));
-    WitchGameState->SetCurse(GenerateCurse());
+    RespawnDeadPlayers();
+    ApplyNewRandomCurse();
     WitchGameState->CursePlayers();
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
 
@@ -276,6 +283,20 @@ void AWitchForestGameMode::RequestStartDay()
     if (WitchForestGameState->Phase == EWitchForestGamePhase::Nighttime)
     {
         StartDay();
+    }
+}
+
+void AWitchForestGameMode::RequestEndDay()
+{
+    AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchForestGameState)
+    {
+        return;
+    }
+
+    if (WitchForestGameState->Phase == EWitchForestGamePhase::Daytime)
+    {
+        EndDay();
     }
 }
 
@@ -442,8 +463,9 @@ FCurse AWitchForestGameMode::GenerateCurse() const
 
     for (const FItemSetEntry& Entry : CurrentItemSet->Items)
     {
+        // Explicitly forbid 'Empty' item tag from the list, in case it would ever be counted
         FGameplayTagContainer TemporaryContainer = FGameplayTagContainer(Entry.ItemTag);
-        if (TemporaryContainer.MatchesQuery(CurseItemFilter))
+        if (TemporaryContainer.MatchesQuery(CurseItemFilter) && Entry.ItemTag != TAG_ItemEmpty)
         {
             PossibleIngredients.Add(Entry.ItemTag);
         }

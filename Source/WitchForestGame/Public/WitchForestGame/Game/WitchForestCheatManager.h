@@ -19,4 +19,13 @@ class WITCHFORESTGAME_API UWitchForestCheatManager : public UCheatManager
 
 	UFUNCTION(Exec)
 	void KillPlayer();
+
+	UFUNCTION(Exec)
+	void EndDay();
+
+	UFUNCTION(Exec)
+	void SpawnItem(FString ItemName, uint8 Count = 1);
+
+	UFUNCTION(Exec)
+	void RegenerateCurse();
 };

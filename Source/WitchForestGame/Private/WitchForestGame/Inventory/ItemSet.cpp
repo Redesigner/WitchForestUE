@@ -39,3 +39,21 @@ bool UItemSet::FindItemTagFromClass(TSubclassOf<APickup> InputClass, FGameplayTa
 	}
 	return false;
 }
+
+bool UItemSet::FindItemTagFromString(FString InputString, FInventoryItemData& DataOut) const
+{
+	if (InputString.IsEmpty())
+	{
+		return false;
+	}
+
+	for (const FItemSetEntry& Entry : Items)
+	{
+		if (InputString == Entry.ItemTag.ToString())
+		{
+			DataOut = Entry.ItemData;
+			return true;
+		}
+	}
+	return false;
+}
