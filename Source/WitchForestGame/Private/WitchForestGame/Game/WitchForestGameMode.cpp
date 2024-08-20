@@ -112,6 +112,7 @@ UBestiaryData* AWitchForestGameMode::GetBestiary() const
     return Bestiary;
 }
 
+
 void AWitchForestGameMode::ApplyNewRandomCurse()
 {
     if (AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>())
@@ -119,6 +120,7 @@ void AWitchForestGameMode::ApplyNewRandomCurse()
         WitchGameState->SetCurse(GenerateCurse());
     }
 }
+
 
 void AWitchForestGameMode::RestartIfNoLivingPlayers()
 {
@@ -132,6 +134,7 @@ void AWitchForestGameMode::RestartIfNoLivingPlayers()
             RestartTime, false, -1.0f);
     }
 }
+
 
 void AWitchForestGameMode::EndDayIfNoLivingPlayers()
 {
@@ -149,6 +152,7 @@ void AWitchForestGameMode::EndDayIfNoLivingPlayers()
         EndDay();
     }
 }
+
 
 void AWitchForestGameMode::StartRound()
 {
@@ -177,8 +181,10 @@ void AWitchForestGameMode::StartRound()
     BroadcastMessageAllClients(NewMessage);
 
     WitchGameState->Phase = EWitchForestGamePhase::Nighttime;
+    ApplyIntermissionEffect();
     // StartDay();
 }
+
 
 void AWitchForestGameMode::StartDay()
 {
@@ -204,6 +210,8 @@ void AWitchForestGameMode::StartDay()
 
     UE_LOGFMT(LogWitchForestGame, Display, "'{GameModeName}' Day started. {DayCount} days remain.", GetName(), WitchGameState->CurseTimeRemaining);
 
+    ClearIntermissionEffect();
+
     World->GetTimerManager().SetTimer(WitchGameState->CurrentDayTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndDay), DayLengthSeconds, false, -1.0f);
     WitchGameState->CurrentDayEndTimeServer = WitchGameState->GetServerWorldTimeSeconds() + DayLengthSeconds;
     WitchGameState->Phase = EWitchForestGamePhase::Daytime;
@@ -211,6 +219,7 @@ void AWitchForestGameMode::StartDay()
     // See the note below about MulticastEndDay
     WitchGameState->MulticastStartDay();
 }
+
 
 void AWitchForestGameMode::EndDay()
 {
@@ -257,20 +266,14 @@ void AWitchForestGameMode::EndDay()
         WitchGameState->CurseTimeRemaining--;
         WitchGameState->Phase = EWitchForestGamePhase::Intermission;
         FTimerHandle IntermissionTimer;
-        GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateLambda([this, WitchGameState]()
-            {
-                if (WitchGameState)
-                {
-                    WitchGameState->Phase = EWitchForestGamePhase::Nighttime;
-                    RespawnDeadPlayers();
-                }
-            }), IntermissionTime, false, -1.0f);
+        GetWorld()->GetTimerManager().SetTimer(IntermissionTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndIntermission), IntermissionTime, false, -1.0f);
     }
 
     // Invoke the replicated EndDay function. This needs to be called on the game state, since the game mode can't replicate functions
     // as it doesn't exist on the clients. (Only a CDO exists)
     WitchGameState->MulticastEndDay();
 }
+
 
 void AWitchForestGameMode::RequestStartDay()
 {
@@ -285,6 +288,7 @@ void AWitchForestGameMode::RequestStartDay()
         StartDay();
     }
 }
+
 
 void AWitchForestGameMode::RequestEndDay()
 {
@@ -318,6 +322,62 @@ void AWitchForestGameMode::EndGame()
         RestartTime, false, -1.0f);
 }
 
+
+void AWitchForestGameMode::EndIntermission()
+{
+    AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchGameState)
+    {
+        return;
+    }
+
+    WitchGameState->Phase = EWitchForestGamePhase::Nighttime;
+    RespawnDeadPlayers();
+    
+    ApplyIntermissionEffect();
+}
+
+
+void AWitchForestGameMode::ApplyIntermissionEffect()
+{
+    AWitchForestGameState* WitchGameState = GetGameState<AWitchForestGameState>();
+    if (!WitchGameState)
+    {
+        return;
+    }
+
+    if (!IntermissionEffect)
+    {
+        return;
+    }
+
+    for (APlayerState* PlayerState : WitchGameState->PlayerArray)
+    {
+        AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+        if (!WitchPlayerState || !WitchPlayerState->GetWitchForestASC())
+        {
+            continue;
+        }
+
+        WitchPlayerState->GetWitchForestASC()->RemoveAllActiveEffects();
+        FGameplayEffectContextHandle IntermissionEffectSpecContextHandle = WitchPlayerState->GetWitchForestASC()->MakeEffectContext();
+        FGameplayEffectSpecHandle IntermissionEffectSpec = WitchPlayerState->GetWitchForestASC()->MakeOutgoingSpec(IntermissionEffect, 1.0f, IntermissionEffectSpecContextHandle);
+        IntermissionGrantedEffects.Add(WitchPlayerState->GetWitchForestASC()->ApplyGameplayEffectSpecToSelf(*IntermissionEffectSpec.Data.Get()));
+    }
+}
+
+
+void AWitchForestGameMode::ClearIntermissionEffect()
+{
+    for (const FActiveGameplayEffectHandle& IntermissionGrantedEffect : IntermissionGrantedEffects)
+    {
+        IntermissionGrantedEffect.GetOwningAbilitySystemComponent()->RemoveActiveGameplayEffect(IntermissionGrantedEffect);
+    }
+
+    IntermissionGrantedEffects.Empty();
+}
+
+
 void AWitchForestGameMode::KillAllPlayers()
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
@@ -337,6 +397,7 @@ void AWitchForestGameMode::KillAllPlayers()
         WitchPlayerState->GetAttributeSet()->KillOwner();
     }
 }
+
 
 void AWitchForestGameMode::KillUnsafePlayers()
 {
@@ -367,6 +428,7 @@ void AWitchForestGameMode::KillUnsafePlayers()
     }
 }
 
+
 void AWitchForestGameMode::RespawnDeadPlayers()
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
@@ -395,6 +457,7 @@ void AWitchForestGameMode::RespawnDeadPlayers()
     }
 }
 
+
 bool AWitchForestGameMode::AnyPlayersAlive() const
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
@@ -420,6 +483,7 @@ bool AWitchForestGameMode::AnyPlayersAlive() const
     return false;
 }
 
+
 void AWitchForestGameMode::BroadcastMessageAllClients(const FWitchForestMessage& Message)
 {
     AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>();
@@ -444,6 +508,7 @@ void AWitchForestGameMode::BroadcastMessageAllClients(const FWitchForestMessage&
     UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(this);
     MessageSystem.BroadcastMessage(Message.Verb, Message);
 }
+
 
 FCurse AWitchForestGameMode::GenerateCurse() const
 {

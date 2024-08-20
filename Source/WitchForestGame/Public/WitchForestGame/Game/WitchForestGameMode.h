@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h" 
 
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
+#include "ActiveGameplayEffectHandle.h"
 
 #include "WitchForestGameMode.generated.h"
 
@@ -49,6 +50,9 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
 	FGameplayTagQuery CurseItemFilter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UGameplayEffect> IntermissionEffect;
 	
 public:
 	AWitchForestGameMode();
@@ -81,6 +85,10 @@ private:
 	void EndDay();
 	void EndGame();
 
+	void EndIntermission();
+	void ApplyIntermissionEffect();
+	void ClearIntermissionEffect();
+
 	void KillAllPlayers();
 	void KillUnsafePlayers();
 	void RespawnDeadPlayers();
@@ -90,4 +98,6 @@ private:
 	void BroadcastMessageAllClients(const FWitchForestMessage& Message);
 
 	FCurse GenerateCurse() const;
+
+	TArray<FActiveGameplayEffectHandle> IntermissionGrantedEffects;
 };
