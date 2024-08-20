@@ -31,11 +31,6 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
-    if (AWitch* Witch = Cast<AWitch>(InPawn))
-    {
-        Witch->OnPotentialInteractionsChanged.AddUObject(this, &ThisClass::PotentialInteractionsChanged);
-    }
-
     if (AWitchPlayerState* WitchPlayerState = GetPlayerState<AWitchPlayerState>())
     {
         WitchPlayerState->GrantAbilities();
@@ -44,6 +39,12 @@ void AWitchPlayerController::OnPossess(APawn* InPawn)
         if (HasAuthority() && IsLocalPlayerController())
         {
             SpawnHUD();
+        }
+
+        if (AWitch* Witch = Cast<AWitch>(InPawn))
+        {
+            Witch->OnPotentialInteractionsChanged.AddUObject(this, &ThisClass::PotentialInteractionsChanged);
+            Witch->SetPlayerColor(WitchPlayerState->GetColor());
         }
     }
 }

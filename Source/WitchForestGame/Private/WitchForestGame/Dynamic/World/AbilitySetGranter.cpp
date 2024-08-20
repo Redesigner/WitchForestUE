@@ -8,6 +8,7 @@
 #include "WitchForestAbility/WitchForestASC.h"
 #include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
 #include "WitchForestGame/Character/Witch/Witch.h"
+#include "WitchForestGame/Character/WitchPlayerState.h"
 
 AAbilitySetGranter::AAbilitySetGranter()
 {
@@ -46,6 +47,11 @@ void AAbilitySetGranter::GrantAbilitiesTo(UWitchForestASC* ASC)
 		if (bSetWitchColor)
 		{
 			Witch->SetPlayerColor(WitchColor);
+
+			if (AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(Witch->GetPlayerState()))
+			{
+				WitchPlayerState->SetColor(WitchColor);
+			}
 		}
 	}
 }

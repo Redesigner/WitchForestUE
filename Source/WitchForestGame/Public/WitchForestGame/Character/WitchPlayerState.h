@@ -22,7 +22,7 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Instanced, VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWitchForestASC> AbilitySystem;
 
 	// This should be set whenever the pawn type changes, but for now, this should be fine
@@ -30,8 +30,11 @@ class WITCHFORESTGAME_API AWitchPlayerState : public APlayerState, public IAbili
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Abilities, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UWitchForestAbilitySet>> AbilitySets;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Instanced, EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBaseAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
+	FColor WitchColor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> Inventory;
@@ -57,6 +60,10 @@ public:
 	void OnAttributeSetDeath(FGameplayEffectSpec SpecCauser);
 
 	bool IsAlive() const { return bAlive; }
+
+	FColor GetColor() const { return WitchColor; }
+
+	void SetColor(FColor Color) { WitchColor = Color; }
 
 	DECLARE_MULTICAST_DELEGATE(FOnDeath)
 	FOnDeath OnDeath;
