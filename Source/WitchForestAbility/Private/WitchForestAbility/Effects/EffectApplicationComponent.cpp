@@ -73,6 +73,12 @@ TArray<FActiveGameplayEffectHandle> UEffectApplicationComponent::ApplyGameplayEf
 				return Result;
 			}
 
+			if (!GameplayEffectClass)
+			{
+				UE_LOGFMT(LogWitchForestAbility, Warning, "Area of Effect {ProjectileName} was unable to apply a GameplayEffect to {OtherActorName}. The GameplayEffectClass was invalid.", GetName(), Target->GetName());
+				continue;
+			}
+
 			FGameplayEffectContextHandle ContextHandle = ActorAbility->GetAbilitySystemComponent()->MakeEffectContext();
 			Result.Add(ActorAbility->GetAbilitySystemComponent()->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(GameplayEffectClass->GetDefaultObject()), 1.0f, ContextHandle));
 		}
