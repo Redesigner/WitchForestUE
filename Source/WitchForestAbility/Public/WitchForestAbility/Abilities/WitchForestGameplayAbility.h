@@ -7,6 +7,8 @@
 #include "WitchForestGameplayAbility.generated.h"
 
 
+class UBlackboardComponent;
+
 UENUM(BlueprintType)
 enum class EAbilityActivationPolicy : uint8
 {
@@ -46,4 +48,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAbilityActivationPolicy ActivationPolicy;
 
+	UFUNCTION(BlueprintCallable, meta = (ExpandBoolAsExecs = bBlackboardFound))
+	UBlackboardComponent* GetOwnerBlackboard(bool& bBlackboardFound);
 };
