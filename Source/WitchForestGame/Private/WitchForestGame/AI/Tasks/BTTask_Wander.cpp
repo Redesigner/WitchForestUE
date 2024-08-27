@@ -3,10 +3,10 @@
 
 #include "WitchForestGame/AI/Tasks/BTTask_Wander.h"
 
-#include "NavigationSystem.h"
-#include "Logging/StructuredLog.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Logging/StructuredLog.h"
+#include "NavigationSystem.h"
 #include "Tasks/AITask_MoveTo.h"
 
 #include "WitchForestGame.h"
