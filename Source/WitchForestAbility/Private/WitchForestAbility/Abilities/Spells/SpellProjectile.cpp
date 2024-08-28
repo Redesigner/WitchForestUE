@@ -29,8 +29,13 @@ void ASpellProjectile::Tick(float DeltaTime)
 	}
 
 	FHitResult HitResult;
-	AddActorWorldOffset(Velocity * DeltaTime, true, &HitResult);
+	AddActorWorldOffset(Velocity * DeltaTime, true, &HitResult, ETeleportType::None);
 	
+	if (HitResult.bBlockingHit && !HitResult.GetActor()->IsA<APawn>())
+	{
+		HitWall(HitResult);
+	}
+
 	if (HitResult.bBlockingHit && bDestroyOnBlockingHit)
 	{
 		Destroy();
@@ -59,6 +64,11 @@ void ASpellProjectile::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		EffectApplication->ApplyGameplayEffectsToTarget(OtherActor, FakeHit);
 		ActorsHit.Add(OtherActor);
+	}
+
+	if (OtherActor->Implements<UAbilitySystemInterface>() && bDestroyOnEffectApplied)
+	{
+		Destroy();
 	}
 }
 

@@ -27,10 +27,24 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
 	bool bDestroyOnBlockingHit = false;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = true))
+	bool bDestroyOnEffectApplied = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameplayTags, meta = (AllowPrivateAccess = true))
 	FGameplayTagContainer GameplayTags;
 
+public:	
+	ASpellProjectile();
 
+	void SetOwningActor(AActor* Actor);
+
+	void SetVelocity(FVector NewVelocity);
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void HitWall(FHitResult Hit);
+
+private:
 	TArray<TWeakObjectPtr<AActor>> ActorsHit;
 
 
@@ -41,11 +55,4 @@ class WITCHFORESTABILITY_API ASpellProjectile : public AActor, public IGameplayT
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-public:	
-	ASpellProjectile();
-
-	void SetOwningActor(AActor* Actor);
-
-	void SetVelocity(FVector NewVelocity);
 };
