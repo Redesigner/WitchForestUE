@@ -27,6 +27,9 @@ class WITCHFORESTABILITY_API USpellAbility : public UWitchForestGameplayAbility
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float ProjectileSpeed = 800.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Activation, meta = (AllowPrivateAccess = true))
+	bool bEndAbilityOnFire = true;
+
 
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)  override;
 
