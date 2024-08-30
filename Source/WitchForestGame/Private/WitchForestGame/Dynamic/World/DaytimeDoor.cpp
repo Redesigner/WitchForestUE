@@ -37,7 +37,7 @@ void ADaytimeDoor::DayStart()
 	InteractionVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void ADaytimeDoor::Interact(AActor* Source)
+void ADaytimeDoor::Interact_Implementation(AActor* Source)
 {
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
 	if (!GameMode)

@@ -25,7 +25,8 @@ class WITCHFORESTABILITY_API UInteractAbility : public UWitchForestGameplayAbili
 
 	FActiveGameplayEffectHandle HeldEffectHandle;
 
-	TWeakInterfacePtr<IInteractableInterface> Target;
+	// This is supposed to be a TWeakInterfacePtr<IInteractableInterface>, but this doesn't work for blueprint implemented interfaces
+	TWeakObjectPtr<AActor> Target;
 
 
 	TWeakObjectPtr<ATimerDisplay> HoldTimerDisplay;
@@ -39,7 +40,7 @@ class WITCHFORESTABILITY_API UInteractAbility : public UWitchForestGameplayAbili
 
 	void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	void StartHoldTimer(IInteractableInterface* InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
+	void StartHoldTimer(TScriptInterface<IInteractableInterface> InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
 
 	void EndHoldTimer();
 };

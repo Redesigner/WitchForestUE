@@ -101,7 +101,7 @@ void ACauldron::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ThisClass, HeldIngredients);
 }
 
-void ACauldron::Interact(AActor* Source)
+void ACauldron::Interact_Implementation(AActor* Source)
 {
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
 	if (!GameMode)

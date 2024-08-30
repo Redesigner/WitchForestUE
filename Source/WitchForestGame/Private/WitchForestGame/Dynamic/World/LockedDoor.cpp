@@ -15,7 +15,7 @@ ALockedDoor::ALockedDoor()
 	RootComponent = DoorShape;
 }
 
-void ALockedDoor::Interact(AActor* Source)
+void ALockedDoor::Interact_Implementation(AActor* Source)
 {
 	if (bLocked)
 	{
@@ -32,7 +32,7 @@ void ALockedDoor::Interact(AActor* Source)
 	}
 }
 
-bool ALockedDoor::CanInteract(AActor* Source) const
+bool ALockedDoor::CanInteract_Implementation(AActor* Source) const
 {
 	return !bLocked;
 }

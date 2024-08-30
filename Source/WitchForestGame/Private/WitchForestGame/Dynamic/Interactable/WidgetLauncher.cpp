@@ -8,7 +8,7 @@
 
 #include "WitchForestGame.h"
 
-void AWidgetLauncher::Interact(AActor* Source)
+void AWidgetLauncher::Interact_Implementation(AActor* Source)
 {
 	APawn* Pawn = Cast<APawn>(Source);
 	if (!Pawn)

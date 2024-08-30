@@ -34,18 +34,20 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 	InteractionVolume->GetOverlappingActors(OverlappingActors);
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
+		if (OverlappingActor->Implements<UInteractableInterface>())
 		{
-			float HoldTime = Interactable->GetRequiredHoldTime();
+			// float HoldTime = Interactable->GetRequiredHoldTime();
+			float HoldTime = IInteractableInterface::Execute_GetRequiredHoldTime(OverlappingActor);
 			UE_LOGFMT(LogWitchForestAbility, Display, "[{ClientServer}] InteractAbility triggered, required hold time '{HoldTime}s'.", IsPredictingClient() ? "Client" : "Server", HoldTime);
 			if (HoldTime <= 0.0f)
 			{
-				Interactable->Interact(Witch);
+				IInteractableInterface::Execute_Interact(OverlappingActor, Witch);
+				// Interactable->Interact(Witch);
 				EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			}
 			else
 			{
-				StartHoldTimer(Interactable, Handle, ActorInfo, ActivationInfo);
+				StartHoldTimer(TScriptInterface<IInteractableInterface>(OverlappingActor), Handle, ActorInfo, ActivationInfo);
 			}
 			return;
 		}
@@ -78,9 +80,10 @@ bool UInteractAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handl
 	InteractionVolume->GetOverlappingActors(OverlappingActors);
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		if (IInteractableInterface* Interactable = Cast<IInteractableInterface>(OverlappingActor))
+		if (OverlappingActor->Implements<UInteractableInterface>())
 		{
-			return Interactable->CanInteract(Witch);
+			return IInteractableInterface::Execute_CanInteract(OverlappingActor, Witch);
+			// return Interactable->CanInteract(Witch);
 		}
 	}
 
@@ -108,10 +111,11 @@ void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, co
 	CancelAbility(Handle, ActorInfo, ActivationInfo, true);
 }
 
-void UInteractAbility::StartHoldTimer(IInteractableInterface* InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+void UInteractAbility::StartHoldTimer(TScriptInterface<IInteractableInterface> InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	Target = InteractableTarget;
-	GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), InteractableTarget->GetRequiredHoldTime(), false, -1.0f);
+	// This should always be an AActor
+	Target = Cast<AActor>(InteractableTarget.GetObject());
+	GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), IInteractableInterface::Execute_GetRequiredHoldTime(InteractableTarget.GetObject()), false, -1.0f);
 	
 	if (!IsPredictingClient())
 	{
@@ -124,7 +128,7 @@ void UInteractAbility::StartHoldTimer(IInteractableInterface* InteractableTarget
 	if (ActorInfo->IsLocallyControlledPlayer())
 	{
 		HoldTimerDisplay = GetWorld()->SpawnActor <ATimerDisplay>(HoldTimerDisplayClass);
-		HoldTimerDisplay->SetActorLocation(Cast<AActor>(InteractableTarget)->GetActorLocation());
+		HoldTimerDisplay->SetActorLocation(Cast<AActor>(InteractableTarget.GetObject())->GetActorLocation());
 		HoldTimerDisplay->SetTimerHandle(HoldTimer);
 	}
 }
@@ -137,9 +141,10 @@ void UInteractAbility::EndHoldTimer()
 		return;
 	}
 
-	if (Target.IsValid() && CurrentActorInfo->AvatarActor.IsValid())
+	// This is a workaround for the failure of TWeakInterfacePtr to work with Blueprint implemented interfaces
+	if (Target.IsValid() && Target.Get()->Implements<UInteractableInterface>() && CurrentActorInfo->AvatarActor.IsValid())
 	{
-		Target->Interact(CurrentActorInfo->AvatarActor.Get());
+		IInteractableInterface::Execute_Interact(Target.Get(), CurrentActorInfo->AvatarActor.Get());
 	}
 
 	UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility completed by timer end. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");

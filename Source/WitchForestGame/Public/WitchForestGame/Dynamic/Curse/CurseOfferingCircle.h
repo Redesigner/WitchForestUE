@@ -13,5 +13,5 @@ class WITCHFORESTGAME_API ACurseOfferingCircle : public ACauldron
 {
 	GENERATED_BODY()
 
-	void Interact(AActor* Source) override;
+	void Interact_Implementation(AActor* Source) override;
 };

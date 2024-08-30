@@ -20,9 +20,16 @@ class WITCHFORESTGAME_API IInteractableInterface
 	GENERATED_BODY()
 
 public:
-	virtual void Interact(AActor* Source) = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void Interact(AActor* Source);
+	virtual void Interact_Implementation(AActor* Source) = 0;
 
-	virtual bool CanInteract(AActor* Source) const { return true; }
+	UFUNCTION(BlueprintNativeEvent)
 
-	virtual float GetRequiredHoldTime() const { return 0.0f; }
+	bool CanInteract(AActor* Source) const;
+	virtual bool CanInteract_Implementation(AActor* Source) const { return true; }
+
+	UFUNCTION(BlueprintNativeEvent)
+	float GetRequiredHoldTime() const;
+	virtual float GetRequiredHoldTime_Implementation() const { return 0.0f; }
 };

@@ -15,7 +15,7 @@
 #include "GameFramework/GameplayMessageSubsystem.h"
 
 // @TODO: move this to a separate class instead of inheriting from cauldron and hold our items in game state?
-void ACurseOfferingCircle::Interact(AActor* Source)
+void ACurseOfferingCircle::Interact_Implementation(AActor* Source)
 {
 	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
 	if (!GameMode)

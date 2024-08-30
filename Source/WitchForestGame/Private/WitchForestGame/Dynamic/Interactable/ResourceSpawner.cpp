@@ -33,7 +33,7 @@ void AResourceSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 }
 
 
-void AResourceSpawner::Interact(AActor* Source)
+void AResourceSpawner::Interact_Implementation(AActor* Source)
 {
 	if (bCooldown)
 	{
@@ -64,12 +64,12 @@ void AResourceSpawner::Interact(AActor* Source)
 	}
 }
 
-float AResourceSpawner::GetRequiredHoldTime() const
+float AResourceSpawner::GetRequiredHoldTime_Implementation() const
 {
 	return HarvestHoldTime;
 }
 
-bool AResourceSpawner::CanInteract(AActor* Source) const
+bool AResourceSpawner::CanInteract_Implementation(AActor* Source) const
 {
 	return !bCooldown;
 }

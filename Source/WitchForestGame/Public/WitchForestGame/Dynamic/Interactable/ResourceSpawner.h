@@ -49,11 +49,9 @@ class WITCHFORESTGAME_API AResourceSpawner : public AActor, public IInteractable
 
 	void EndCooldown();
 
-	void Interact(AActor* Source) override;
-
-	float GetRequiredHoldTime() const override;
-
-	bool CanInteract(AActor* Source) const override;
+	void Interact_Implementation(AActor* Source) override;
+	float GetRequiredHoldTime_Implementation() const override;
+	bool CanInteract_Implementation(AActor* Source) const override;
 
 	UFUNCTION()
 	void OnRep_Cooldown(bool bOldCooldown);

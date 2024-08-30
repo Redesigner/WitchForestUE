@@ -38,7 +38,7 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void Interact(AActor* Source) override;
+	void Interact_Implementation(AActor* Source) override;
 
 	void LaunchItem(const FGameplayTag& Item, UItemSet* ItemSet);
 	void LaunchItem(TSubclassOf<APickup> Item);

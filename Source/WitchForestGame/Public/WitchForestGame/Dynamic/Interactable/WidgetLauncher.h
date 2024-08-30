@@ -17,5 +17,5 @@ class WITCHFORESTGAME_API AWidgetLauncher : public AActor, public IInteractableI
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Widget, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> WidgetClass;
 
-	void Interact(AActor* Source) override;
+	void Interact_Implementation(AActor* Source) override;
 };

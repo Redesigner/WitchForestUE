@@ -26,6 +26,6 @@ class WITCHFORESTGAME_API ADaytimeDoor : public ADaytimeActor, public IInteracta
 	void DayEnd() override;
 	void DayStart() override;
 
-	void Interact(AActor* Source) override;
+	void Interact_Implementation(AActor* Source) override;
 
 };
