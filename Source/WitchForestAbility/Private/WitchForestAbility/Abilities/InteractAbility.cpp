@@ -114,7 +114,7 @@ void UInteractAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, co
 void UInteractAbility::StartHoldTimer(TScriptInterface<IInteractableInterface> InteractableTarget, const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	// This should always be an AActor
-	Target = Cast<AActor>(InteractableTarget.GetObject());
+	Target = InteractableTarget;
 	GetWorld()->GetTimerManager().SetTimer(HoldTimer, FTimerDelegate::CreateUObject(this, &ThisClass::EndHoldTimer), IInteractableInterface::Execute_GetRequiredHoldTime(InteractableTarget.GetObject()), false, -1.0f);
 	
 	if (!IsPredictingClient())
@@ -141,10 +141,9 @@ void UInteractAbility::EndHoldTimer()
 		return;
 	}
 
-	// This is a workaround for the failure of TWeakInterfacePtr to work with Blueprint implemented interfaces
-	if (Target.IsValid() && Target.Get()->Implements<UInteractableInterface>() && CurrentActorInfo->AvatarActor.IsValid())
+	if (Target.GetObject()  && CurrentActorInfo->AvatarActor.IsValid())
 	{
-		IInteractableInterface::Execute_Interact(Target.Get(), CurrentActorInfo->AvatarActor.Get());
+		IInteractableInterface::Execute_Interact(Target.GetObject(), CurrentActorInfo->AvatarActor.Get());
 	}
 
 	UE_LOGFMT(LogWitchForestAbility, Display, "InteractAbility completed by timer end. [{ClientServer}]", IsPredictingClient() ? "Client" : "Server");
