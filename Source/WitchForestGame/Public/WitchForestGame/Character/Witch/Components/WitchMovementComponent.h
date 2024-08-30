@@ -30,6 +30,7 @@ class WITCHFORESTGAME_API UWitchMovementComponent : public UCharacterMovementCom
 	void PhysWalking(float DeltaTime, int32 Iterations) override;
 
 	FRotator GetDeltaRotation(float DeltaTime) const override;
+	void PhysicsRotation(float DeltaTime) override;
 
 	float GetMaxSpeed() const override;
 

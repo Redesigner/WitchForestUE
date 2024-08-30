@@ -56,6 +56,16 @@ FRotator UWitchMovementComponent::GetDeltaRotation(float DeltaTime) const
 	return Super::GetDeltaRotation(DeltaTime);
 }
 
+void UWitchMovementComponent::PhysicsRotation(float DeltaTime)
+{
+	if (AbilitySystemComponent.IsValid() && AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+	{
+		return;
+	}
+
+	Super::PhysicsRotation(DeltaTime);
+}
+
 float UWitchMovementComponent::GetMaxSpeed() const
 {
 	switch (MovementMode)
