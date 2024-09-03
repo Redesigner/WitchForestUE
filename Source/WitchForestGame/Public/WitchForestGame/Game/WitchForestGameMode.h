@@ -52,7 +52,7 @@ class WITCHFORESTGAME_API AWitchForestGameMode : public AGameMode
 	FGameplayTagQuery CurseItemFilter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Curse, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UGameplayEffect> IntermissionEffect;
+	TArray<TSubclassOf<UGameplayEffect>> IntermissionEffects;
 	
 public:
 	AWitchForestGameMode();

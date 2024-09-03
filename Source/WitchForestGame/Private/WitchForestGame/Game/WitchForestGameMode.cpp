@@ -24,6 +24,7 @@ AWitchForestGameMode::AWitchForestGameMode()
 {
 }
 
+
 void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
@@ -65,6 +66,7 @@ void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
     }
 }
 
+
 void AWitchForestGameMode::StartPlay()
 {
     Super::StartPlay();
@@ -73,6 +75,7 @@ void AWitchForestGameMode::StartPlay()
     // GetWorld()->GetTimerManager().SetTimer(RestartTimer, FTimerDelegate::CreateUObject(this, &ThisClass::StartRound), RestartTime, false, -1.0f);
     StartRound();
 }
+
 
 void AWitchForestGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -97,15 +100,18 @@ void AWitchForestGameMode::InitGame(const FString& MapName, const FString& Optio
     GameInstance->GetStreamableManager().RequestAsyncLoad(ItemsToStream);
 }
 
+
 UItemSet* AWitchForestGameMode::GetItemSet() const
 {
     return CurrentItemSet;
 }
 
+
 UPotionRecipeSet* AWitchForestGameMode::GetRecipeBook() const
 {
     return RecipeBook;
 }
+
 
 UBestiaryData* AWitchForestGameMode::GetBestiary() const
 {
@@ -346,7 +352,7 @@ void AWitchForestGameMode::ApplyIntermissionEffect()
         return;
     }
 
-    if (!IntermissionEffect)
+    if (IntermissionEffects.IsEmpty())
     {
         return;
     }
@@ -359,10 +365,20 @@ void AWitchForestGameMode::ApplyIntermissionEffect()
             continue;
         }
 
-        WitchPlayerState->GetWitchForestASC()->RemoveAllActiveEffects();
-        FGameplayEffectContextHandle IntermissionEffectSpecContextHandle = WitchPlayerState->GetWitchForestASC()->MakeEffectContext();
-        FGameplayEffectSpecHandle IntermissionEffectSpec = WitchPlayerState->GetWitchForestASC()->MakeOutgoingSpec(IntermissionEffect, 1.0f, IntermissionEffectSpecContextHandle);
-        IntermissionGrantedEffects.Add(WitchPlayerState->GetWitchForestASC()->ApplyGameplayEffectSpecToSelf(*IntermissionEffectSpec.Data.Get()));
+        // WitchPlayerState->GetWitchForestASC()->RemoveAllActiveEffects();
+        for (TSubclassOf<UGameplayEffect> IntermissionEffect : IntermissionEffects)
+        {
+            if (!IntermissionEffect)
+            {
+                UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGame::ApplyIntermissionEffect encountered an invalid GameplayEffect, will skip applying effect.");
+                continue;
+            }
+
+            UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGame::ApplyIntermissionEffect applied effect '{EffectName}' to '{PlayerName}'", IntermissionEffect->GetName(), PlayerState->GetName());
+            FGameplayEffectContextHandle IntermissionEffectSpecContextHandle = WitchPlayerState->GetWitchForestASC()->MakeEffectContext();
+            FGameplayEffectSpecHandle IntermissionEffectSpec = WitchPlayerState->GetWitchForestASC()->MakeOutgoingSpec(IntermissionEffect, 1.0f, IntermissionEffectSpecContextHandle);
+            IntermissionGrantedEffects.Add(WitchPlayerState->GetWitchForestASC()->ApplyGameplayEffectSpecToSelf(*IntermissionEffectSpec.Data.Get()));
+        }
     }
 }
 
@@ -371,6 +387,11 @@ void AWitchForestGameMode::ClearIntermissionEffect()
 {
     for (const FActiveGameplayEffectHandle& IntermissionGrantedEffect : IntermissionGrantedEffects)
     {
+        if (!IntermissionGrantedEffect.IsValid())
+        {
+            UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode::ClearIntermissionEffect encountered an invalid intermission effect handle.");
+            continue;
+        }
         IntermissionGrantedEffect.GetOwningAbilitySystemComponent()->RemoveActiveGameplayEffect(IntermissionGrantedEffect);
     }
 
