@@ -377,7 +377,12 @@ void AWitchForestGameMode::ApplyIntermissionEffect()
             UE_LOGFMT(LogWitchForestGame, Display, "WitchForestGame::ApplyIntermissionEffect applied effect '{EffectName}' to '{PlayerName}'", IntermissionEffect->GetName(), PlayerState->GetName());
             FGameplayEffectContextHandle IntermissionEffectSpecContextHandle = WitchPlayerState->GetWitchForestASC()->MakeEffectContext();
             FGameplayEffectSpecHandle IntermissionEffectSpec = WitchPlayerState->GetWitchForestASC()->MakeOutgoingSpec(IntermissionEffect, 1.0f, IntermissionEffectSpecContextHandle);
-            IntermissionGrantedEffects.Add(WitchPlayerState->GetWitchForestASC()->ApplyGameplayEffectSpecToSelf(*IntermissionEffectSpec.Data.Get()));
+            FActiveGameplayEffectHandle IntermissionActiveEffectHandle = WitchPlayerState->GetWitchForestASC()->ApplyGameplayEffectSpecToSelf(*IntermissionEffectSpec.Data.Get());
+            if (IntermissionEffect.GetDefaultObject()->DurationPolicy != EGameplayEffectDurationType::Instant)
+            {
+                // Don't add instant effects to the array, because these will be invalid by the time we try to clear them
+                IntermissionGrantedEffects.Add(IntermissionActiveEffectHandle);
+            }
         }
     }
 }
@@ -535,13 +540,13 @@ FCurse AWitchForestGameMode::GenerateCurse() const
 {
     if (!CurrentItemSet)
     {
-        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet was invalid.");
+        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode::GenerateCurse failed. CurrentItemSet was invalid.");
         return FCurse();
     }
 
     if (CurrentItemSet->Items.Num() == 0)
     {
-        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode GenerateCurse() failed. CurrentItemSet '{ItemSetname}' does not have any valid entries.", CurrentItemSet->GetName());
+        UE_LOGFMT(LogWitchForestGame, Warning, "WitchForestGameMode::GenerateCurse failed. CurrentItemSet '{ItemSetname}' does not have any valid entries.", CurrentItemSet->GetName());
         return FCurse();
     }
 
