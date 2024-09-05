@@ -7,7 +7,7 @@
 
 // @TODO: We are including this to reuse the UInventoryItemUIData wrapper class. 
 // Should this be moved out to a seprate class that both can include?
-#include "WitchForestUI/ViewModels/RecipeListViewModel.h"
+#include "WitchForestUI/ViewModels/InventoryItemUIData.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 
 #include "CurseViewModel.generated.h"

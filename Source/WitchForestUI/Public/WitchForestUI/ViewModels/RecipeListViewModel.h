@@ -6,23 +6,12 @@
 #include "MVVMViewModelBase.h"
 
 #include "WitchForestGame/Inventory/ItemSet.h"
+#include "WitchForestUI/ViewModels/InventoryItemUIData.h"
 
 #include "RecipeListViewModel.generated.h"
 
 class AWitchForestGameState;
 
-UCLASS(BlueprintType)
-class WITCHFORESTUI_API UInventoryItemUIData : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadOnly)
-	FInventoryItemData ItemData;
-};
-
-// A class holding all the data we need for a recipe, to be exposed to the MVVM panel
-// This has to be a class, it can't be a struct
 UCLASS(BlueprintType)
 class WITCHFORESTUI_API URecipeUIData : public UObject
 {

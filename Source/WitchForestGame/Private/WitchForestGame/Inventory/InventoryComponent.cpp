@@ -19,6 +19,7 @@ UInventoryComponent::UInventoryComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -26,11 +27,13 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ThisClass, InventorySlots)
 }
 
+
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
+
 
 #if WITH_EDITOR
 void UInventoryComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -138,6 +141,7 @@ void UInventoryComponent::SetSelectedIndex(uint8 Value)
 	SelectedIndex = Value;
 	OnSelectedIndexChanged.Broadcast(Value);
 }
+
 
 void UInventoryComponent::ServerSetSelectedIndex_Implementation(uint8 Value)
 {
