@@ -160,7 +160,7 @@ void APickup::SetVelocity(FVector Velocity)
 
 void APickup::SetThrown(bool bNewValue)
 {
-    bThrown = true;
+    bThrown = bNewValue;
 }
 
 // Mostly just a workaround for the error messages

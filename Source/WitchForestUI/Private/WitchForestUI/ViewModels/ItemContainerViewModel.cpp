@@ -15,8 +15,19 @@ void UItemContainerViewModel::BindItemContainer(AItemContainer* ItemContainer)
 		return;
 	}
 
+	BoundContainer = ItemContainer;
 	ItemContainer->OnContentsChanged.AddUObject(this, &ThisClass::ContentsChanged);
 	ContentsChanged(ItemContainer->GetItems()); // Force update, otherwise it won't reflect the current state until the contents change again
+}
+
+void UItemContainerViewModel::RemoveItem()
+{
+	if (!BoundContainer.IsValid())
+	{
+		return;
+	}
+
+	BoundContainer->LaunchItemByIndex(SelectedIndex);
 }
 
 void UItemContainerViewModel::ContentsChanged(const TArray<FGameplayTag>& Contents)

@@ -23,11 +23,80 @@ AItemContainer::AItemContainer()
 	LaunchVectorArrow->SetupAttachment(RootComponent);
 }
 
+void AItemContainer::LaunchItemByIndex(int Index)
+{
+	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+	if (!GameMode)
+	{
+		return;
+	}
+
+	UItemSet* ItemSet = GameMode->GetItemSet();
+	if (!ItemSet)
+	{
+		return;
+	}
+
+	if (!Items.IsValidIndex(Index))
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "ItemContainer '{ContainerName}' failed to launch item. The item index '{Index}' was invalid.", GetName(), Index);
+		return;
+	}
+
+	FGameplayTag ItemTag = Items[Index];
+	if (ItemTag == FGameplayTag::EmptyTag)
+	{
+		return;
+	}
+
+	FInventoryItemData ItemData;
+	if (!ItemSet->FindItemDataForTag(ItemTag, ItemData))
+	{
+		UE_LOGFMT(LogWitchForestGame, Warning, "ItemContainer '{ContainerName}' failed to launch item. Could not find ItemData associated with ItemTag '{ItemTag}'", GetName(), ItemTag.ToString());
+		return;
+	}
+
+	Items[Index] = FGameplayTag::EmptyTag;
+	OnContentsChanged.Broadcast(Items);
+	LaunchItem(ItemData.PickupClass);
+}
+
+void AItemContainer::LaunchItem(TSubclassOf<APickup> Item)
+{
+	if (!GetWorld())
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "ItemContainer '{ContainerName}' world was invalid.", GetName());
+		return;
+	}
+
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	APickup* LaunchedItem = GetWorld()->SpawnActorDeferred<APickup>(Item, LaunchVectorArrow->GetComponentTransform());
+	if (!LaunchedItem)
+	{
+		UE_LOGFMT(LogWitchForestGame, Error, "ItemContainer '{ContainerName}' failed to spawn item of class `{ItemClassName}'.", GetName(), Item->GetName());
+		return;
+	}
+
+	LaunchedItem->bHeld = true;
+	FTimerHandle WaitTimer;
+	FTimerDelegate WaitTimerDelegate;
+	WaitTimerDelegate.BindLambda([LaunchedItem]()
+		{
+			LaunchedItem->bHeld = false;
+		});
+
+	GetWorld()->GetTimerManager().SetTimer(WaitTimer, WaitTimerDelegate, 0.25f, false, -1.0f);
+	LaunchedItem->SetVelocity(MakeLaunchVector());
+	LaunchedItem->FinishSpawning(LaunchVectorArrow->GetComponentTransform());
+}
+
 void AItemContainer::BeginPlay()
 {
 	Super::BeginPlay();
-
-
 }
 
 void AItemContainer::Interact_Implementation(AActor* Source)
@@ -96,7 +165,10 @@ void AItemContainer::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (!HasEmptySlot(NewItemIndex))
 	{
 		Pickup->SetActorLocation(LaunchVectorArrow->GetComponentLocation());
-		Pickup->SetVelocity(MakeLaunchVector());
+		FVector LaunchVector = MakeLaunchVector();
+		Pickup->SetVelocity(LaunchVector);
+		Pickup->SetThrown(false);
+		DrawDebugDirectionalArrow(GetWorld(), LaunchVectorArrow->GetComponentLocation(), LaunchVectorArrow->GetComponentLocation() + LaunchVector, 50.0f, FColor::Red, true, 2.0f);
 		return;
 	}
 
@@ -160,5 +232,5 @@ bool AItemContainer::HasEmptySlot(int& AvailableSlotIndexOut) const
 
 FVector AItemContainer::MakeLaunchVector() const
 {
-	return LaunchVectorArrow->GetComponentRotation().RotateVector(WitchForestMath::MakeLaunchVector(MaxLaunchVelocity, MinLaunchVelocity, 0.0f, LaunchAngleRandomArc));
+	return WitchForestMath::MakeLaunchVector(MaxLaunchVelocity, MinLaunchVelocity, 0.0f, LaunchAngleRandomArc);
 }

@@ -11,6 +11,7 @@
 #include "ItemContainer.generated.h"
 
 class UArrowComponent;
+class APickup;
 class UGameplayEffect;
 
 UCLASS()
@@ -48,6 +49,11 @@ public:
 	FOnContentsChanged OnContentsChanged;
 
 	const TArray<FGameplayTag>& GetItems() const { return Items; }
+
+	void LaunchItemByIndex(int Index);
+
+	// This function is mostly copied from Cauldron... maybe this should be shared somewhere?
+	void LaunchItem(TSubclassOf<APickup> Item);
 
 private:
 	AItemContainer();

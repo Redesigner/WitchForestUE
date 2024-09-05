@@ -20,9 +20,20 @@ class WITCHFORESTUI_API UItemContainerViewModel : public UMVVMViewModelBase
 	TArray<TObjectPtr<UInventoryItemUIData>> ContainerItems;
 
 public:
+	UPROPERTY(BlueprintReadWrite, FieldNotify, Setter, meta = (AllowPrivateAccess = true))
+	int SelectedIndex = 0;
+
 	UFUNCTION(BlueprintCallable)
 	void BindItemContainer(AItemContainer* ItemContainer);
 
+	UFUNCTION(BlueprintCallable)
+	void RemoveItem();
+
+	UFUNCTION(BlueprintCallable)
+	void SetSelectedIndex(int32 Index) { SelectedIndex = Index; }
+
 private:
 	void ContentsChanged(const TArray<FGameplayTag>& Contents);
+
+	TWeakObjectPtr<AItemContainer> BoundContainer;
 };
