@@ -12,7 +12,6 @@
 
 #include "Logging/StructuredLog.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 
 // @TODO: move this to a separate class instead of inheriting from cauldron and hold our items in game state?
 void ACurseOfferingCircle::Interact_Implementation(AActor* Source)
@@ -43,16 +42,6 @@ void ACurseOfferingCircle::Interact_Implementation(AActor* Source)
 		{
 			LaunchItem(Item, ItemSet);
 		}
-	}
-	else
-	{
-		UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
-
-		FWitchForestMessage NewMessage;
-		NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
-		NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lifted;
-		NewMessage.Source = Source;
-		MessageSystem.BroadcastMessage(NewMessage.Verb, NewMessage);
 	}
 	HeldIngredients.Reset();
 	OnContentsChanged.Broadcast();

@@ -4,11 +4,16 @@
 #include "WitchForestGame/Game/WitchForestGameState.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Messages/WitchForestMessage.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
-#include "Net/UnrealNetwork.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Logging/StructuredLog.h"
+#include "Net/UnrealNetwork.h"
+
 
 float AWitchForestGameState::GetDayRemainingSeconds() const
 {
@@ -83,9 +88,19 @@ bool AWitchForestGameState::TryLiftCurse(TArray<FGameplayTag> Items)
 		return false;
 	}
 
+	LiftCurse();
+	return true;
+}
+
+void AWitchForestGameState::LiftCurse()
+{
 	OnCurseChanged.Broadcast(CurrentCurse, false);
 	bCurseActive = false;
-	return true;
+
+	FWitchForestMessage NewMessage;
+	NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+	NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lifted;
+	BroadcastMessageAllClients(NewMessage);
 }
 
 float AWitchForestGameState::GetDayTime() const
@@ -101,7 +116,26 @@ float AWitchForestGameState::GetDayTime() const
 		return -1.0f;
 	}
 
+	// Rework this so we don't need to call the game mode here
 	return 1.0f - (GetDayRemainingSeconds() / WitchForestGameMode->GetDayLength());
+}
+
+void AWitchForestGameState::BroadcastMessageAllClients(const FWitchForestMessage& Message)
+{
+	for (APlayerState* PlayerState : PlayerArray)
+	{
+		AWitchPlayerState* WitchPlayerState = Cast<AWitchPlayerState>(PlayerState);
+		if (!WitchPlayerState)
+		{
+			continue;
+		}
+
+		WitchPlayerState->ClientBroadcastMessage(Message);
+	}
+
+	// Broadcast the message to the host, in case this is a listen server
+	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(this);
+	MessageSystem.BroadcastMessage(Message.Verb, Message);
 }
 
 void AWitchForestGameState::MulticastStartDay_Implementation()

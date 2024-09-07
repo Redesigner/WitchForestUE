@@ -11,6 +11,7 @@
 #include "WitchForestGameState.generated.h"
 
 class AWitchForestGameMode;
+struct FWitchForestMessage;
 
 UENUM()
 enum class EWitchForestGamePhase: uint8
@@ -65,6 +66,9 @@ public:
 
 	bool TryLiftCurse(TArray<FGameplayTag> Items);
 
+	UFUNCTION(Exec)
+	void LiftCurse();
+
 	bool IsCurseActive() const { return bCurseActive; }
 
 	float GetDayTime() const;
@@ -74,6 +78,8 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastStartDay();
+
+	void BroadcastMessageAllClients(const FWitchForestMessage& Message);
 
 
 	FOnRecipeLearned OnRecipeLearned;
