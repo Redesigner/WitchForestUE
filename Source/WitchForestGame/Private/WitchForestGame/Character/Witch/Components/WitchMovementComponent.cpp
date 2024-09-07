@@ -32,9 +32,11 @@ void UWitchMovementComponent::SetWandering(bool Wandering)
 
 void UWitchMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 {
-	if (AbilitySystemComponent.IsValid())
+	// Should we be doing this cast ever frame for every actor?
+	if (GetOwner())
 	{
-		if (AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+		IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner());
+		if (ASI && ASI->GetAbilitySystemComponent() && ASI->GetAbilitySystemComponent()->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
 		{
 			return;
 		}
@@ -45,9 +47,10 @@ void UWitchMovementComponent::PhysWalking(float DeltaTime, int32 Iterations)
 
 FRotator UWitchMovementComponent::GetDeltaRotation(float DeltaTime) const
 {
-	if (AbilitySystemComponent.IsValid())
+	if (GetOwner())
 	{
-		if (AbilitySystemComponent->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
+		IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner());
+		if (ASI && ASI->GetAbilitySystemComponent() && ASI->GetAbilitySystemComponent()->HasMatchingGameplayTag(WitchForestGameplayTags::GameplayEffect_Immobile))
 		{
 			return FRotator();
 		}
