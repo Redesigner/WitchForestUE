@@ -7,6 +7,7 @@
 
 #include "WitchForestGame/Dynamic/Interactable/ItemContainer.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Game/WitchForestGameState.h"
 
 void UItemContainerViewModel::BindItemContainer(AItemContainer* ItemContainer)
 {
@@ -20,19 +21,27 @@ void UItemContainerViewModel::BindItemContainer(AItemContainer* ItemContainer)
 	ContentsChanged(ItemContainer->GetItems()); // Force update, otherwise it won't reflect the current state until the contents change again
 }
 
-void UItemContainerViewModel::RemoveItem()
+void UItemContainerViewModel::RemoveItem(APlayerController* Requester)
 {
 	if (!BoundContainer.IsValid())
 	{
 		return;
 	}
 
-	BoundContainer->LaunchItemByIndex(SelectedIndex);
+	BoundContainer->RequestLaunchItemByIndex(Requester, SelectedIndex);
 }
 
 void UItemContainerViewModel::ContentsChanged(const TArray<FGameplayTag>& Contents)
 {
-	const AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+	AGameStateBase* GameState = UGameplayStatics::GetGameState(this);
+	if (!GameState)
+	{
+		return;
+	}
+
+	// Get the *default* gamemode by way of the game state, rather than the gamemode directly
+	// the gamemode from GameplayStatics does not exist on clients
+	const AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(GameState->GetDefaultGameMode());
 	if (!GameMode)
 	{
 		return;

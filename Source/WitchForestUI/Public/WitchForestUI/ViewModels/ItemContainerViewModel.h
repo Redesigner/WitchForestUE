@@ -27,7 +27,7 @@ public:
 	void BindItemContainer(AItemContainer* ItemContainer);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem();
+	void RemoveItem(APlayerController* Requester);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSelectedIndex(int32 Index) { SelectedIndex = Index; }

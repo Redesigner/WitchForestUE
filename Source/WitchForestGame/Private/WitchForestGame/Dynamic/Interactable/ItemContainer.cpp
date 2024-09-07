@@ -7,13 +7,16 @@
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
+#include "Net/UnrealNetwork.h"
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/Dynamic/Interactable/ActorParameterWidgetInterface.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
+#include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Math/WitchForestMath.h"
+#include "WitchForestGame/Network/ForwardNetworkRPCComponent.h"
 
 AItemContainer::AItemContainer()
 {
@@ -23,9 +26,31 @@ AItemContainer::AItemContainer()
 	LaunchVectorArrow->SetupAttachment(RootComponent);
 }
 
+void AItemContainer::RequestLaunchItemByIndex(APlayerController* Requester, int Index)
+{
+	if (HasAuthority())
+	{
+		LaunchItemByIndex(Index);
+		return;
+	}
+
+	if (UForwardNetworkRPCComponent* Forwarder = Requester->FindComponentByClass<UForwardNetworkRPCComponent>())
+	{
+		Forwarder->ServerForwardRequest(this, Index);
+	}
+}
+
 void AItemContainer::LaunchItemByIndex(int Index)
 {
-	AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this));
+	AGameStateBase* GameState = UGameplayStatics::GetGameState(this);
+	if (!GameState)
+	{
+		return;
+	}
+
+	// Get the *default* gamemode by way of the game state, rather than the gamemode directly
+	// the gamemode from GameplayStatics does not exist on clients
+	const AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(GameState->GetDefaultGameMode());
 	if (!GameMode)
 	{
 		return;
@@ -69,10 +94,10 @@ void AItemContainer::LaunchItem(TSubclassOf<APickup> Item)
 		return;
 	}
 
-	if (GetLocalRole() < ENetRole::ROLE_Authority)
-	{
-		return;
-	}
+	//if (GetLocalRole() < ENetRole::ROLE_Authority)
+	//{
+	//	return;
+	//}
 
 	APickup* LaunchedItem = GetWorld()->SpawnActorDeferred<APickup>(Item, LaunchVectorArrow->GetComponentTransform());
 	if (!LaunchedItem)
@@ -168,7 +193,7 @@ void AItemContainer::NotifyActorBeginOverlap(AActor* OtherActor)
 		FVector LaunchVector = MakeLaunchVector();
 		Pickup->SetVelocity(LaunchVector);
 		Pickup->SetThrown(false);
-		DrawDebugDirectionalArrow(GetWorld(), LaunchVectorArrow->GetComponentLocation(), LaunchVectorArrow->GetComponentLocation() + LaunchVector, 50.0f, FColor::Red, true, 2.0f);
+		// DrawDebugDirectionalArrow(GetWorld(), LaunchVectorArrow->GetComponentLocation(), LaunchVectorArrow->GetComponentLocation() + LaunchVector, 50.0f, FColor::Red, true, 2.0f);
 		return;
 	}
 
@@ -198,6 +223,12 @@ void AItemContainer::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 	}
 }
 #endif
+
+void AItemContainer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, Items);
+}
 
 uint8 AItemContainer::CalculateEmptySlots() const
 {
@@ -233,4 +264,14 @@ bool AItemContainer::HasEmptySlot(int& AvailableSlotIndexOut) const
 FVector AItemContainer::MakeLaunchVector() const
 {
 	return WitchForestMath::MakeLaunchVector(MaxLaunchVelocity, MinLaunchVelocity, 0.0f, LaunchAngleRandomArc);
+}
+
+void AItemContainer::OnRep_Items(TArray<FGameplayTag> OldTags)
+{
+	OnContentsChanged.Broadcast(Items);
+}
+
+void AItemContainer::HandleForwardedRPC(int Data)
+{
+	LaunchItemByIndex(Data);
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WitchForestGame/Dynamic/Interactable/InteractableInterface.h"
+#include "WitchForestGame/Network/ForwardedNetworkRPCHandler.h"
 
 #include "GameplayTagContainer.h"
 
@@ -15,13 +16,13 @@ class APickup;
 class UGameplayEffect;
 
 UCLASS()
-class WITCHFORESTGAME_API AItemContainer : public AActor, public IInteractableInterface
+class WITCHFORESTGAME_API AItemContainer : public AActor, public IInteractableInterface, public IForwardedNetworkRPCHandler
 {
 	GENERATED_BODY()
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContentsChanged, const TArray<FGameplayTag>&)
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (AllowPrivateAccess = true, Categories = ItemTag))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = OnRep_Items, meta = (AllowPrivateAccess = true, Categories = ItemTag))
 	TArray<FGameplayTag> Items;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Display, meta = (AllowPrivateAccess = true))
@@ -50,10 +51,7 @@ public:
 
 	const TArray<FGameplayTag>& GetItems() const { return Items; }
 
-	void LaunchItemByIndex(int Index);
-
-	// This function is mostly copied from Cauldron... maybe this should be shared somewhere?
-	void LaunchItem(TSubclassOf<APickup> Item);
+	void RequestLaunchItemByIndex(APlayerController* Requester, int Index);
 
 private:
 	AItemContainer();
@@ -64,15 +62,27 @@ private:
 
 	void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
+	// This function is mostly copied from Cauldron... maybe this should be shared somewhere?
+	void LaunchItem(TSubclassOf<APickup> Item);
+
+	void LaunchItemByIndex(int Index);
+
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	uint8 CalculateEmptySlots() const;
 
 	bool HasEmptySlot(int& AvailableSlotIndexOut) const;
 	
 	FVector MakeLaunchVector() const;
+
+	UFUNCTION()
+	void OnRep_Items(TArray<FGameplayTag> OldTags);
+
+	void HandleForwardedRPC(int Data) override;
 
 	uint8 EmptySlotCount = 0;
 };

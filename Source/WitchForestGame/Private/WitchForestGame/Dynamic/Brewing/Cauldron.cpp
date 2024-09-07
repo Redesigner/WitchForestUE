@@ -4,10 +4,10 @@
 #include "WitchForestGame/Dynamic/Brewing/Cauldron.h"
 
 #include "Components/SphereComponent.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
 #include "Net/UnrealNetwork.h"
-#include "GameFramework/GameplayMessageSubsystem.h"
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
