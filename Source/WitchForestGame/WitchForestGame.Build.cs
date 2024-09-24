@@ -14,8 +14,8 @@ public class WitchForestGame : ModuleRules
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
-			"WitchForestAbility",
 			"GameplayTags",
+            "AIModule",
 			"UMG"
 		});
 
@@ -23,8 +23,8 @@ public class WitchForestGame : ModuleRules
 			"GameplayAbilities",
 			"GameplayTasks",
 			"NavigationSystem",
-			"WitchForestUI",
-            "GameplayMessageRuntime"
+            "GameplayMessageRuntime",
+			"WitchForestAbility"
         });
 	}
 }

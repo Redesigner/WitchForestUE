@@ -4,6 +4,7 @@
 #include "WitchForestGame/Dynamic/Pickup/Potion.h"
 
 #include "AbilitySystemInterface.h"
+#include "Engine/OverlapResult.h"
 #include "Logging/StructuredLog.h"
 
 #include "WitchForestGame.h"

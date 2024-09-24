@@ -16,7 +16,8 @@ public class WitchForestUI : ModuleRules
 			"AIModule",
 			"CommonUI",
 			"CommonInput",
-			"UMG"
+			"UMG",
+			"ModelViewViewModel"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {

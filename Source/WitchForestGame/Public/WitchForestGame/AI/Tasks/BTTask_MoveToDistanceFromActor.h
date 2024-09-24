@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
 
+#include "NavFilters/NavigationQueryFilter.h"
+
 #include "BTTask_MoveToDistanceFromActor.generated.h"
 
 class UAITask_MoveTo;
