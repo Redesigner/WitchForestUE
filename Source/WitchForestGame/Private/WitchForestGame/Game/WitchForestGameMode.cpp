@@ -59,7 +59,7 @@ void AWitchForestGameMode::PostLogin(APlayerController* NewPlayer)
     if (WitchForestGameState->IsCurseActive())
     {
         FWitchForestMessage NewMessage;
-        NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+        NewMessage.Verb = WitchForestGameplayTags::MessageChannel_Notification;
         NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
         NewMessage.Source = this;
         WitchPlayerState->ClientBroadcastMessage(NewMessage);
@@ -181,7 +181,7 @@ void AWitchForestGameMode::StartRound()
     WitchGameState->CurseTimeRemaining = CurseTimeLimit;
 
     FWitchForestMessage NewMessage;
-    NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+    NewMessage.Verb = WitchForestGameplayTags::MessageChannel_Notification;
     NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Afflicted;
     NewMessage.Source = this;
     WitchGameState->BroadcastMessageAllClients(NewMessage);
@@ -318,7 +318,7 @@ void AWitchForestGameMode::EndGame()
     if (AWitchForestGameState* WitchForestGameState = GetGameState<AWitchForestGameState>())
     {
         FWitchForestMessage NewMessage;
-        NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+        NewMessage.Verb = WitchForestGameplayTags::MessageChannel_Notification;
         NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lethal;
         NewMessage.Source = this;
         WitchForestGameState->BroadcastMessageAllClients(NewMessage);

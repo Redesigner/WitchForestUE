@@ -15,9 +15,9 @@ void UWitchForestRootWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
-	UE_LOGFMT(LogWitchForestUI, Display, "RootWidget '{Name}' registering listener for notifications", GetName());
-	MessageSubsystem.RegisterListener(WitchForestGameplayTags::Event_Notification, this, &ThisClass::OnNotification);
+	//UGameplayMessageSubsystem& MessageSubsystem = UGameplayMessageSubsystem::Get(this);
+	//UE_LOGFMT(LogWitchForestUI, Display, "RootWidget '{Name}' registering listener for notifications", GetName());
+	//MessageSubsystem.RegisterListener(WitchForestGameplayTags::MessageChannel_Notification, this, &ThisClass::OnNotification);
 }
 
 void UWitchForestRootWidget::OnNotification(FGameplayTag Channel, const FWitchForestMessage& Payload)

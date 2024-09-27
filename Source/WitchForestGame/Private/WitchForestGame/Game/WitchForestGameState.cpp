@@ -4,11 +4,11 @@
 #include "WitchForestGame/Game/WitchForestGameState.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Dynamic/Curse/Curse.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Messages/WitchForestMessage.h"
-#include "WitchForestGame/WitchForestGameplayTags.h"
 
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Logging/StructuredLog.h"
@@ -98,7 +98,7 @@ void AWitchForestGameState::LiftCurse()
 	bCurseActive = false;
 
 	FWitchForestMessage NewMessage;
-	NewMessage.Verb = WitchForestGameplayTags::Event_Notification;
+	NewMessage.Verb = WitchForestGameplayTags::MessageChannel_Notification;
 	NewMessage.Data = WitchForestGameplayTags::Notification_Curse_Lifted;
 	BroadcastMessageAllClients(NewMessage);
 }

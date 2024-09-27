@@ -3,7 +3,7 @@
 
 #include "WitchForestGame/Dynamic/Interactable/ItemContainer.h"
 
-#include "Blueprint/UserWidget.h"
+#include "AbilitySystemInterface.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
@@ -134,13 +134,22 @@ void AItemContainer::Interact_Implementation(AActor* Source)
 		return;
 	}
 
-	// We can't launch widgets on non-local controllers!
-	// Unreal will catch this, but it's better to avoid here
 	APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
-	if (!PlayerController || !PlayerController->IsLocalController())
+	if (!PlayerController)
 	{
 		return;
 	}
+
+	//if (PlayerController->IsLocalController())
+	//{
+	//	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(Pawn))
+	//	{
+	//		if (ASI->GetAbilitySystemComponent())
+	//		{
+	//			ASI->GetAbilitySystemComponent()
+	//		}
+	//	}
+	//}
 
 	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 
@@ -148,11 +157,6 @@ void AItemContainer::Interact_Implementation(AActor* Source)
 	NewMessage.MessageTag = WidgetMessageTag;
 	NewMessage.RelevantActor = this;
 	MessageSystem.BroadcastMessage(WitchForestGameplayTags::MessageChannel_UI, NewMessage);
-
-	//if (SpawnedWidget->Implements<UActorParameterWidgetInterface>())
-	//{
-	//	IActorParameterWidgetInterface::Execute_AddActorParameter(SpawnedWidget, this);
-	//}
 }
 
 void AItemContainer::NotifyActorBeginOverlap(AActor* OtherActor)
