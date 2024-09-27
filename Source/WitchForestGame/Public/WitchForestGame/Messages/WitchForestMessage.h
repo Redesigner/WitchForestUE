@@ -22,3 +22,14 @@ struct WITCHFORESTGAME_API FWitchForestMessage
 	UPROPERTY(BlueprintReadWrite, Category = Gameplay)
 	FGameplayTag Data;
 };
+
+USTRUCT(BlueprintType)
+struct WITCHFORESTGAME_API FWitchForestUIMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = Gameplay, meta = (Categories = "UI.MessageTag"))
+	FGameplayTag MessageTag;
+
+	TWeakObjectPtr<AActor> RelevantActor;
+};

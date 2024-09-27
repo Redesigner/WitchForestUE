@@ -5,17 +5,19 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Components/ArrowComponent.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"
 #include "Net/UnrealNetwork.h"
 
 #include "WitchForestGame.h"
-#include "WitchForestGame/Dynamic/Interactable/ActorParameterWidgetInterface.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Math/WitchForestMath.h"
+#include "WitchForestGame/Messages/WitchForestMessage.h"
 #include "WitchForestGame/Network/ForwardNetworkRPCComponent.h"
 
 AItemContainer::AItemContainer()
@@ -140,23 +142,17 @@ void AItemContainer::Interact_Implementation(AActor* Source)
 		return;
 	}
 
-	if (!ContainerWidgetClass)
-	{
-		return;
-	}
+	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 
-	UUserWidget* SpawnedWidget = CreateWidget(PlayerController, ContainerWidgetClass);
-	if (!SpawnedWidget)
-	{
-		UE_LOGFMT(LogWitchForestGame, Error, "ItemContainer '{ContainerName}' failed to launch widget. Widget of type '{ClassName}' was not created successfully.", GetName(), ContainerWidgetClass->GetName());
-		return;
-	}
+	FWitchForestUIMessage NewMessage;
+	NewMessage.MessageTag = WidgetMessageTag;
+	NewMessage.RelevantActor = this;
+	MessageSystem.BroadcastMessage(WitchForestGameplayTags::MessageChannel_UI, NewMessage);
 
-	SpawnedWidget->AddToViewport();
-	if (SpawnedWidget->Implements<UActorParameterWidgetInterface>())
-	{
-		IActorParameterWidgetInterface::Execute_AddActorParameter(SpawnedWidget, this);
-	}
+	//if (SpawnedWidget->Implements<UActorParameterWidgetInterface>())
+	//{
+	//	IActorParameterWidgetInterface::Execute_AddActorParameter(SpawnedWidget, this);
+	//}
 }
 
 void AItemContainer::NotifyActorBeginOverlap(AActor* OtherActor)

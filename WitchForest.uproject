@@ -1,250 +1,256 @@
 {
-  "FileVersion": 3,
-  "EngineAssociation": "5.4",
-  "Category": "",
-  "Description": "",
-  "Modules": [
-    {
-      "Name": "WitchForestGame",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    },
-    {
-      "Name": "WitchForestAbility",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    },
-    {
-      "Name": "WitchForestUI",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "AlembicImporter",
-      "Enabled": false
-    },
-    {
-      "Name": "AndroidMoviePlayer",
-      "Enabled": false
-    },
-    {
-      "Name": "AndroidMedia",
-      "Enabled": false
-    },
-    {
-      "Name": "AndroidDeviceProfileSelector",
-      "Enabled": false
-    },
-    {
-      "Name": "OnlineSubsystemGooglePlay",
-      "Enabled": false
-    },
-    {
-      "Name": "AndroidPermission",
-      "Enabled": false
-    },
-    {
-      "Name": "AndroidFileServer",
-      "Enabled": false
-    },
-    {
-      "Name": "AppleImageUtils",
-      "Enabled": false
-    },
-    {
-      "Name": "AppleMoviePlayer",
-      "Enabled": false
-    },
-    {
-      "Name": "ArchVisCharacter",
-      "Enabled": false
-    },
-    {
-      "Name": "Metasound",
-      "Enabled": false
-    },
-    {
-      "Name": "Synthesis",
-      "Enabled": false
-    },
-    {
-      "Name": "AvfMedia",
-      "Enabled": false
-    },
-    {
-      "Name": "BackChannel",
-      "Enabled": false
-    },
-    {
-      "Name": "Bridge",
-      "Enabled": false
-    },
-    {
-      "Name": "CableComponent",
-      "Enabled": false
-    },
-    {
-      "Name": "ChaosCloth",
-      "Enabled": false
-    },
-    {
-      "Name": "ChaosClothEditor",
-      "Enabled": false
-    },
-    {
-      "Name": "ChaosEditor",
-      "Enabled": false
-    },
-    {
-      "Name": "ChaosUserDataPT",
-      "Enabled": false
-    },
-    {
-      "Name": "CLionSourceCodeAccess",
-      "Enabled": false
-    },
-    {
-      "Name": "CodeLiteSourceCodeAccess",
-      "Enabled": false
-    },
-    {
-      "Name": "ControlRigSpline",
-      "Enabled": false
-    },
-    {
-      "Name": "CustomMeshComponent",
-      "Enabled": false
-    },
-    {
-      "Name": "DumpGPUServices",
-      "Enabled": false
-    },
-    {
-      "Name": "FacialAnimation",
-      "Enabled": false
-    },
-    {
-      "Name": "GooglePAD",
-      "Enabled": false
-    },
-    {
-      "Name": "MediaCompositing",
-      "Enabled": false
-    },
-    {
-      "Name": "MediaPlate",
-      "Enabled": false
-    },
-    {
-      "Name": "ImgMedia",
-      "Enabled": false
-    },
-    {
-      "Name": "MeshPainting",
-      "Enabled": false
-    },
-    {
-      "Name": "IOSDeviceProfileSelector",
-      "Enabled": false
-    },
-    {
-      "Name": "KDevelopSourceCodeAccess",
-      "Enabled": false
-    },
-    {
-      "Name": "MobilePatchingUtils",
-      "Enabled": false
-    },
-    {
-      "Name": "WebMMoviePlayer",
-      "Enabled": false
-    },
-    {
-      "Name": "MsQuic",
-      "Enabled": false
-    },
-    {
-      "Name": "LocationServicesBPLibrary",
-      "Enabled": false
-    },
-    {
-      "Name": "OnlineSubsystemIOS",
-      "Enabled": false
-    },
-    {
-      "Name": "PerforceSourceControl",
-      "Enabled": false
-    },
-    {
-      "Name": "PixWinPlugin",
-      "Enabled": false
-    },
-    {
-      "Name": "PlasticSourceControl",
-      "Enabled": false
-    },
-    {
-      "Name": "SoundFields",
-      "Enabled": false
-    },
-    {
-      "Name": "SpeedTreeImporter",
-      "Enabled": false
-    },
-    {
-      "Name": "LocalizableMessage",
-      "Enabled": false
-    },
-    {
-      "Name": "SubversionSourceControl",
-      "Enabled": false
-    },
-    {
-      "Name": "UObjectPlugin",
-      "Enabled": false
-    },
-    {
-      "Name": "UVEditor",
-      "Enabled": false
-    },
-    {
-      "Name": "XCodeSourceCodeAccess",
-      "Enabled": false
-    },
-    {
-      "Name": "XGEController",
-      "Enabled": false
-    },
-    {
-      "Name": "GameplayAbilities",
-      "Enabled": true
-    },
-    {
-      "Name": "VisualStudioTools",
-      "Enabled": true
-    },
-    {
-      "Name": "GameplayStateTree",
-      "Enabled": true
-    },
-    {
-      "Name": "StateTree",
-      "Enabled": true
-    },
-    {
-      "Name": "ModelViewViewModel",
-      "Enabled": true
-    },
-    {
-      "Name": "CommonUI",
-      "Enabled": true
-    }
-  ],
-  "TargetPlatforms": [
-    "Windows"
-  ],
-  "AdditionalPluginDirectories": [],
-  "EpicSampleNameHash": ""
+	"FileVersion": 3,
+	"EngineAssociation": "5.4",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "WitchForestGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "WitchForestAbility",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "WitchForestUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"CommonUI",
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "AlembicImporter",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidMoviePlayer",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidMedia",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidDeviceProfileSelector",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemGooglePlay",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidPermission",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidFileServer",
+			"Enabled": false
+		},
+		{
+			"Name": "AppleImageUtils",
+			"Enabled": false
+		},
+		{
+			"Name": "AppleMoviePlayer",
+			"Enabled": false
+		},
+		{
+			"Name": "ArchVisCharacter",
+			"Enabled": false
+		},
+		{
+			"Name": "Metasound",
+			"Enabled": false
+		},
+		{
+			"Name": "Synthesis",
+			"Enabled": false
+		},
+		{
+			"Name": "AvfMedia",
+			"Enabled": false
+		},
+		{
+			"Name": "BackChannel",
+			"Enabled": false
+		},
+		{
+			"Name": "Bridge",
+			"Enabled": false
+		},
+		{
+			"Name": "CableComponent",
+			"Enabled": false
+		},
+		{
+			"Name": "ChaosCloth",
+			"Enabled": false
+		},
+		{
+			"Name": "ChaosClothEditor",
+			"Enabled": false
+		},
+		{
+			"Name": "ChaosEditor",
+			"Enabled": false
+		},
+		{
+			"Name": "ChaosUserDataPT",
+			"Enabled": false
+		},
+		{
+			"Name": "CLionSourceCodeAccess",
+			"Enabled": false
+		},
+		{
+			"Name": "CodeLiteSourceCodeAccess",
+			"Enabled": false
+		},
+		{
+			"Name": "ControlRigSpline",
+			"Enabled": false
+		},
+		{
+			"Name": "CustomMeshComponent",
+			"Enabled": false
+		},
+		{
+			"Name": "DumpGPUServices",
+			"Enabled": false
+		},
+		{
+			"Name": "FacialAnimation",
+			"Enabled": false
+		},
+		{
+			"Name": "GooglePAD",
+			"Enabled": false
+		},
+		{
+			"Name": "MediaCompositing",
+			"Enabled": false
+		},
+		{
+			"Name": "MediaPlate",
+			"Enabled": false
+		},
+		{
+			"Name": "ImgMedia",
+			"Enabled": false
+		},
+		{
+			"Name": "MeshPainting",
+			"Enabled": false
+		},
+		{
+			"Name": "IOSDeviceProfileSelector",
+			"Enabled": false
+		},
+		{
+			"Name": "KDevelopSourceCodeAccess",
+			"Enabled": false
+		},
+		{
+			"Name": "MobilePatchingUtils",
+			"Enabled": false
+		},
+		{
+			"Name": "WebMMoviePlayer",
+			"Enabled": false
+		},
+		{
+			"Name": "MsQuic",
+			"Enabled": false
+		},
+		{
+			"Name": "LocationServicesBPLibrary",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemIOS",
+			"Enabled": false
+		},
+		{
+			"Name": "PerforceSourceControl",
+			"Enabled": false
+		},
+		{
+			"Name": "PixWinPlugin",
+			"Enabled": false
+		},
+		{
+			"Name": "PlasticSourceControl",
+			"Enabled": false
+		},
+		{
+			"Name": "SoundFields",
+			"Enabled": false
+		},
+		{
+			"Name": "SpeedTreeImporter",
+			"Enabled": false
+		},
+		{
+			"Name": "LocalizableMessage",
+			"Enabled": false
+		},
+		{
+			"Name": "SubversionSourceControl",
+			"Enabled": false
+		},
+		{
+			"Name": "UObjectPlugin",
+			"Enabled": false
+		},
+		{
+			"Name": "UVEditor",
+			"Enabled": false
+		},
+		{
+			"Name": "XCodeSourceCodeAccess",
+			"Enabled": false
+		},
+		{
+			"Name": "XGEController",
+			"Enabled": false
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "VisualStudioTools",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/362651520df94e4fa65492dbcba44ae2",
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "GameplayStateTree",
+			"Enabled": true
+		},
+		{
+			"Name": "StateTree",
+			"Enabled": true
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"Windows"
+	]
 }

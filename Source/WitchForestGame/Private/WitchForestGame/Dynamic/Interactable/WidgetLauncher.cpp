@@ -5,8 +5,11 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Logging/StructuredLog.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 
 #include "WitchForestGame.h"
+#include "WitchForestGame/Messages/WitchForestMessage.h"
+#include "WitchForestGame/WitchForestGameplayTags.h"
 
 void AWidgetLauncher::Interact_Implementation(AActor* Source)
 {
@@ -24,17 +27,23 @@ void AWidgetLauncher::Interact_Implementation(AActor* Source)
 		return;
 	}
 
-	if (!WidgetClass)
-	{
-		return;
-	}
+	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
 
-	UUserWidget* SpawnedWidget = CreateWidget(PlayerController, WidgetClass);
-	if (!SpawnedWidget)
-	{
-		UE_LOGFMT(LogWitchForestGame, Error, "WidgetLauncher '{LauncherName}' failed to launch widget. Widget of type '{ClassName}' was not created successfully.", GetName(), WidgetClass->GetName());
-		return;
-	}
+	FWitchForestUIMessage NewMessage;
+	NewMessage.MessageTag = WidgetMessageTag;
+	MessageSystem.BroadcastMessage(WitchForestGameplayTags::MessageChannel_UI, NewMessage);
 
-	SpawnedWidget->AddToViewport();
+	//if (!WidgetClass)
+	//{
+	//	return;
+	//}
+
+	//UUserWidget* SpawnedWidget = CreateWidget(PlayerController, WidgetClass);
+	//if (!SpawnedWidget)
+	//{
+	//	UE_LOGFMT(LogWitchForestGame, Error, "WidgetLauncher '{LauncherName}' failed to launch widget. Widget of type '{ClassName}' was not created successfully.", GetName(), WidgetClass->GetName());
+	//	return;
+	//}
+
+	//SpawnedWidget->AddToViewport();
 }

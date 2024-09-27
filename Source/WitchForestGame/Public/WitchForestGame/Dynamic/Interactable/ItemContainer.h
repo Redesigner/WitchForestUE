@@ -25,8 +25,11 @@ class WITCHFORESTGAME_API AItemContainer : public AActor, public IInteractableIn
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = OnRep_Items, meta = (AllowPrivateAccess = true, Categories = ItemTag))
 	TArray<FGameplayTag> Items;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Display, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UUserWidget> ContainerWidgetClass;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Display, meta = (AllowPrivateAccess = true))
+	//TSubclassOf<UUserWidget> ContainerWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Widget, meta = (AllowPrivateAccess = true, Categories = "UI.MessageTag"))
+	FGameplayTag WidgetMessageTag;
 	
 	// The effect we apply to the interacting actor
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Interaction, meta = (AllowPrivateAccess = true))
