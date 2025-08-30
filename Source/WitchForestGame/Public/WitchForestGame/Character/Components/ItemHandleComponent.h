@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 
-#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
+#include "WitchForestGame/Abilities/WitchForestAbilitySet.h"
 
 #include "ItemHandleComponent.generated.h"
 

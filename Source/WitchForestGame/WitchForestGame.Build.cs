@@ -23,8 +23,7 @@ public class WitchForestGame : ModuleRules
 			"GameplayAbilities",
 			"GameplayTasks",
 			"NavigationSystem",
-            "GameplayMessageRuntime",
-			"WitchForestAbility"
+            "GameplayMessageRuntime"
         });
 	}
 }

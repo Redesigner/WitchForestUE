@@ -3,9 +3,9 @@
 
 #include "WitchForestUI/ViewModels/ControlTipsViewModel.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Abilities/WitchForestGameplayAbility.h"
-#include "WitchForestAbility/Input/WitchForestInputHints.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Abilities/WitchForestGameplayAbility.h"
+#include "WitchForestGame/Input/WitchForestInputHints.h"
 #include "WitchForestGame/Character/WitchPlayerController.h"
 
 

@@ -3,8 +3,8 @@
 
 #include "WitchForestUI/ViewModels/HealthViewModel.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
 
 
 void UHealthViewModel::BindAttributeSet(UWitchForestASC* AbilitySystemComponent, UBaseAttributeSet* AttributeSet)

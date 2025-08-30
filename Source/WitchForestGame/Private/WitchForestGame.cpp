@@ -6,5 +6,5 @@
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, WitchForestGame, "WitchForestGame" );
 
 DEFINE_LOG_CATEGORY(LogWitchForestGame);
-
+DEFINE_LOG_CATEGORY(LogWitchForestAbility);
 DEFINE_LOG_CATEGORY(LogWitchForestAI);

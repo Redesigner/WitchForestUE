@@ -5,7 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 void APickup::Tick(float DeltaSeconds)
 {

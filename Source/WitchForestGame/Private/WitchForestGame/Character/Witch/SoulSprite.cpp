@@ -4,7 +4,7 @@
 #include "WitchForestGame/Character/Witch/SoulSprite.h"
 
 #include "WitchForestGame/WitchForestGameplayTags.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 #include "Abilities/GameplayAbilityTypes.h" 
 

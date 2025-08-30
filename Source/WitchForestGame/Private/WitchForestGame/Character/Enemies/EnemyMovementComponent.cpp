@@ -5,7 +5,7 @@
 
 #include "WitchForestGame/Character/Enemies/Enemy.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 #include "Components/CapsuleComponent.h"
 #include "AbilitySystemInterface.h"

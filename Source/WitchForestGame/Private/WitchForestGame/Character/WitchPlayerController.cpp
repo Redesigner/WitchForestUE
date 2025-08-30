@@ -10,7 +10,7 @@
 #include "WitchForestGame/Game/WitchForestCheatManager.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputSubsystems.h"

@@ -8,9 +8,9 @@
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 #include "WitchForestGame/Character/Witch/Components/WitchMovementComponent.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
-#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/Abilities/WitchForestAbilitySet.h"
 
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"

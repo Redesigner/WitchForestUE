@@ -6,7 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameplayTagContainer.h"
 
-#include "WitchForestAbility/Input/WitchForestInputConfig.h"
+#include "WitchForestGame/Input/WitchForestInputConfig.h"
 
 #include "WitchForestInputComponent.generated.h"
 

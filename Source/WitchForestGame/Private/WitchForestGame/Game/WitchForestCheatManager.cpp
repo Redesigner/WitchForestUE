@@ -12,8 +12,8 @@
 #include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Logging/StructuredLog.h"

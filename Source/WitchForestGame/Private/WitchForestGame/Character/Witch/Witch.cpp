@@ -21,8 +21,8 @@
 #include "WitchForestGame/Inventory/InventoryComponent.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
-#include "WitchForestAbility/Input/WitchForestInputConfig.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/Input/WitchForestInputConfig.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 
 AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :

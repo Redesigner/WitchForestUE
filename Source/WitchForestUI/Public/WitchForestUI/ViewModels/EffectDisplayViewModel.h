@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
 
-#include "WitchForestAbility/Effects/GameplayEffectUIDataComponent.h"
+#include "WitchForestGame/Effects/GameplayEffectUIDataComponent.h"
 
 #include "GameplayTagContainer.h"
 #include "GameplayEffect.h"

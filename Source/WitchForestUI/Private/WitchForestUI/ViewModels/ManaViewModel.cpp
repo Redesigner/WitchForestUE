@@ -3,8 +3,8 @@
 
 #include "WitchForestUI/ViewModels/ManaViewModel.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Attributes/WitchAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Attributes/WitchAttributeSet.h"
 
 void UManaViewModel::BindAttributeSet(UWitchForestASC* AbilitySystemComponent, UWitchAttributeSet* AttributeSet)
 {

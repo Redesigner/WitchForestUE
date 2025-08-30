@@ -5,8 +5,8 @@
 
 #include "AbilitySystemInterface.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Abilities/WitchForestAbilitySet.h"
 #include "WitchForestGame/Character/Witch/Witch.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 

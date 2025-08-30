@@ -3,9 +3,9 @@
 
 #include "WitchForestGame/Character/WitchPlayerState.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Abilities/WitchForestAbilitySet.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Abilities/WitchForestAbilitySet.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
 #include "WitchForestGame.h"
 #include "WitchForestGame/Character/WitchPlayerController.h"
 #include "WitchForestGame/Inventory/InventoryComponent.h"

@@ -9,7 +9,7 @@
 
 #include "WitchForestGame.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 void APotion::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {

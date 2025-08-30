@@ -11,8 +11,8 @@
 #include "WitchForestGame/Game/WitchForestGameInstance.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
 #include "WitchForestGame/Messages/WitchForestMessage.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 #include "Engine/StreamableManager.h"
 #include "GameFramework/GameplayMessageSubsystem.h"

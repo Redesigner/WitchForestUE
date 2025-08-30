@@ -3,7 +3,7 @@
 
 #include "WitchForestGame/Dynamic/Interactable/ResourceSpawner.h"
 
-#include "WitchForestAbility/Attributes/WitchAttributeSet.h"
+#include "WitchForestGame/Attributes/WitchAttributeSet.h"
 #include "WitchForestGame.h"
 #include "WitchForestGame/Character/Components/DropTableComponent.h"
 

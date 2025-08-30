@@ -5,8 +5,8 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemGlobals.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
-#include "WitchForestAbility/Attributes/BaseAttributeSet.h"
+#include "WitchForestGame/WitchForestASC.h"
+#include "WitchForestGame/Attributes/BaseAttributeSet.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 
 UWitchMovementComponent::UWitchMovementComponent()

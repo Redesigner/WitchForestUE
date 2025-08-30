@@ -7,7 +7,7 @@
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
 #include "WitchForestGame/Character/WitchPlayerState.h"
 #include "WitchForestGame/Character/Witch/Witch.h"
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 #include "Logging/StructuredLog.h"
 #include "Net/UnrealNetwork.h"

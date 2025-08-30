@@ -5,7 +5,7 @@
 
 #include "AbilitySystemInterface.h"
 
-#include "WitchForestAbility/WitchForestASC.h"
+#include "WitchForestGame/WitchForestASC.h"
 
 UAnimNotify_GameplayEvent::UAnimNotify_GameplayEvent()
 {
