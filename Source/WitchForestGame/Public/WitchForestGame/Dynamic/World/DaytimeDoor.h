@@ -21,6 +21,8 @@ class WITCHFORESTGAME_API ADaytimeDoor : public ADaytimeActor, public IInteracta
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced, Category = Components, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> InteractionVolume;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDoorStatusChanged, bool, doorOpened);
+	
 	ADaytimeDoor();
 
 	void DayEnd() override;
@@ -28,4 +30,6 @@ class WITCHFORESTGAME_API ADaytimeDoor : public ADaytimeActor, public IInteracta
 
 	void Interact_Implementation(AActor* Source) override;
 
+	UPROPERTY(BlueprintAssignable, meta = (AllowPrivateAccess))
+	FOnDoorStatusChanged OnDoorStatusChanged;
 };

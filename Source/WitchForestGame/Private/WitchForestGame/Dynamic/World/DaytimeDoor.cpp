@@ -21,7 +21,8 @@ void ADaytimeDoor::DayEnd()
 {
 	Super::DayEnd();
 
-	DoorMesh->SetVisibility(true, true);
+	// DoorMesh->SetVisibility(true, true);
+	OnDoorStatusChanged.Broadcast(true);
 	DoorMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	InteractionVolume->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -31,7 +32,8 @@ void ADaytimeDoor::DayStart()
 {
 	Super::DayStart();
 
-	DoorMesh->SetVisibility(false, true);
+	// DoorMesh->SetVisibility(false, true);
+	OnDoorStatusChanged.Broadcast(false);
 	DoorMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	InteractionVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
