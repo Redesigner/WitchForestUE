@@ -134,6 +134,7 @@ void ACauldron::Interact_Implementation(AActor* Source)
 		return;
 	}
 
+	CompleteBrewing();
 	FPotionRecipe Recipe;
 	if (!RecipeBook->FindRecipeFromIngredients(HeldIngredients, Recipe))
 	{

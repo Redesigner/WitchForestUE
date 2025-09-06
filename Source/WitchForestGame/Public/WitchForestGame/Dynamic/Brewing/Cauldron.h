@@ -50,7 +50,6 @@ public:
 
 	void ClearContents();
 
-public:	
 	ACauldron();
 
 	UFUNCTION()
@@ -58,6 +57,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FString GetContentsString() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CompleteBrewing();
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentsChanged);
 	UPROPERTY(BlueprintAssignable)
