@@ -42,6 +42,13 @@ void UThrowItemAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	if (!TriggerEventData)
+	{
+		UE_LOGFMT(LogWitchForestAbility, Warning, "ThrowItemAbility failed for '{PawnName}' ThrowItemAbility must be triggered by an event.", GetNameSafe(Pawn));
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
 	if (ItemHandle->HoldingItem())
 	{
 		ThrowItem(ItemHandle->GetHeldItem(), Pawn, ItemHandle, TriggerEventData->EventMagnitude);
