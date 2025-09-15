@@ -53,6 +53,7 @@ public:
 
 	void PickupItem(APickup* Item);
 
+	UFUNCTION(BlueprintCallable)
 	bool HoldingItem() const;
 
 	void SetHeldItemHidden(bool bHidden);

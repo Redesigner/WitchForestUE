@@ -235,6 +235,10 @@
 		{
 			"Name": "CommonUI",
 			"Enabled": true
+		},
+		{
+			"Name": "USDImporter",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
