@@ -14,12 +14,18 @@ class WITCHFORESTGAME_API UInteractAbility : public UWitchForestGameplayAbility
 {
 	GENERATED_BODY()
 
+protected:
+	/// Called when we interact with something that requests we hold the button down!
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHoldRequested();
+
+private:
+	
 	UPROPERTY(EditDefaultsOnly, Category = Holding, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UGameplayEffect> HeldEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = Holding, meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATimerDisplay> HoldTimerDisplayClass;
-
 
 	FTimerHandle HoldTimer;
 

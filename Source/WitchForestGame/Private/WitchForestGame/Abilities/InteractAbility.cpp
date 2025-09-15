@@ -48,6 +48,7 @@ void UInteractAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			else
 			{
 				StartHoldTimer(TScriptInterface<IInteractableInterface>(OverlappingActor), Handle, ActorInfo, ActivationInfo);
+				OnHoldRequested();
 			}
 			return;
 		}
