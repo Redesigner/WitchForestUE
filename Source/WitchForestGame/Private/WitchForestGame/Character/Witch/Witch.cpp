@@ -46,7 +46,7 @@ AWitch::AWitch(const FObjectInitializer& ObjectInitializer) :
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	ItemHandle = CreateDefaultSubobject<UItemHandleComponent>(TEXT("ItemHandle"));
-	ItemHandle->SetupAttachment(RootComponent);
+	ItemHandle->SetupAttachment(GetMesh(), TEXT("HandSocket"));
 	ItemHandle->OnHeldItemChanged.AddUObject(this, &ThisClass::HeldItemChanged);
 
 	InteractionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionVolume"));

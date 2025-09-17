@@ -24,6 +24,9 @@ class WITCHFORESTGAME_API USpellAbility : public UWitchForestGameplayAbility
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile, meta = (AllowPrivateAccess = true))
 	TSubclassOf<ASpellProjectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile, meta = (AllowPrivateAccess = true))
+	FVector ProjectileOffset;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile, meta = (AllowPrivateAccess = true, ClampMin = 0.0f))
 	float ProjectileSpeed = 800.0f;
 

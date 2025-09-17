@@ -44,11 +44,12 @@ void USpellAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	// Only spawn the projectile on the server, and replicate out from there
 	if (ActorInfo->IsNetAuthority())
 	{
-		SpawnProjectile(ActorInfo->AvatarActor->GetActorLocation());
+		SpawnProjectile(ActorInfo->AvatarActor->GetActorLocation() + ActorInfo->AvatarActor->GetActorRotation().RotateVector(ProjectileOffset));
 	}
 
 	// CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true);
-	CommitExecute(Handle, ActorInfo, ActivationInfo);
+	// CommitExecute(Handle, ActorInfo, ActivationInfo);
+	CommitAbility(Handle, ActorInfo, ActivationInfo);
 
 	if (bEndAbilityOnFire)
 	{
