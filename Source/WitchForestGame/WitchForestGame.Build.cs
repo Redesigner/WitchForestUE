@@ -16,7 +16,7 @@ public class WitchForestGame : ModuleRules
 			"EnhancedInput",
 			"GameplayTags",
             "AIModule",
-			"UMG"
+			"UMG", "DaySequence"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]{

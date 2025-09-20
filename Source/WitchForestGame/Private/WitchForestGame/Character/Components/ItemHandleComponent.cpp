@@ -116,6 +116,10 @@ APickup* UItemHandleComponent::ConsumeItem()
 
 	APickup* Item = HeldItem.Get();
 	Item->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	FRotator Rotation = Item->GetActorRotation();
+	Rotation.Pitch = 0.0;
+	Rotation.Roll = 0.0;
+	Item->SetActorRotation(Rotation);
 	Item->bHeld = false;
 	HeldItem = nullptr;
 

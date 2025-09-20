@@ -7,7 +7,11 @@
 		{
 			"Name": "WitchForestGame",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"DaySequence",
+				"Engine"
+			]
 		},
 		{
 			"Name": "WitchForestUI",
@@ -238,6 +242,10 @@
 		},
 		{
 			"Name": "USDImporter",
+			"Enabled": true
+		},
+		{
+			"Name": "DaySequence",
 			"Enabled": true
 		}
 	],

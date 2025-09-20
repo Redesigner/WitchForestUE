@@ -19,12 +19,19 @@ struct WITCHFORESTGAME_API FInventoryItemData
 	GENERATED_BODY()
 
 public:
+	/// Item icon, to be displayed in the UI
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSoftObjectPtr<UMaterialInterface> ItemIcon;
 
+	/// The pickup associated with this tag
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<APickup> PickupClass;
 
+	/// Preview actor, for displaying in the world with something like an itemcontainer
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<AActor> PreviewActor;
+
+	/// A friendly name for the item
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName ItemName;
 };

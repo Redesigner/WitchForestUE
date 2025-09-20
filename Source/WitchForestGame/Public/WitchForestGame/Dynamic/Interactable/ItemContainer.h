@@ -14,6 +14,7 @@
 class UArrowComponent;
 class APickup;
 class UGameplayEffect;
+class UItemSet;
 
 UCLASS()
 class WITCHFORESTGAME_API AItemContainer : public AActor, public IInteractableInterface, public IForwardedNetworkRPCHandler
@@ -35,6 +36,8 @@ class WITCHFORESTGAME_API AItemContainer : public AActor, public IInteractableIn
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Interaction, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UGameplayEffect> InteractionEffect;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Preview, meta = (AllowPrivateAccess = true))
+	TArray<FComponentReference> Previews;
 
 	UPROPERTY(Instanced, BlueprintReadWrite, EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UArrowComponent> LaunchVectorArrow;
@@ -69,6 +72,10 @@ private:
 	void LaunchItem(TSubclassOf<APickup> Item);
 
 	void LaunchItemByIndex(int Index);
+
+	void UpdateDisplays(const UItemSet* ItemSet);
+
+	void UpdateDisplaySlot(const UItemSet* ItemSet, int Index);
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

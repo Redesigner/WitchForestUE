@@ -3,7 +3,6 @@
 
 #include "WitchForestGame/Dynamic/Interactable/ItemContainer.h"
 
-#include "AbilitySystemInterface.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,6 +12,7 @@
 #include "WitchForestGame.h"
 #include "WitchForestGame/WitchForestGameplayTags.h"
 #include "WitchForestGame/Dynamic/Pickup/Pickup.h"
+#include "WitchForestGame/Dynamic/World/ActorPreviewComponent.h"
 #include "WitchForestGame/Game/WitchForestGameMode.h"
 #include "WitchForestGame/Game/WitchForestGameState.h"
 #include "WitchForestGame/Inventory/ItemSet.h"
@@ -50,8 +50,8 @@ void AItemContainer::LaunchItemByIndex(int Index)
 		return;
 	}
 
-	// Get the *default* gamemode by way of the game state, rather than the gamemode directly
-	// the gamemode from GameplayStatics does not exist on clients
+	// Get the *default* game mode by way of the game state, rather than the game mode directly
+	// the game mode from GameplayStatics does not exist on clients
 	const AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(GameState->GetDefaultGameMode());
 	if (!GameMode)
 	{
@@ -86,6 +86,50 @@ void AItemContainer::LaunchItemByIndex(int Index)
 	Items[Index] = FGameplayTag::EmptyTag;
 	OnContentsChanged.Broadcast(Items);
 	LaunchItem(ItemData.PickupClass);
+
+	//@TODO: Add item data as a param, since we've already looked it up and don't want to look it up again
+	UpdateDisplaySlot(ItemSet, Index);
+}
+
+void AItemContainer::UpdateDisplays(const UItemSet* ItemSet)
+{
+	const int NumDisplays = Previews.Num();
+	const int NumSlots = Items.Num();
+	
+	for (int i = 0; i < NumSlots && i < NumDisplays; ++i)
+	{
+		UpdateDisplaySlot(ItemSet, i);
+	}
+}
+
+void AItemContainer::UpdateDisplaySlot(const UItemSet* ItemSet, const int Index)
+{
+	if (Index >= Previews.Num() || Index >= Items.Num())
+	{
+		return;
+	}
+	
+	UActorPreviewComponent* PreviewComponent = Cast<UActorPreviewComponent>(Previews[Index].GetComponent(this));
+	if (!PreviewComponent)
+	{
+		return;
+	}
+
+	const FGameplayTag& ItemTag = Items[Index];
+
+	if (ItemTag == FGameplayTag::EmptyTag)
+	{
+		PreviewComponent->SetPreviewClass(nullptr);
+		return;
+	}
+
+	FInventoryItemData SlottedItemData;
+	if (!ItemSet->FindItemDataForTag(ItemTag, SlottedItemData))
+	{
+		return;
+	}
+	// Fallback to our pickup class
+	PreviewComponent->SetPreviewClass(SlottedItemData.PreviewActor ? SlottedItemData.PreviewActor : SlottedItemData.PickupClass);
 }
 
 void AItemContainer::LaunchItem(TSubclassOf<APickup> Item)
@@ -101,7 +145,11 @@ void AItemContainer::LaunchItem(TSubclassOf<APickup> Item)
 	//	return;
 	//}
 
-	APickup* LaunchedItem = GetWorld()->SpawnActorDeferred<APickup>(Item, LaunchVectorArrow->GetComponentTransform());
+	FTransform VectorTransform = LaunchVectorArrow->GetComponentTransform();
+	FRotator VectorRotation = FRotator(0.0f, GetActorRotation().Yaw, 0.0f);
+	VectorTransform.SetRotation(VectorRotation.Quaternion());
+	
+	APickup* LaunchedItem = GetWorld()->SpawnActorDeferred<APickup>(Item, VectorTransform);
 	if (!LaunchedItem)
 	{
 		UE_LOGFMT(LogWitchForestGame, Error, "ItemContainer '{ContainerName}' failed to spawn item of class `{ItemClassName}'.", GetName(), Item->GetName());
@@ -118,12 +166,20 @@ void AItemContainer::LaunchItem(TSubclassOf<APickup> Item)
 
 	GetWorld()->GetTimerManager().SetTimer(WaitTimer, WaitTimerDelegate, 0.25f, false, -1.0f);
 	LaunchedItem->SetVelocity(MakeLaunchVector());
-	LaunchedItem->FinishSpawning(LaunchVectorArrow->GetComponentTransform());
+	LaunchedItem->FinishSpawning(VectorTransform);
 }
 
 void AItemContainer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (AWitchForestGameMode* GameMode = Cast<AWitchForestGameMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		if (UItemSet* ItemSet = GameMode->GetItemSet())
+		{
+			UpdateDisplays(ItemSet);
+		}
+	}
 }
 
 void AItemContainer::Interact_Implementation(AActor* Source)
@@ -208,6 +264,7 @@ void AItemContainer::NotifyActorBeginOverlap(AActor* OtherActor)
 			{
 				Items[NewItemIndex] = ItemTag;
 				OnContentsChanged.Broadcast(Items);
+				UpdateDisplaySlot(ItemSet, NewItemIndex);
 			}
 		}
 		Pickup->Destroy();
@@ -247,7 +304,7 @@ uint8 AItemContainer::CalculateEmptySlots() const
 
 bool AItemContainer::HasEmptySlot(int& AvailableSlotIndexOut) const
 {
-	// Worst case is O(n), so this should be fine. (n is always going to be very small here anyways)
+	// Worst case is O(n), so this should be fine. (n is always going to be very small here anyway)
 	for (int i = 0; i < Items.Num(); ++i)
 	{
 		if (Items[i] == FGameplayTag::EmptyTag)
@@ -263,7 +320,11 @@ bool AItemContainer::HasEmptySlot(int& AvailableSlotIndexOut) const
 
 FVector AItemContainer::MakeLaunchVector() const
 {
-	return WitchForestMath::MakeLaunchVector(MaxLaunchVelocity, MinLaunchVelocity, 0.0f, LaunchAngleRandomArc);
+	FVector LaunchVector = WitchForestMath::MakeLaunchVector(MaxLaunchVelocity, MinLaunchVelocity, 0.0f, FMath::DegreesToRadians(LaunchAngleRandomArc));
+	FRotator ArrowRotator = LaunchVectorArrow->GetComponentRotation();
+	ArrowRotator.Pitch -= 90.0f;
+	LaunchVector = ArrowRotator.RotateVector(LaunchVector);
+	return LaunchVector;
 }
 
 void AItemContainer::OnRep_Items(TArray<FGameplayTag> OldTags)
